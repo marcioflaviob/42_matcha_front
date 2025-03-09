@@ -1,0 +1,36 @@
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 1rem;
+  background-color: #282c34;
+  color: white;
+  height: 100px;
+}
+
+.header-left .title {
+  font-size: 1.5rem;
+  margin: 0;
+}
+
+.header-right nav {
+  display: flex;
+}
+
+.navList {
+  list-style: none;
+  display: flex;
+  gap: 1rem;
+  margin: 0;
+  padding: 0;
+}
+
+.navItem a {
+  color: white;
+  text-decoration: none;
+  font-size: 1rem;
+}
+
+.navItem a:hover {
+  text-decoration: underline;
+}

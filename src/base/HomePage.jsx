@@ -1,7 +1,7 @@
 import React from 'react';
-import './MainContent.css';
+import './HomePage.css';
 
-const MainContent = () => {
+const HomePage = () => {
 	return (
 		<div>
 			<h1>Welcome to Main Content</h1>
@@ -10,4 +10,4 @@ const MainContent = () => {
 	);
 };
 
-export default MainContent;
+export default HomePage;

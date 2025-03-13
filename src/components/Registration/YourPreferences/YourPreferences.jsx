@@ -3,7 +3,7 @@ import './YourPreferences.css';
 import { Button } from 'primereact/button';
 import { MultiSelect } from 'primereact/multiselect';
 import { SelectButton } from 'primereact/selectbutton';
-import { Gender, Interests, SexualInterest } from '../constants';
+import { Gender, Interests, SexualInterest } from './constants';
 import { Divider } from 'primereact/divider';
 
 const YourPreferences = ({ formData, handleSelectChange, stepperRef }) => {

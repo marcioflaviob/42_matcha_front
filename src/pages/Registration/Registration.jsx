@@ -3,24 +3,24 @@ import './Registration.css';
 
 import { Stepper } from 'primereact/stepper';
 import { StepperPanel } from 'primereact/stepperpanel';
-import YourDetails from './steps/YourDetails';
-import YourPreferences from './steps/YourPreferences';
-import SetUpProfile from './steps/SetUpProfile';
-import EmailValidation from './steps/EmailValidation';
+import YourDetails from '../../components/Registration/YourDetails/YourDetails';
+import YourPreferences from '../../components/Registration/YourPreferences/YourPreferences';
+import SetUpProfile from '../../components/Registration/SetUpProfile/SetUpProfile';
+import EmailValidation from '../../components/Registration/EmailValidation/EmailValidation';
         
 const Registration = () => {
 	const stepperRef = useRef(null);
 
 	const [formData, setFormData] = useState({
-        first_name: null,
-        last_name: null,
-        email: null,
-        password: null,
+        first_name: '',
+        last_name: '',
+        email: '',
+        password: '',
 		date: null,
 		gender: null,
 		sexual_interest: null,
-		interests_tags: null,
-		biography: null
+		interests_tags: [],
+		biography: ''
     });
 
     const handleChange = (e) => {

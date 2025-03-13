@@ -1,0 +1,10 @@
+.your-details-panel {
+	display: flex;
+	flex-direction: column;
+	gap: 25px;
+}
+
+.birthdate {
+	max-width: 300px;
+	align-self: center;
+}

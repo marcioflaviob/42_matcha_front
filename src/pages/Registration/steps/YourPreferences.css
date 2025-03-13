@@ -1,0 +1,17 @@
+.hobby-selection {
+	width: 80%;
+}
+
+.hobby-selection-input {
+	width: 100%;
+}
+
+.your-preferences-panel {
+	display: flex;
+	flex-direction: column;
+	gap: 25px;
+}
+
+p{
+	margin-top: 0px;
+}

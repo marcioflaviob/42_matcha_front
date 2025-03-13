@@ -1,0 +1,23 @@
+.registration-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 50px;
+}
+
+h2 {
+	align-self: center;
+}
+
+.aligned-div{
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+}
+
+.button-div {
+	margin-top: 1.5rem;
+	display: flex;
+	flex-direction: row;
+	justify-content: space-evenly;
+}

@@ -1,0 +1,75 @@
+.biography-div {
+	display: flex;
+	flex-direction: column;
+}
+
+.h2-bio {
+	align-self: auto !important;
+}
+
+.empty-template {
+	display: flex;
+	align-items: center;
+	flex-direction: column;
+  }
+  
+.item-template {
+	display: flex;
+	align-items: center;
+	flex-wrap: wrap;
+}
+
+.empty-icon {
+	margin-top: 0.75rem;
+	padding: 1.25rem;
+	font-size: 5em;
+	border-radius: 50%;
+	background-color: var(--surface-b);
+	color: var(--surface-d);
+}
+
+.empty-span {
+	margin-top: 1.25rem;
+	margin-bottom: 1.25rem;
+	font-size: 1.2em;
+	color: var(--text-color-secondary);
+}
+
+.image-div {
+	display: flex;
+	align-items: center;
+	width: 40%;
+}
+
+.filename-span {
+	display: flex;
+	flex-direction: column;
+	text-align: left;
+	margin-left: 0.75rem;
+}
+
+.item-tag {
+	padding-left: 0.75rem;
+	padding-right: 0.75rem;
+	padding-top: 0.5rem;
+	padding-bottom: 0.5rem;
+}
+
+.header-progress {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	margin-left: auto;
+}
+
+.right-div {
+	color: goldenrod;
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	margin-left: auto;
+}
+
+.select-star {
+	font-size: 2rem;
+}

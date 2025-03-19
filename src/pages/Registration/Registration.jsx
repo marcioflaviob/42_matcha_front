@@ -42,13 +42,13 @@ const Registration = () => {
 		<div className='registration-container'>
 			<Stepper ref={stepperRef} linear={true}>
 				<StepperPanel header="Your details">
-					<YourDetails formData={formData} handleChange={handleChange} stepperRef={stepperRef} />
+					<YourDetails stepperRef={stepperRef} />
 				</StepperPanel>
 				<StepperPanel header="Your preferences">
-					<YourPreferences formData={formData} handleSelectChange={handleSelectChange} stepperRef={stepperRef} />
+					<YourPreferences stepperRef={stepperRef} />
 				</StepperPanel>
 				<StepperPanel header="Set up profile">
-					<SetUpProfile formData={formData} handleChange={handleChange} stepperRef={stepperRef} />
+					<SetUpProfile stepperRef={stepperRef} />
 				</StepperPanel>
 				<StepperPanel header="Validate">
 					<EmailValidation />

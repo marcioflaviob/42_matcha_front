@@ -11,44 +11,17 @@ import EmailValidation from '../../components/Registration/EmailValidation/Email
 const Registration = () => {
 	const stepperRef = useRef(null);
 
-	const [formData, setFormData] = useState({
-        first_name: '',
-        last_name: '',
-        email: '',
-        password: '',
-		date: null,
-		gender: null,
-		sexual_interest: null,
-		interests_tags: [],
-		biography: ''
-    });
-
-    const handleChange = (e) => {
-        const { id, value } = e.target;
-        setFormData((prevData) => ({
-            ...prevData,
-            [id]: value,
-        }));
-    };
-
-	const handleSelectChange = (e, field) => {
-        setFormData((prevData) => ({
-            ...prevData,
-            [field]: e.value,
-        }));
-    };
-
 	return (
 		<div className='registration-container'>
 			<Stepper ref={stepperRef} linear={true}>
 				<StepperPanel header="Your details">
-					<YourDetails formData={formData} handleChange={handleChange} stepperRef={stepperRef} />
+					<YourDetails stepperRef={stepperRef} />
 				</StepperPanel>
 				<StepperPanel header="Your preferences">
-					<YourPreferences formData={formData} handleSelectChange={handleSelectChange} stepperRef={stepperRef} />
+					<YourPreferences stepperRef={stepperRef} />
 				</StepperPanel>
 				<StepperPanel header="Set up profile">
-					<SetUpProfile formData={formData} handleChange={handleChange} stepperRef={stepperRef} />
+					<SetUpProfile stepperRef={stepperRef} />
 				</StepperPanel>
 				<StepperPanel header="Validate">
 					<EmailValidation />

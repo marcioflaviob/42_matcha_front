@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import './YourPreferences.css';
 import { Button } from 'primereact/button';
 import { MultiSelect } from 'primereact/multiselect';
@@ -12,6 +13,7 @@ const YourPreferences = ({ stepperRef }) => {
 		gender: '',
 		sexual_interest: '',
 		interests_tags: [],
+		status: 'step_two'
 	});
 	const [touchedFields, setTouchedFields] = useState({
 		gender: false,
@@ -35,7 +37,7 @@ const YourPreferences = ({ stepperRef }) => {
     };
 
 	const handleButtonNext = () => {
-		// TODO Add logic to send data to the server
+		axios.put(`${import.meta.env.VITE_API_URL}/users/me`, formData, { withCredentials: true });
 		stepperRef.current.nextCallback();
 	}
 

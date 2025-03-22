@@ -4,13 +4,17 @@ import { Button } from 'primereact/button';
 import { Divider } from 'primereact/divider';
 import { FileUpload } from 'primereact/fileupload';
 import { InputTextarea } from 'primereact/inputtextarea';
+import { displayAlert } from '../../Notification/Notification';
+import { Tooltip } from 'primereact/tooltip';
 
-const SetUpProfile = ({ formData, handleChange, stepperRef  }) => {
+const SetUpProfile = ({ stepperRef }) => {
 
 	const [fileCount, setFileCount] = useState(0);
 	const fileUploadRef = useRef(null);
 	const uploadedFiles = useRef([]);
 	const [profilePicture, setProfilePicture] = useState(null);
+    const [biography, setBiography] = useState('');
+    const [biographyTouched, setBiographyTouched] = useState(false);
 
 	const chooseOptions = { icon: 'pi pi-fw pi-images', iconOnly: true, className: 'custom-choose-btn p-button-rounded p-button-outlined' };
     
@@ -18,8 +22,7 @@ const SetUpProfile = ({ formData, handleChange, stepperRef  }) => {
         let files = e.files;
 
         if (fileCount + files.length > 5) {
-			alert('You can only upload up to 5 photos');
-            // TODO show proper alert
+            displayAlert('warn', 'You can only upload up to 5 photos');
             return;
         }
 
@@ -75,6 +78,11 @@ const SetUpProfile = ({ formData, handleChange, stepperRef  }) => {
         );
     };
 
+    const handleChange = (e) => {
+        setBiographyTouched(true);
+        setBiography(e.target.value);
+    };
+
     const emptyTemplate = () => {
         return (
             <div className="empty-template">
@@ -97,7 +105,7 @@ const SetUpProfile = ({ formData, handleChange, stepperRef  }) => {
 		<div className='set-up-panel'>
 			<div className='biography-div'>
 				<h2 className='h2-bio'>Write your biography</h2>
-				<InputTextarea rows={5} cols={40} autoResize value={formData.biography} onChange={handleChange} />
+				<InputTextarea rows={5} cols={40} autoResize value={biography} onChange={handleChange} invalid={biographyTouched && !biography} />
 			</div>
 			<Divider align="center" />
 			<div>
@@ -108,7 +116,7 @@ const SetUpProfile = ({ formData, handleChange, stepperRef  }) => {
 			</div>
 			<div className='button-div'>
 				<Button label="Back" severity="secondary" icon="pi pi-arrow-left" onClick={() => stepperRef.current.prevCallback()} />
-				<Button label="Next" icon="pi pi-arrow-right" iconPos="right" onClick={() => stepperRef.current.nextCallback()} />
+				<Button label="Next" icon="pi pi-arrow-right" iconPos="right" onClick={handleUpload} disabled={!biography || fileCount == 0} />
 			</div>
 		</div>
 	);

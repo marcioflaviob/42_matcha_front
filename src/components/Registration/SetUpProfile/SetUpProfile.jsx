@@ -7,7 +7,7 @@ import { InputTextarea } from 'primereact/inputtextarea';
 import { displayAlert } from '../../Notification/Notification';
 import { Tooltip } from 'primereact/tooltip';
 
-const SetUpProfile = ({ stepperRef }) => {
+const SetUpProfile = ({ setActiveStep }) => {
 
 	const [fileCount, setFileCount] = useState(0);
 	const fileUploadRef = useRef(null);
@@ -98,7 +98,7 @@ const SetUpProfile = ({ stepperRef }) => {
         if (fileUploadRef.current) {
             fileUploadRef.current.upload();
         }
-        stepperRef.current.nextCallback();
+        setActiveStep(3);
     };
 
 	return (
@@ -115,7 +115,7 @@ const SetUpProfile = ({ stepperRef }) => {
 					headerTemplate={headerTemplate} itemTemplate={itemTemplate} emptyTemplate={emptyTemplate} chooseOptions={chooseOptions} />
 			</div>
 			<div className='button-div'>
-				<Button label="Back" severity="secondary" icon="pi pi-arrow-left" onClick={() => stepperRef.current.prevCallback()} />
+				<Button label="Back" severity="secondary" icon="pi pi-arrow-left" onClick={() => setActiveStep(1)} />
 				<Button label="Next" icon="pi pi-arrow-right" iconPos="right" onClick={handleUpload} disabled={!biography || fileCount == 0} />
 			</div>
 		</div>

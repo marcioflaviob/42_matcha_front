@@ -7,7 +7,7 @@ import { InputText } from 'primereact/inputtext';
 import { Password } from 'primereact/password';
 import { Divider } from 'primereact/divider';
         
-const YourDetails = ({ stepperRef }) => {
+const YourDetails = ({ setActiveStep }) => {
 	const nameKeyFilter = /^[a-zA-ZÀ-ÿ' -]+$/;
 	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 	const [formData, setFormData] = useState({
@@ -43,14 +43,6 @@ const YourDetails = ({ stepperRef }) => {
         }));
     };
 
-	const handlePasswordChange = (e) => {
-		setTouchedFields((prev) => ({ ...prev, password: true }));
-		setFormData((prevData) => ({
-			...prevData,
-			password: e.target.value,
-		}));
-	};
-
 	const handleDateChange = (e) => {
 		setTouchedFields((prev) => ({ ...prev, birthdate: true }));
 		setFormData((prevData) => ({
@@ -61,7 +53,7 @@ const YourDetails = ({ stepperRef }) => {
 
 	const handleButtonNext = () => {
 		// TODO Add logic to send data to the server
-		stepperRef.current.nextCallback();
+		setActiveStep(1);
 	}
 
 	useEffect(() => {
@@ -97,7 +89,7 @@ const YourDetails = ({ stepperRef }) => {
 			</div>
 			<Calendar
 				className='birthdate'
-				inputId='birth_date'
+				inputId='birthdate'
 				placeholder='Birth Date'
 				value={formData.birthdate}
 				onChange={handleDateChange}
@@ -116,9 +108,10 @@ const YourDetails = ({ stepperRef }) => {
 				</FloatLabel>
 				<FloatLabel>
 					<Password
+						inputId='password'
 						value={formData.password}
 						invalid={touchedFields.password && !validFields.password}
-						onChange={handlePasswordChange}
+						onChange={handleInputChange}
 						feedback={false} />
 					<label htmlFor="password">Password</label>
 				</FloatLabel>

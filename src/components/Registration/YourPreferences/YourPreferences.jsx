@@ -6,7 +6,7 @@ import { SelectButton } from 'primereact/selectbutton';
 import { Gender, Interests, SexualInterest } from './constants';
 import { Divider } from 'primereact/divider';
 
-const YourPreferences = ({ stepperRef }) => {
+const YourPreferences = ({ setActiveStep }) => {
 
 	const [formData, setFormData] = useState({
 		gender: '',
@@ -36,7 +36,7 @@ const YourPreferences = ({ stepperRef }) => {
 
 	const handleButtonNext = () => {
 		// TODO Add logic to send data to the server
-		stepperRef.current.nextCallback();
+		setActiveStep(2);
 	}
 
 	useEffect(() => {

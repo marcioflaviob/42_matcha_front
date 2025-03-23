@@ -1,0 +1,46 @@
+.login-component {
+	display: flex;
+	flex-direction: column;
+	text-align: center;
+	min-width: 280px;
+}
+
+.login-inputs {
+	display: flex;
+	flex-direction: column;
+	gap: 25px;
+
+}
+
+.input-login {
+	width: 100%;
+}
+
+.p-password input {
+    width: 100%;
+}
+
+.login-title {
+	margin-top: 0px;
+}
+
+.forgot-password {
+    margin-top: 0.5rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+}
+
+.forgot-password:hover {
+    text-decoration: underline;
+}
+
+.register-div {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	margin-top: 1rem;
+}
+
+.register-button {
+	margin: 10px;
+}

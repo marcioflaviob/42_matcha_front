@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios'
 import './YourDetails.css';
 import { Button } from 'primereact/button';
 import { Calendar } from 'primereact/calendar';
@@ -6,16 +7,19 @@ import { FloatLabel } from 'primereact/floatlabel';
 import { InputText } from 'primereact/inputtext';
 import { Password } from 'primereact/password';
 import { Divider } from 'primereact/divider';
+import { displayAlert } from '../../Notification/Notification';
         
 const YourDetails = ({ setActiveStep }) => {
 	const nameKeyFilter = /^[a-zA-ZÀ-ÿ' -]+$/;
 	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+	const [isLoading, setIsLoading] = useState(false);
 	const [formData, setFormData] = useState({
 		first_name: '',
 		last_name: '',
 		birthdate: null,
 		email: '',
 		password: '',
+		status: 'step_one'
 	});
 	const [touchedFields, setTouchedFields] = useState({
         first_name: false,
@@ -53,7 +57,18 @@ const YourDetails = ({ setActiveStep }) => {
 
 	const handleButtonNext = () => {
 		// TODO Add logic to send data to the server
-		setActiveStep(1);
+		setIsLoading(true);
+		axios.post(`${import.meta.env.VITE_API_URL}/new-user`, formData)
+		.then(response => {
+			console.log('User details saved:', response.data);
+			// Log the user in
+			setActiveStep(1);
+		})
+		.catch(error => {
+			console.log('Error saving user details:', error);
+			displayAlert('error', 'Error saving user details');
+		});
+		setIsLoading(false);
 	}
 
 	useEffect(() => {
@@ -117,7 +132,7 @@ const YourDetails = ({ setActiveStep }) => {
 				</FloatLabel>
 			</div>
 			<div className='button-div'>
-				<Button label="Next" icon="pi pi-arrow-right" iconPos="right" onClick={handleButtonNext} disabled={allFieldsValid} />
+				<Button label="Next" icon="pi pi-arrow-right" iconPos="right" onClick={handleButtonNext} disabled={allFieldsValid} loading={isLoading} />
 			</div>
 		</div>
 	);

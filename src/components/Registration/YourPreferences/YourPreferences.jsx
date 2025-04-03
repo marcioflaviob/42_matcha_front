@@ -1,17 +1,23 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import axios, { all } from 'axios';
 import './YourPreferences.css';
 import { Button } from 'primereact/button';
 import { MultiSelect } from 'primereact/multiselect';
 import { SelectButton } from 'primereact/selectbutton';
 import { Gender, Interests, SexualInterest } from './constants';
 import { Divider } from 'primereact/divider';
+import { UserContext } from '../../../context/UserContext';
+import { displayAlert } from '../../Notification/Notification';
 
-const YourPreferences = ({ stepperRef }) => {
-
+const YourPreferences = ({ setActiveStep }) => {
+	const { user, setUser } = useContext(UserContext);
+	const token = localStorage.getItem('token');
+	const [isLoading, setIsLoading] = useState(false);
 	const [formData, setFormData] = useState({
 		gender: '',
 		sexual_interest: '',
 		interests_tags: [],
+		status: 'step_two'
 	});
 	const [touchedFields, setTouchedFields] = useState({
 		gender: false,
@@ -35,8 +41,26 @@ const YourPreferences = ({ stepperRef }) => {
     };
 
 	const handleButtonNext = () => {
-		// TODO Add logic to send data to the server
-		stepperRef.current.nextCallback();
+		setIsLoading(true);
+		axios.put(
+			`${import.meta.env.VITE_API_URL}/update-user`,
+			formData,
+			{
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+				withCredentials: true,
+			}
+		)
+		.then((response) => {
+			setUser(response.data);
+			setActiveStep(2);
+		})
+		.catch((error) => {
+			console.error('Error:', error);
+			displayAlert('error', 'An error occurred. Please try again later.');
+		})
+		setIsLoading(false);
 	}
 
 	useEffect(() => {
@@ -45,6 +69,8 @@ const YourPreferences = ({ stepperRef }) => {
 			sexual_interest: formData.sexual_interest !== '',
 			interests_tags: formData.interests_tags.length > 0,
 		});
+		console.log(validFields);
+		console.log(allFieldsValid);
 	}, [formData]);
 
 	return (
@@ -70,7 +96,7 @@ const YourPreferences = ({ stepperRef }) => {
 
 			</div>
 			<div className='button-div'>
-				<Button label="Next" icon="pi pi-arrow-right" iconPos="right" onClick={handleButtonNext} disabled={allFieldsValid} />
+				<Button label="Next" icon="pi pi-arrow-right" iconPos="right" onClick={handleButtonNext} disabled={!allFieldsValid} loading={isLoading} />
 			</div>
 		</div>
 	);

@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios'
 import './YourDetails.css';
 import { Button } from 'primereact/button';
 import { Calendar } from 'primereact/calendar';
@@ -6,16 +7,19 @@ import { FloatLabel } from 'primereact/floatlabel';
 import { InputText } from 'primereact/inputtext';
 import { Password } from 'primereact/password';
 import { Divider } from 'primereact/divider';
+import { displayAlert } from '../../Notification/Notification';
         
-const YourDetails = ({ stepperRef }) => {
+const YourDetails = ({ setActiveStep }) => {
 	const nameKeyFilter = /^[a-zA-ZÀ-ÿ' -]+$/;
 	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+	const [isLoading, setIsLoading] = useState(false);
 	const [formData, setFormData] = useState({
 		first_name: '',
 		last_name: '',
 		birthdate: null,
 		email: '',
 		password: '',
+		status: 'step_one'
 	});
 	const [touchedFields, setTouchedFields] = useState({
         first_name: false,
@@ -43,14 +47,6 @@ const YourDetails = ({ stepperRef }) => {
         }));
     };
 
-	const handlePasswordChange = (e) => {
-		setTouchedFields((prev) => ({ ...prev, password: true }));
-		setFormData((prevData) => ({
-			...prevData,
-			password: e.target.value,
-		}));
-	};
-
 	const handleDateChange = (e) => {
 		setTouchedFields((prev) => ({ ...prev, birthdate: true }));
 		setFormData((prevData) => ({
@@ -59,9 +55,28 @@ const YourDetails = ({ stepperRef }) => {
 		}));
 	};
 
-	const handleButtonNext = () => {
-		// TODO Add logic to send data to the server
-		stepperRef.current.nextCallback();
+	const handleButtonNext = async () => {
+		setIsLoading(true);
+		await axios.post(`${import.meta.env.VITE_API_URL}/new-user`, formData)
+		.then(async response => {
+			console.log('User details saved:', response.data);
+			await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, {
+				email: formData.email,
+				password: formData.password,
+			}).then(response => {
+				setUser(response.data.user);
+				localStorage.setItem('token', response.data.token);
+				setIsLoading(false);
+				setActiveStep(1);
+			}).catch(error => {
+				console.error('Login failed:', error.response?.data || error.message);
+			});
+		})
+		.catch(error => {
+			console.log('Error saving user details:', error);
+			displayAlert('error', 'Error saving user details');
+		});
+		setIsLoading(false);
 	}
 
 	useEffect(() => {
@@ -97,7 +112,7 @@ const YourDetails = ({ stepperRef }) => {
 			</div>
 			<Calendar
 				className='birthdate'
-				inputId='birth_date'
+				inputId='birthdate'
 				placeholder='Birth Date'
 				value={formData.birthdate}
 				onChange={handleDateChange}
@@ -116,15 +131,16 @@ const YourDetails = ({ stepperRef }) => {
 				</FloatLabel>
 				<FloatLabel>
 					<Password
+						inputId='password'
 						value={formData.password}
 						invalid={touchedFields.password && !validFields.password}
-						onChange={handlePasswordChange}
+						onChange={handleInputChange}
 						feedback={false} />
 					<label htmlFor="password">Password</label>
 				</FloatLabel>
 			</div>
 			<div className='button-div'>
-				<Button label="Next" icon="pi pi-arrow-right" iconPos="right" onClick={handleButtonNext} disabled={allFieldsValid} />
+				<Button label="Next" icon="pi pi-arrow-right" iconPos="right" onClick={handleButtonNext} disabled={allFieldsValid} loading={isLoading} />
 			</div>
 		</div>
 	);

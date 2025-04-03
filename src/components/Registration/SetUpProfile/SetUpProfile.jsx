@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import './SetUpProfile.css';
 import { Button } from 'primereact/button';
 import { Divider } from 'primereact/divider';
@@ -6,18 +6,25 @@ import { FileUpload } from 'primereact/fileupload';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { displayAlert } from '../../Notification/Notification';
 import { Tooltip } from 'primereact/tooltip';
+import { UserContext } from '../../../context/UserContext';
+import axios from 'axios';
 
-const SetUpProfile = ({ stepperRef }) => {
-
+const SetUpProfile = ({ setActiveStep }) => {
+    const { user, setUser } = useContext(UserContext);
+    const token = localStorage.getItem('token');
+    const [isLoading, setIsLoading] = useState(false);
 	const [fileCount, setFileCount] = useState(0);
+    const uploadUrl = import.meta.env.VITE_API_URL + "/upload/single/";
 	const fileUploadRef = useRef(null);
 	const uploadedFiles = useRef([]);
 	const [profilePicture, setProfilePicture] = useState(null);
-    const [biography, setBiography] = useState('');
+    const [formData, setFormData] = useState({
+        biography: '',
+        status: 'validation'
+    });
     const [biographyTouched, setBiographyTouched] = useState(false);
 
 	const chooseOptions = { icon: 'pi pi-fw pi-images', iconOnly: true, className: 'custom-choose-btn p-button-rounded p-button-outlined' };
-    
     const onTemplateSelect = (e) => {
         let files = e.files;
 
@@ -80,7 +87,10 @@ const SetUpProfile = ({ stepperRef }) => {
 
     const handleChange = (e) => {
         setBiographyTouched(true);
-        setBiography(e.target.value);
+        setFormData((prevData) => ({
+            ...prevData,
+            biography: e.target.value,
+        }));
     };
 
     const emptyTemplate = () => {
@@ -94,29 +104,62 @@ const SetUpProfile = ({ stepperRef }) => {
         );
     };
 
-    const handleUpload = () => {
-        if (fileUploadRef.current) {
-            fileUploadRef.current.upload();
+    const handleUpload = async () => {
+        setIsLoading(true);
+    
+        try {
+            uploadedFiles.current.forEach((file) => {
+                const payload = new FormData();
+
+                payload.append('isProfilePicture', file === profilePicture);
+                payload.append('picture', file);
+
+                axios.post(uploadUrl, payload, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                        'Content-Type': 'multipart/form-data',
+                    },
+                    withCredentials: true,
+                })
+                .catch((error) => {
+                    console.error('Error uploading file:', error);
+                    displayAlert('error', 'Error uploading file');
+                });
+            });
+    
+            const response = await axios.put(`${import.meta.env.VITE_API_URL}/update-user`, formData, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+                withCredentials: true,
+            });
+    
+            setUser(response.data);
+            setActiveStep(3);
+        } catch (error) {
+            console.error('Error:', error);
+            displayAlert('error', 'An error occurred. Please try again later.');
+        } finally {
+            setIsLoading(false);
         }
-        stepperRef.current.nextCallback();
     };
 
 	return (
 		<div className='set-up-panel'>
 			<div className='biography-div'>
 				<h2 className='h2-bio'>Write your biography</h2>
-				<InputTextarea rows={5} cols={40} autoResize value={biography} onChange={handleChange} invalid={biographyTouched && !biography} />
+				<InputTextarea rows={5} cols={40} autoResize value={formData.biography} onChange={handleChange} invalid={biographyTouched && !formData.biography} />
 			</div>
 			<Divider align="center" />
 			<div>
 				<h2>Upload your pictures</h2>
-				<FileUpload ref={fileUploadRef} name="demo[]" url="/api/upload" multiple accept="image/*" maxFileSize={1000000}
+				<FileUpload ref={fileUploadRef} url={uploadUrl} multiple accept="image/*" maxFileSize={1000000}
 					onSelect={onTemplateSelect}
 					headerTemplate={headerTemplate} itemTemplate={itemTemplate} emptyTemplate={emptyTemplate} chooseOptions={chooseOptions} />
 			</div>
 			<div className='button-div'>
-				<Button label="Back" severity="secondary" icon="pi pi-arrow-left" onClick={() => stepperRef.current.prevCallback()} />
-				<Button label="Next" icon="pi pi-arrow-right" iconPos="right" onClick={handleUpload} disabled={!biography || fileCount == 0} />
+				<Button label="Back" severity="secondary" icon="pi pi-arrow-left" onClick={() => setActiveStep(1)} />
+				<Button label="Next" icon="pi pi-arrow-right" iconPos="right" onClick={handleUpload} disabled={!formData.biography || fileCount == 0} loading={isLoading} />
 			</div>
 		</div>
 	);

@@ -55,14 +55,22 @@ const YourDetails = ({ setActiveStep }) => {
 		}));
 	};
 
-	const handleButtonNext = () => {
-		// TODO Add logic to send data to the server
+	const handleButtonNext = async () => {
 		setIsLoading(true);
-		axios.post(`${import.meta.env.VITE_API_URL}/new-user`, formData)
-		.then(response => {
+		await axios.post(`${import.meta.env.VITE_API_URL}/new-user`, formData)
+		.then(async response => {
 			console.log('User details saved:', response.data);
-			// Log the user in
-			setActiveStep(1);
+			await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, {
+				email: formData.email,
+				password: formData.password,
+			}).then(response => {
+				setUser(response.data.user);
+				localStorage.setItem('token', response.data.token);
+				setIsLoading(false);
+				setActiveStep(1);
+			}).catch(error => {
+				console.error('Login failed:', error.response?.data || error.message);
+			});
 		})
 		.catch(error => {
 			console.log('Error saving user details:', error);

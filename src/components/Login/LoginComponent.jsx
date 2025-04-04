@@ -41,7 +41,7 @@ const LoginComponent = ({ setIsPasswordForgotten }) => {
 
     const handleLogin = async () => {
         try {
-            const response = await axios.post('http://localhost:3000/auth/login', {
+            const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, {
                 email: formData.email,
                 password: formData.password,
             });
@@ -83,7 +83,7 @@ const LoginComponent = ({ setIsPasswordForgotten }) => {
 			<Button label="Login" className="p-button-raised p-button-rounded" onClick={handleLogin} disabled={!validFields.email && !validFields.password} />
 			<div className='register-div'>
 				<span>No account?</span>
-				<Button label="Register" className="register-button p-button-raised p-button-rounded" onClick={handleLogin} disabled={!validFields.email && !validFields.password} />
+				<Button label="Register" className="register-button p-button-raised p-button-rounded" onClick={() => navigate('/register')} />
 			</div>
 		</div>
 	);

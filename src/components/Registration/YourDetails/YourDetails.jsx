@@ -8,9 +8,11 @@ import { InputText } from 'primereact/inputtext';
 import { Password } from 'primereact/password';
 import { Divider } from 'primereact/divider';
 import { displayAlert } from '../../Notification/Notification';
+import { UserContext } from '../../../context/UserContext';
         
 const YourDetails = ({ setActiveStep }) => {
 	const nameKeyFilter = /^[a-zA-ZÀ-ÿ' -]+$/;
+	const { setUser } = React.useContext(UserContext);
 	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 	const [isLoading, setIsLoading] = useState(false);
 	const [formData, setFormData] = useState({
@@ -59,7 +61,6 @@ const YourDetails = ({ setActiveStep }) => {
 		setIsLoading(true);
 		await axios.post(`${import.meta.env.VITE_API_URL}/new-user`, formData)
 		.then(async response => {
-			console.log('User details saved:', response.data);
 			await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, {
 				email: formData.email,
 				password: formData.password,
@@ -73,7 +74,7 @@ const YourDetails = ({ setActiveStep }) => {
 			});
 		})
 		.catch(error => {
-			console.log('Error saving user details:', error);
+			console.error('Error saving user details:', error);
 			displayAlert('error', 'Error saving user details');
 		});
 		setIsLoading(false);
@@ -140,7 +141,7 @@ const YourDetails = ({ setActiveStep }) => {
 				</FloatLabel>
 			</div>
 			<div className='button-div'>
-				<Button label="Next" icon="pi pi-arrow-right" iconPos="right" onClick={handleButtonNext} disabled={allFieldsValid} loading={isLoading} />
+				<Button label="Next" icon="pi pi-arrow-right" iconPos="right" onClick={handleButtonNext} disabled={!allFieldsValid} loading={isLoading} />
 			</div>
 		</div>
 	);

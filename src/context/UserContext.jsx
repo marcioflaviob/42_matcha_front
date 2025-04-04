@@ -10,7 +10,7 @@ export const UserProvider = ({ children }) => {
         const token = localStorage.getItem('token');
         if (token) {
             axios
-                .get('http://localhost:3000/auth/me', {
+                .get(`${import.meta.env.VITE_API_URL}/auth/me`, {
                     headers: { Authorization: `Bearer ${token}` },
                 })
                 .then((response) => {

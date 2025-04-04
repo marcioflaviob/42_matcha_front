@@ -17,7 +17,6 @@ const Registration = () => {
 
 	useEffect(() => {
 		if (user && user.status) {
-			console.log(user.status);
 			switch (user.status) {
 				case 'step_one':
 					setActiveStep(1);

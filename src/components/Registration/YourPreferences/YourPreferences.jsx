@@ -69,8 +69,6 @@ const YourPreferences = ({ setActiveStep }) => {
 			sexual_interest: formData.sexual_interest !== '',
 			interests_tags: formData.interests_tags.length > 0,
 		});
-		console.log(validFields);
-		console.log(allFieldsValid);
 	}, [formData]);
 
 	return (

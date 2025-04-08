@@ -8,10 +8,11 @@ import { displayAlert } from '../../Notification/Notification';
 import { Tooltip } from 'primereact/tooltip';
 import { UserContext } from '../../../context/UserContext';
 import axios from 'axios';
+import { AuthContext } from '../../../context/AuthContext';
 
 const SetUpProfile = ({ setActiveStep }) => {
     const { user, setUser } = useContext(UserContext);
-    const token = localStorage.getItem('token');
+    const { token } = useContext(AuthContext);
     const [isLoading, setIsLoading] = useState(false);
 	const [fileCount, setFileCount] = useState(0);
     const uploadUrl = import.meta.env.VITE_API_URL + "/upload/single/";

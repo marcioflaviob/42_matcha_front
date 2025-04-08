@@ -6,10 +6,12 @@ import { Password } from 'primereact/password';
 import { Button } from 'primereact/button';
 import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../../context/AuthContext';
 import { UserContext } from '../../context/UserContext';
 
 const LoginComponent = ({ setIsPasswordForgotten }) => {
 	const navigate = useNavigate();
+	const { login } = useContext(AuthContext);
 	const { setUser } = useContext(UserContext);
 	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 	const [formData, setFormData] = useState({
@@ -46,8 +48,8 @@ const LoginComponent = ({ setIsPasswordForgotten }) => {
                 password: formData.password,
             });
 
-            setUser(response.data.user);
-            localStorage.setItem('token', response.data.token);
+			login(response.data.token);
+			setUser(response.data.user);
 			navigate('/');
         } catch (error) {
             console.error('Login failed:', error.response?.data || error.message);

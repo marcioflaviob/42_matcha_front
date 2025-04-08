@@ -8,10 +8,11 @@ import { Gender, Interests, SexualInterest } from './constants';
 import { Divider } from 'primereact/divider';
 import { UserContext } from '../../../context/UserContext';
 import { displayAlert } from '../../Notification/Notification';
+import { AuthContext } from '../../../context/AuthContext';
 
 const YourPreferences = ({ setActiveStep }) => {
 	const { user, setUser } = useContext(UserContext);
-	const token = localStorage.getItem('token');
+	const { token } = useContext(AuthContext);
 	const [isLoading, setIsLoading] = useState(false);
 	const [formData, setFormData] = useState({
 		gender: '',

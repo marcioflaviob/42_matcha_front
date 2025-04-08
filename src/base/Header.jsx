@@ -1,16 +1,13 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext } from 'react';
 import './Header.css';
 import { UserContext } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
+import { AuthContext } from '../context/AuthContext';
 
 const Header = () => {
-	const { user, setUser } = useContext(UserContext);
+	const { user } = useContext(UserContext);
+	const { logout } = useContext(AuthContext);
 	const navigate = useNavigate();
-
-	const handleLogout = () => {
-        localStorage.removeItem('token');
-        setUser(null);
-    };
 
 	return (
 		<div className="header">
@@ -21,7 +18,7 @@ const Header = () => {
 				{user ? (
 					<div className="user-info">
 						<span>Welcome {user.first_name} </span>
-						<button onClick={handleLogout}>Log out</button>
+						<button onClick={logout}>Log out</button>
 					</div>
 				) : (
 					<div className="login-buttons">

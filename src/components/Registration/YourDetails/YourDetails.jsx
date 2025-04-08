@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import axios from 'axios'
 import './YourDetails.css';
 import { Button } from 'primereact/button';
@@ -12,7 +12,8 @@ import { UserContext } from '../../../context/UserContext';
         
 const YourDetails = ({ setActiveStep }) => {
 	const nameKeyFilter = /^[a-zA-ZÀ-ÿ' -]+$/;
-	const { setUser } = React.useContext(UserContext);
+	const { setUser } = useContext(UserContext);
+	const { login } = useContext(AuthContext);
 	const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 	const [isLoading, setIsLoading] = useState(false);
 	const [formData, setFormData] = useState({
@@ -66,7 +67,7 @@ const YourDetails = ({ setActiveStep }) => {
 				password: formData.password,
 			}).then(response => {
 				setUser(response.data.user);
-				localStorage.setItem('token', response.data.token);
+				login(response.data.token);
 				setIsLoading(false);
 				setActiveStep(1);
 			}).catch(error => {

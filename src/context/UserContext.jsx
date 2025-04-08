@@ -1,14 +1,17 @@
-import React, { createContext, useState, useEffect } from 'react';
+import React, { createContext, useState, useEffect, useContext } from 'react';
 import axios from 'axios';
+import { AuthContext } from './AuthContext';
 
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const { token, isAuthenticated, isLoading } = useContext(AuthContext);
 
     useEffect(() => {
-        const token = localStorage.getItem('token');
-        if (token) {
+        if (isLoading) return;
+
+        if (isAuthenticated && token) {
             axios
                 .get(`${import.meta.env.VITE_API_URL}/auth/me`, {
                     headers: { Authorization: `Bearer ${token}` },
@@ -21,8 +24,10 @@ export const UserProvider = ({ children }) => {
                     }
                 })
                 .catch(() => setUser(null));
+        } else {
+            setUser(null);
         }
-    }, []);
+    }, [isAuthenticated, token, isLoading]);
 
     return (
         <UserContext.Provider value={{ user, setUser }}>

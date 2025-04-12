@@ -67,8 +67,7 @@ const ProfileInfo = ({ userId }) => {
                 console.log('error'); // Handle errors
             }
         };
-        // fetchData();
-        setInterestIcon('circle')
+        fetchData();
     }, [userId, user]);
 
     if (!data) return (

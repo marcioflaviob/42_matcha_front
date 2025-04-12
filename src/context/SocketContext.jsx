@@ -1,48 +1,63 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import { io } from 'socket.io-client';
+import Pusher from 'pusher-js';
 import { AuthContext } from './AuthContext';
+import { UserContext } from './UserContext';
 
 const SocketContext = createContext();
 
 export const SocketProvider = ({ children }) => {
-  const [socket, setSocket] = useState(null);
+  const [pusher, setPusher] = useState(null);
+  const [channel, setChannel] = useState(null);
   const [connected, setConnected] = useState(false);
   const { token, isAuthenticated, isLoading } = useContext(AuthContext);
+  const { user } = useContext(UserContext);
 
   useEffect(() => {
-	if (isLoading) return;
+    if (isLoading) return;
 
     if (isAuthenticated && token) {
-      const socketInstance = io(import.meta.env.VITE_API_URL, {
-        auth: { token },
-        withCredentials: true,
+      // Initialize Pusher
+      const pusherInstance = new Pusher(import.meta.env.VITE_PUSHER_KEY, {
+        cluster: import.meta.env.VITE_PUSHER_CLUSTER,
+        authEndpoint: `${import.meta.env.VITE_API_URL}/auth/pusher`,
+        auth: {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        },
       });
 
-      socketInstance.on('connect', () => {
+      // Subscribe to a private channel
+      const privateChannel = pusherInstance.subscribe(`private-user-${user?.id}`);
+
+      privateChannel.bind('pusher:subscription_succeeded', () => {
         setConnected(true);
       });
 
-      socketInstance.on('connect_error', (error) => {
-        console.error('WebSocket connection error:', error.message);
+      privateChannel.bind('pusher:subscription_error', (error) => {
+        console.error('Pusher subscription error:', error);
         setConnected(false);
       });
 
-      socketInstance.on('disconnect', () => {
-        setConnected(false);
+      privateChannel.bind('new-message', (message) => {
+        console.log('New message received:', message);
       });
 
-      setSocket(socketInstance);
+      setPusher(pusherInstance);
+      setChannel(privateChannel);
 
       return () => {
-        socketInstance.disconnect();
+        privateChannel.unbind('new-message');
+        // privateChannel.unsubscribe();
+        pusherInstance.disconnect();
       };
     }
-    
+
     return () => {};
-  }, [token, isAuthenticated, isLoading]);
+  }, [token, isAuthenticated, isLoading, user?.id]);
 
   return (
-    <SocketContext.Provider value={{ socket, connected }}>
+    <SocketContext.Provider value={{ pusher, channel, connected }}>
       {children}
     </SocketContext.Provider>
   );

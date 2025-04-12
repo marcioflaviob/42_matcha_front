@@ -9,6 +9,7 @@ import { Password } from 'primereact/password';
 import { Divider } from 'primereact/divider';
 import { displayAlert } from '../../Notification/Notification';
 import { UserContext } from '../../../context/UserContext';
+import { AuthContext } from '../../../context/AuthContext';
         
 const YourDetails = ({ setActiveStep }) => {
 	const nameKeyFilter = /^[a-zA-ZÀ-ÿ' -]+$/;

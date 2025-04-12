@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useContext } from 'react';
 import './ProfileInfo.css';
 import axios from 'axios';
-import { DotLottieReact } from '@lottiefiles/dotlottie-react';
 import { Chip } from 'primereact/chip';
 import { UserContext } from '../../../context/UserContext';
 import 'primeicons/primeicons.css';
@@ -72,12 +71,12 @@ const ProfileInfo = ({ userId }) => {
 
     if (!data) return (
         <div className='bio-Div'>
-            <DotLottieReact
+            {/* <DotLottieReact
                 src="https://lottie.host/de177ab8-5b7f-47a7-89e4-bd45eb2bf030/DS595uJPq0.lottie"
                 loop
                 autoplay
                 className="loadingProfile"
-            />
+            /> */}
         </div>
     );
 
@@ -91,7 +90,6 @@ const ProfileInfo = ({ userId }) => {
         </div>
         <div className='bio-container bio-sexualInterest'>
             <div className='bio-info1'>Looking for</div>
-            {/* <i className={`pi pi-${interestIcon} bio-img ${interestIcon}`}></i> */}
             {interestIcon === 'circle' ? (
                 <>
                     <i className="pi pi-mars bio-img mars"></i>

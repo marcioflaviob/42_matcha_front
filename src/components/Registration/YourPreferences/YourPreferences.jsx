@@ -17,18 +17,18 @@ const YourPreferences = ({ setActiveStep }) => {
 	const [formData, setFormData] = useState({
 		gender: '',
 		sexual_interest: '',
-		interests_tags: [],
+		interests: [],
 		status: 'step_two'
 	});
 	const [touchedFields, setTouchedFields] = useState({
 		gender: false,
 		sexual_interest: false,
-		interests_tags: false,
+		interests: false,
 	});
 	const [validFields, setValidFields] = useState({
 		gender: false,
 		sexual_interest: false,
-		interests_tags: false,
+		interests: false,
 	});
 	const allFieldsValid = Object.values(validFields).every((isValid) => isValid);
 
@@ -68,7 +68,7 @@ const YourPreferences = ({ setActiveStep }) => {
 		setValidFields({
 			gender: formData.gender !== '',
 			sexual_interest: formData.sexual_interest !== '',
-			interests_tags: formData.interests_tags.length > 0,
+			interests: formData.interests.length > 0,
 		});
 	}, [formData]);
 
@@ -89,8 +89,8 @@ const YourPreferences = ({ setActiveStep }) => {
 			<div className='aligned-div'>
 				<span className='hobby-selection'>
 					<p>My hobbies</p>
-					<MultiSelect id='interests_tags' className='hobby-selection-input' value={formData.interests_tags} options={Interests} onChange={(e) => handleSelectChange(e, 'interests_tags')}
-						optionLabel="name" optionValue="value" display="chip" placeholder='Select your interests' showSelectAll={false} filter invalid={touchedFields.interests_tags && !validFields.interests_tags} />
+					<MultiSelect id='interests' className='hobby-selection-input' value={formData.interests} options={Interests} onChange={(e) => handleSelectChange(e, 'interests')}
+						optionLabel="name" optionValue="value" display="chip" placeholder='Select your interests' showSelectAll={false} filter invalid={touchedFields.interests && !validFields.interests} />
 				</span>
 
 			</div>

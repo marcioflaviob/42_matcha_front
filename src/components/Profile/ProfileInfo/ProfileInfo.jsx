@@ -4,6 +4,7 @@ import axios from 'axios';
 import { Chip } from 'primereact/chip';
 import { UserContext } from '../../../context/UserContext';
 import 'primeicons/primeicons.css';
+import displayAlert from "../../Notification/Notification"
         
 const ProfileInfo = ({ userId }) => {
     const [data, setData] = useState(null);
@@ -40,7 +41,6 @@ const ProfileInfo = ({ userId }) => {
         if (user && Number(user.id) === Number(userId))
             setShowEditButton(true);
         const fetchData = async () => {
-            // console.log('API URL:', `${import.meta.env.VITE_API_URL}/users/${userId}`);
             try {
                 const response = await axios.get(`${import.meta.env.VITE_API_URL}/users/${userId}`);
                 setData(response.data); // Set the fetched data to state
@@ -51,19 +51,15 @@ const ProfileInfo = ({ userId }) => {
                     response.data.sexual_interest === 'Any' ? 'circle' : 'venus'
                 );
                 setAge(calculateAge(response.data.birthdate))
-                console.log(response.data);
             } catch (err) {
-                console.log('error'); // Handle errors
+                displayAlert('error', 'Error fetching information'); // Handle errors
             } finally {
-            // console.log(data);
             }
             try {
                 const response = await axios.get(`${import.meta.env.VITE_API_URL}/interests/${userId}`);
                 setInterests(response.data); // Set the fetched data to state
-                console.log(response.data);
-                console.log('moch woaw');
             } catch (err) {
-                console.log('error'); // Handle errors
+                displayAlert('error', 'Error fetching information'); // Handle errors
             }
         };
         fetchData();
@@ -101,7 +97,7 @@ const ProfileInfo = ({ userId }) => {
         </div>
         <div className='bio-containerInterest'>
                 {interests?.map((interest) => (
-                    <Chip className='bio-interest' label={interest.name} />
+                    <Chip className='bio-interest' label={interest.name} key={interest.id}/>
                 ))}
         </div>
         <div className='bio-container'>

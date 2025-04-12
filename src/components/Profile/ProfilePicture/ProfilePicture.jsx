@@ -35,15 +35,12 @@ const ProfilePicture = ({ userId }) => {
   useEffect(() => {
     // Fetch data from the API
     const fetchData = async () => {
-      console.log('API URL:', `${import.meta.env.VITE_API_URL}/users/${userId}`);
       try {
         const response = await axios.get(`${import.meta.env.VITE_API_URL}/users/${userId}`);
         setData(response.data); // Set the fetched data to state
-        // console.log(response.data);
       } catch (err) {
-        console.log('error'); // Handle errors
+        displayAlert('error', 'Error fetching information');
       } finally {
-        console.log(data);
       }
     };
     fetchData();
@@ -51,11 +48,9 @@ const ProfilePicture = ({ userId }) => {
       try {
         const response = await axios.get(`${import.meta.env.VITE_API_URL}/pictures/${userId}`);
         setPictures(response.data); // Set the fetched data to state
-        // console.log("This is the pictures here \n", response.data);
       } catch (err) {
-        console.log('error'); // Handle errors
+        displayAlert('error', 'Error fetching pictures');
       } finally {
-        // console.log(data);
       }
     };
     fetchPictures();

@@ -1,0 +1,15 @@
+.home-page-container {
+	width: 100%;
+	height: calc(100vh - var(--header-height) - var(--footer-height));
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 1rem;
+}
+
+.no-matches {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}

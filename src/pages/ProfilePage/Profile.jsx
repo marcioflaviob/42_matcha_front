@@ -14,7 +14,6 @@ const Profile = () => {
 		try {
 			const response = await axios.get(`${import.meta.env.VITE_API_URL}/users/${userId}`);
 			setCurrentUser(response.data);
-			console.log(response.data);
 		} catch (err) {
 			displayAlert('error', 'Error fetching information'); // Handle errors
 		}

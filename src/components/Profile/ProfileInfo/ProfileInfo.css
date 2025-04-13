@@ -63,21 +63,6 @@
     color: rgba(94, 94, 237, 0.491);
 }
 
-.mars
-{
-    color: rgba(94, 94, 237, 0.491);
-}
-
-.venus
-{
-    color: rgba(200, 47, 106, 0.395);
-}
-
-.circle
-{
-    color: rgba(123, 193, 70, 0.342);
-}
-
 .bio-Text
 {
     font-size: min(2.7vh, 1.5vw); /* Scales with BOTH height & width */
@@ -136,10 +121,19 @@
 {
     background-color: rgba(56, 50, 230, 0.251);
     border-radius: 10px;
-    /* padding-left: 0.6vw;
-    padding-right: 0.6vw;
-    padding-top: 0.6vh;
-    padding-bottom: 0.6vh; */
+}
+
+.bio-smallChip
+{
+    background-color: rgba(13, 114, 154, 0.251);
+    border-radius: 10px;
+    font-size: min(2vh, 1vw);
+    padding: 0.2vw;
+}
+
+.bio-smallChip .p-chip-text
+{
+    margin: 0.2vw;
 }
 
 @media (max-width: 768px)

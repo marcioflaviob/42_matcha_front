@@ -19,7 +19,6 @@ const HomePage = () => {
 				},
 			});
 			setPotentialMatches(response.data);
-			console.log('Updated potential matches:', response.data);
 			if (response.data.length == 0) {
 				displayAlert('warn', 'No potential matches found');
 				return;

@@ -1,10 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import './ProfilePicture.css';
 import { Galleria } from 'primereact/galleria';
-import axios from 'axios';
         
-const ProfilePicture = ({ userId }) => {
-  const [data, setData] = useState(null);
+const ProfilePicture = ({ userId, userInfo }) => {
   const [pictures, setPictures] = useState(null);
   const likeRef = useRef(null);
 
@@ -32,29 +30,20 @@ const ProfilePicture = ({ userId }) => {
     }
   };
 
-  useEffect(() => {
-    // Fetch data from the API
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/users/${userId}`);
-        setData(response.data); // Set the fetched data to state
-      } catch (err) {
-        displayAlert('error', 'Error fetching information');
-      } finally {
-      }
-    };
-    fetchData();
-    const fetchPictures = async () => {
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/pictures/${userId}`);
-        setPictures(response.data); // Set the fetched data to state
-      } catch (err) {
-        displayAlert('error', 'Error fetching pictures');
-      } finally {
-      }
-    };
-    fetchPictures();
-  }, [userId]);
+  useEffect(() => 
+  {
+    if(userInfo)
+      setPictures(userInfo.pictures)
+  }, [userId, userInfo]);
+
+  if (!userInfo)
+  {
+    return (
+      <div className="ProfilePicture-div">
+
+      </div>
+    )
+  }
 
   const itemTemplate = (item) => {
     return <img src={`${import.meta.env.VITE_BLOB_URL}/${item.url}`} style={{ width: '100%', objectFit: 'cover', display: 'block', height: '100%', backgroundSize: 'contain'}} />;

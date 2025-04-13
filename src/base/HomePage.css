@@ -1,4 +1,0 @@
-.home-page-container {
-	width: 100%;
-	height: calc(100vh - var(--header-height) - var(--footer-height));
-}

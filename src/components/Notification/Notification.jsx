@@ -28,7 +28,7 @@ const Notification = forwardRef (( props, ref ) => {
 		const handleScroll = () => {
 			const toastContainer = document.querySelector('.p-toast');
 			if (toastContainer) {
-				toastContainer.style.top = window.scrollY > 50 ? '20px' : '110px';
+				toastContainer.style.marginTop = window.scrollY > 50 ? '10px' : '60px';
 			}
 		};
 

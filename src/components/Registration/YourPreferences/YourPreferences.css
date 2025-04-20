@@ -15,3 +15,14 @@
 p{
 	margin-top: 0px;
 }
+
+.slider-container {
+    min-width: 260px;
+}
+
+.age-range-display {
+    display: flex;
+    justify-content: space-between;
+    margin-top: 10px;
+    font-size: 0.9rem;
+}

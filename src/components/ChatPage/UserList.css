@@ -1,0 +1,49 @@
+.user-list {
+    width: 25%;
+    background-color: #f4f4f4;
+    border-right: 1px solid #ddd;
+    overflow-y: auto;
+}
+
+.user-item {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    cursor: pointer;
+    border-bottom: 1px solid #ddd;
+}
+
+.user-list .user-item .p-avatar img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
+.user-item.selected {
+    background-color: #e0e0e0;
+}
+
+.user-list-info {
+    margin-left: 10px;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+}
+
+.user-name {
+    font-weight: bold;
+}
+
+.user-status {
+    font-size: 0.7em;
+    color: gray;
+}
+
+.user-status.online {
+    color: green;
+}
+
+.user-status.offline {
+    color: red;
+}

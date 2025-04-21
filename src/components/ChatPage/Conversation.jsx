@@ -1,0 +1,142 @@
+import React, { useContext, useEffect, useState } from 'react';
+import { Button } from 'primereact/button';
+import { InputText } from 'primereact/inputtext';
+import { ScrollPanel } from 'primereact/scrollpanel';
+import './Conversation.css';
+import axios from 'axios';
+import { AuthContext } from '../../context/AuthContext';
+import { displayAlert } from '../Notification/Notification';
+import ConversationHeader from './ConversationHeader';
+import { SocketContext } from '../../context/SocketContext';
+
+const Conversation = ({ selectedUser, setSelectedUser, setUsers }) => {
+    const { token } = useContext(AuthContext);
+    const [input, setInput] = useState('');
+    const { connected, channel } = useContext(SocketContext);
+
+    const saveMessage = async (message, isSent) => {
+        const userId = isSent ? message.receiver_id : message.sender_id;
+        setUsers((prevUsers) => {
+            const updatedUsers = prevUsers.map(user => {
+                if (user.id === userId) {
+                    return {
+                        ...user,
+                        messages: [...user.messages, message],
+                    };
+                }
+                return user;
+            });
+            
+            if (selectedUser && selectedUser.id == userId) {
+                const updatedSelectedUser = updatedUsers.find(user => user.id === selectedUser.id);
+                setSelectedUser(updatedSelectedUser);
+            }
+            
+            return updatedUsers;
+        });
+    }
+
+    const sendMessage = async () => {
+        try {
+            const trimmedInput = input.trim();
+    
+            if (!trimmedInput) return;
+    
+            const response = await axios.post(import.meta.env.VITE_API_URL + '/messages', {
+                content: trimmedInput,
+                receiver_id: selectedUser.id,
+            }, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+
+            saveMessage(response.data, true);
+        } catch (error) {
+            console.error('Error sending message:', error);
+            displayAlert('error', 'Error sending message');
+        } finally {
+            setInput('');
+        }
+    };
+
+    useEffect(() => {
+        const readMessages = async () => {
+            if (selectedUser) {
+                await axios.patch(import.meta.env.VITE_API_URL + '/messages/read/' + selectedUser.id, {}, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+                setUsers((prevUsers) => {
+                    return prevUsers.map(user => {
+                        if (user.id === selectedUser.id) {
+                            const updatedMessages = user.messages.map(msg => ({ ...msg, is_read: true }));
+                            return { ...user, messages: updatedMessages };
+                        }
+                        return user;
+                    });
+                });
+            }
+        };
+        readMessages();
+    }, [selectedUser]);
+
+    useEffect(() => {
+        if (connected) {
+            channel.bind('new-message', (message) => {
+                if (message.sender_id == selectedUser?.id) {
+                    message.is_read = true;
+                }
+                saveMessage(message, false);
+            });
+        }
+        return () => {
+            if (connected) {
+                channel.unbind('new-message');
+            }
+        }
+    }, [connected, channel, selectedUser]);
+
+    return (
+        <div className="conversation">
+            {selectedUser ? (
+                <>
+                    <ConversationHeader selectedUser={selectedUser} setSelectedUser={setSelectedUser} setUsers={setUsers} />
+
+                    <ScrollPanel className="message-list">
+                        {selectedUser?.messages && selectedUser.messages.length > 0 ?
+                            (selectedUser.messages.map((msg) => (
+                                <div key={msg.id} className={`message ${msg.sender_id === selectedUser.id ? 'received' : 'sent'}`}>
+                                    <span>{msg.content}</span>
+                                    <span className="message-time">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                    </span>
+                                </div>
+                            )))
+                            :
+                            <div className="no-conversation">
+                                <p>No messages yet. Say hello!</p>
+                            </div>
+                        }
+                    </ScrollPanel>
+
+                    <div className="message-input">
+                        <InputText value={input}
+                        onChange={(e) => setInput(e.target.value)}
+                        onKeyDown={(e) => {
+                            if (e.key === 'Enter') {
+                                sendMessage();
+                            }
+                        }} 
+                        placeholder="Type a message..." />
+                        <Button label="Send" onClick={sendMessage} className='register-button p-button-raised p-button-rounded' />
+                    </div>
+                </>
+            ) : (
+                <div className="no-conversation">Select a user to start a conversation</div>
+            )}
+        </div>
+    );
+};
+
+export default Conversation;

@@ -4,12 +4,19 @@ import axios from 'axios';
 import { displayAlert } from '../../components/Notification/Notification';
 import { AuthContext } from '../../context/AuthContext';
 import ProfileCard from '../../components/HomePage/ProfileCard';
-
+import GuestHomePage from './GuestHomePage';
 
 const HomePage = () => {
 	const [potentialMatches, setPotentialMatches] = useState(null);
 	const { token } = useContext(AuthContext);
 	const [matchIndex, setMatchIndex] = useState(0);
+	const { isAuthenticated, isLoading } = useContext(AuthContext);
+	
+	useEffect(() => {
+		if (isAuthenticated && !isLoading) {
+			fetchPotentialMatches();
+		}
+	}, [isAuthenticated, isLoading]);
 	
 	const fetchPotentialMatches = async () => {
 		try {
@@ -30,25 +37,20 @@ const HomePage = () => {
 
 	const handleLike = async () => {
 		try {
-			const response = await axios.post(`${import.meta.env.VITE_API_URL}/like/${potentialMatches[matchIndex].id}`, {}, {
+			await axios.post(`${import.meta.env.VITE_API_URL}/like/${potentialMatches[matchIndex].id}`, {}, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},
 			});
-			if (response.data.interaction_type == 'match') {
-				displayAlert('success', `You have matched with ${potentialMatches[matchIndex].first_name}!`);
-			} else {
-				displayAlert('success', `You have liked ${potentialMatches[matchIndex].first_name}!`);
-			}
 			setMatchIndex((prevIndex) => prevIndex + 1);
 		} catch (err) {
 			console.error('Error liking match:', err);
 		}
 	}
-
+	
 	const handleBlock = async () => {
 		try {
-			const response = await axios.post(`${import.meta.env.VITE_API_URL}/block/${potentialMatches[matchIndex].id}`, {}, {
+			await axios.post(`${import.meta.env.VITE_API_URL}/block/${potentialMatches[matchIndex].id}`, {}, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},
@@ -58,11 +60,10 @@ const HomePage = () => {
 			console.error('Error liking match:', err);
 		}
 	}
-
 	
-	useEffect(() => {
-		fetchPotentialMatches();
-	}, []);
+	if (!isAuthenticated || isLoading) {
+		return <GuestHomePage />;
+	}
 	
 	if (!potentialMatches) {
 		return <div className='home-page-container'>Loading...</div>;

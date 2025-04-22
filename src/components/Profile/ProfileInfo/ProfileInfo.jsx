@@ -18,7 +18,7 @@ const ProfileInfo = ({ userId, userInfo }) => {
 
     const handleEditButton = () =>
     {
-        navigate(`/editprofile/${userId}`);
+        navigate(`/edit-profile/${userId}`);
     }
 
     if (!userInfo || !user) return (

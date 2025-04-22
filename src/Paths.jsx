@@ -9,5 +9,5 @@ export const Paths = [
 	{path: '/register', component: <Registration />},
 	{path: '/login', component: <Login />},
 	{path: '/profile/:userId', component: <Profile />},
-	{path: '/editprofile/:userId', component: <EditProfile />},
+	{path: '/edit-profile/:userId', component: <EditProfile />},
 ];

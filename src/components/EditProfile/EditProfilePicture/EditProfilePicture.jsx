@@ -1,12 +1,15 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useContext } from 'react';
 import './EditProfilePicture.css';
 import { Galleria } from 'primereact/galleria';
-import axios from 'axios';
+import { UserContext } from '../../../context/UserContext';
+import PictureSelector from '../../PictureSelector/PictureSelector';
+import 'primeicons/primeicons.css';
         
 const EditProfilePicture = ({ userId }) => {
-  const [data, setData] = useState(null);
-  const [pictures, setPictures] = useState(null);
+
   const likeRef = useRef(null);
+  const { user } = useContext(UserContext);
+  const [disableUpload, setDisableUpload] = useState(true);
 
   const likeAnimation = () => {
     if (likeRef.current) {
@@ -32,29 +35,15 @@ const EditProfilePicture = ({ userId }) => {
     }
   };
 
+  const handleDisableChange = (newValue) => {
+    setDisableUpload(newValue);
+    // window.location.reload();
+  };
+
+
   useEffect(() => {
-    // Fetch data from the API
-    const fetchData = async () => {
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/users/${userId}`);
-        setData(response.data); // Set the fetched data to state
-      } catch (err) {
-        displayAlert('error', 'Error fetching information');
-      } finally {
-      }
-    };
-    fetchData();
-    const fetchPictures = async () => {
-      try {
-        const response = await axios.get(`${import.meta.env.VITE_API_URL}/pictures/${userId}`);
-        setPictures(response.data); // Set the fetched data to state
-      } catch (err) {
-        displayAlert('error', 'Error fetching pictures');
-      } finally {
-      }
-    };
-    fetchPictures();
-  }, [userId]);
+    setDisableUpload(disableUpload);
+  }, [disableUpload, user?.pictures]);
 
   const itemTemplate = (item) => {
     return <img src={`${import.meta.env.VITE_BLOB_URL}/${item.url}`} style={{ width: '100%', objectFit: 'cover', display: 'block', height: '100%', backgroundSize: 'contain'}} />;
@@ -64,10 +53,19 @@ const EditProfilePicture = ({ userId }) => {
     return <img src={item.url} style={{ display: 'block' }} />;
   }
 
+  if (!user)
+  {
+    return (
+      <div className="ProfilePicture-div">
+
+      </div>
+    )
+  }
+
   return (
     <div className="ProfilePicture-div">
       <div className="image-container">
-        <Galleria value={pictures}
+        <Galleria value={user.pictures}
         style={{ width: '100%', height: '100%'}}
         numVisible={5}
         circular 
@@ -80,6 +78,8 @@ const EditProfilePicture = ({ userId }) => {
       </div>
       {/* <LikeLogo className='pfpLikeIcon' onClick={likeAnimation} ref={likeRef}/> */}
       <div className='pfpLikeCount'>{}</div>
+      <i className="pi pi-upload uploadButton" onClick={() => setDisableUpload(false)}></i>
+      <PictureSelector disabled={disableUpload} onDisabledChange={handleDisableChange}></PictureSelector>
     </div>
   );
 };

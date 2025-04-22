@@ -193,11 +193,12 @@
     color: aliceblue;
     box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.107), 0 6px 20px 0 rgba(0, 0, 0, 0.036);
     top: calc(100% - 10vh);
-    transition: transform ease 0.3s;
+    transition: background-color ease 0.3s transform ease 0.3s;
 }
 
 .saveButton:hover
 {
+    background-color: rgb(3, 219, 3);
     transform: scale(1.1);
     cursor: pointer;
 }

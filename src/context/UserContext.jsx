@@ -1,12 +1,14 @@
 import React, { createContext, useState, useEffect, useContext } from 'react';
 import axios from 'axios';
 import { AuthContext } from './AuthContext';
+import { useRefresh } from "./RefreshContext";
 
 export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const { token, isAuthenticated, isLoading } = useContext(AuthContext);
+    const { refreshSignal } = useRefresh();
 
     useEffect(() => {
         if (isLoading) return;
@@ -27,7 +29,7 @@ export const UserProvider = ({ children }) => {
         } else {
             setUser(null);
         }
-    }, [isAuthenticated, token, isLoading]);
+    }, [isAuthenticated, token, isLoading, refreshSignal]);
 
     return (
         <UserContext.Provider value={{ user, setUser }}>

@@ -17,8 +17,19 @@
 
 .profile-header {
   display: flex;
-  flex-direction: column;
+  flex-direction: row;
   gap: 0.25rem;
+}
+
+.profile-header-left {
+  display: flex;
+  flex-direction: column;
+}
+
+.profile-header-right {
+  display: flex;
+  align-items: center;
+  margin-left: auto;
 }
 
 .profile-name-age {

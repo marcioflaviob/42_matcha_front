@@ -17,13 +17,18 @@ const ProfileCard = ({ profile, handleLike, handleBlock, showLike, showBlock }) 
       <PhotoCarousel photos={profile.pictures} name={profile.name} />
       <div className="profile-content">
         <div className="profile-header">
-          <div className="profile-name-age">
-            <h2 className="profile-name">{profile.first_name}</h2>
-            <span className="profile-age">{profile.age}</span>
+          <div className="profile-header-left">
+            <div className="profile-name-age">
+              <h2 className="profile-name">{profile.first_name}</h2>
+              <span className="profile-age">{profile.age}</span>
+            </div>
+            <div className="profile-location">
+              <i className="pi pi-map-marker location-icon"></i>
+              <span>Paris, France</span>
+            </div>
           </div>
-          <div className="profile-location">
-            <i className="pi pi-map-marker location-icon"></i>
-            <span>Paris, France</span>
+          <div className="profile-header-right">
+            {profile.liked_me && <Chip label="liked you" className="liked-you-chip" /> }
           </div>
         </div>
 

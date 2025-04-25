@@ -4,6 +4,7 @@ import Profile from "./pages/ProfilePage/Profile"
 import ChatPage from "./pages/ChatPage/ChatPage";
 import HomePage from "./base/HomePage/HomePage";
 import EditProfile from "./pages/EditProfilePage/EditProfile"
+import ResetPassword from "./pages/ResetPassword/ResetPassword";
 
 export const Paths = [
 	{path: '', component: <HomePage/>},
@@ -12,4 +13,5 @@ export const Paths = [
 	{path: '/profile/:userId', component: <Profile />},
 	{path: '/chat', component: <ChatPage />},
 	{path: '/edit-profile/:userId', component: <EditProfile />},
+	{path: '/reset-password', component: <ResetPassword />},
 ];

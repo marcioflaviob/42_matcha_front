@@ -1,13 +1,15 @@
-import HomePage from "./base/HomePage";
 import Login from "./pages/Login/Login";
 import Registration from "./pages/Registration/Registration";
 import Profile from "./pages/ProfilePage/Profile"
+import ChatPage from "./pages/ChatPage/ChatPage";
+import HomePage from "./base/HomePage/HomePage";
 import EditProfile from "./pages/EditProfilePage/EditProfile"
 
 export const Paths = [
-	{path: '', component: <HomePage />},
+	{path: '', component: <HomePage/>},
 	{path: '/register', component: <Registration />},
 	{path: '/login', component: <Login />},
 	{path: '/profile/:userId', component: <Profile />},
+	{path: '/chat', component: <ChatPage />},
 	{path: '/edit-profile/:userId', component: <EditProfile />},
 ];

@@ -1,0 +1,73 @@
+.conversation-header {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    border-bottom: 1px solid #ddd;
+    background-color: #f9f9f9;
+}
+
+.conversation-header .p-avatar img {
+    object-fit: cover;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+}
+
+.user-info-header {
+	display: flex;
+	flex-direction: row;
+	align-items: center;
+	cursor: pointer;
+}
+
+.header-actions {
+	margin-left: auto;
+	display: flex;
+	gap: 10px;
+}
+
+.header-action-button {
+	background-color: #f0f0f0;
+	outline: none;
+	border: none;
+}
+
+.header-action-button:hover {
+	background-color: #e0e0e0;
+}
+
+.header-action-button:focus {
+	outline: none;
+	border: none;
+	box-shadow: none;
+}
+
+.header-action-block {
+	color: rgb(186, 5, 5);
+}
+
+.header-action-call {
+	color: rgb(96, 96, 96);
+}
+
+.header-info {
+    margin-left: 10px;
+}
+
+.header-name {
+    font-weight: bold;
+	font-size: 1.2em;
+}
+
+.header-status {
+    font-size: 0.8em;
+    color: gray;
+}
+
+.header-status.online {
+    color: green;
+}
+
+.header-status.offline {
+    color: red;
+}

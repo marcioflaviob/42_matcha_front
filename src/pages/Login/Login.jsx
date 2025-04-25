@@ -4,6 +4,7 @@ import LoginComponent from '../../components/Login/LoginComponent';
 import ForgotPassword from '../../components/Login/ForgotPassword';
 import { UserContext } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
+import loginBackground from '/login_background.png';
 
 const Login = () => {
 	const { user } = useContext(UserContext);
@@ -18,7 +19,9 @@ const Login = () => {
 
 	return (
 		<div className='login-container'>
-			<div className='login-left-div'></div>
+			<div className='login-left-div'>
+				<img src={loginBackground} alt='Couple Illustration' className='login-background-img' />
+			</div>
 			<div className='login-right-div'>
 				{
 					!isPasswordForgotten ?
@@ -34,7 +37,9 @@ const Login = () => {
 						</div>
 					</>
 					:
-					<ForgotPassword />
+					<div className='login-border'>
+						<ForgotPassword setIsPasswordForgotten={setIsPasswordForgotten} />
+					</div>
 				}
 			</div>
 		</div>

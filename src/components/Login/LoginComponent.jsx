@@ -26,6 +26,7 @@ const LoginComponent = ({ setIsPasswordForgotten }) => {
 		email: false,
 		password: false,
 	});
+	const [loading, setLoading] = useState(false);
 
 	const handleInputChange = (e) => {
         const { id, value } = e.target;
@@ -37,12 +38,13 @@ const LoginComponent = ({ setIsPasswordForgotten }) => {
 		setValidFields((prevValid) => ({
 			...prevValid,
 			email: id === 'email' ? emailRegex.test(value) : prevValid.email,
-			password: id === 'password' ? value.length >= 5 : prevValid.password,
+			password: id === 'password' ? value.length >= 0 : prevValid.password,
 		}));
     };
 
     const handleLogin = async () => {
         try {
+            setLoading(true);
             const response = await axios.post(`${import.meta.env.VITE_API_URL}/auth/login`, {
                 email: formData.email,
                 password: formData.password,
@@ -53,12 +55,17 @@ const LoginComponent = ({ setIsPasswordForgotten }) => {
 			navigate('/');
         } catch (error) {
             console.error('Login failed:', error.response?.data || error.message);
+        } finally {
+            setLoading(false);
         }
     };
 
 	return (
 		<div className="login-component">
-			<h1 className='login-title'>Login</h1>
+			<div>
+				<h1 className='login-title'>Welcome Back</h1>
+				<p className='login-subtitle'>Sign in to continue your journey</p>
+			</div>
 			<div className='login-inputs'>
 				<FloatLabel>
 					<InputText
@@ -81,8 +88,18 @@ const LoginComponent = ({ setIsPasswordForgotten }) => {
 					<label htmlFor="password">Password</label>
 				</FloatLabel>
 			</div>
-			<p className='forgot-password' onClick={() => setIsPasswordForgotten(true)} >I forgot my password 🤦🏻‍♂️</p>
-			<Button label="Login" className="p-button-raised p-button-rounded" onClick={handleLogin} disabled={!validFields.email && !validFields.password} />
+			<p className='forgot-password' onClick={() => setIsPasswordForgotten(true)}>
+				<span>I forgot my password</span>
+				<span>🤦‍♂️</span>
+			</p>
+			<Button 
+				label={loading ? "Signing in..." : "Sign In"} 
+				icon={loading ? "pi pi-spin pi-spinner" : "pi pi-sign-in"} 
+				iconPos="right"
+				className="p-button-raised p-button-rounded" 
+				onClick={handleLogin} 
+				disabled={!validFields.email || !validFields.password || loading} 
+			/>
 			<div className='register-div'>
 				<span>No account?</span>
 				<Button label="Register" className="register-button p-button-raised p-button-rounded" onClick={() => navigate('/register')} />

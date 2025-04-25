@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useContext} from 'react';
+import React, { useState, useEffect, useContext, useRef, useCallback} from 'react';
 import './EditProfileInfo.css';
-import axios from 'axios';
+import axios, { formToJSON } from 'axios';
 import { Chip } from 'primereact/chip';
 import { UserContext } from '../../../context/UserContext';
 import { displayAlert }  from "../../Notification/Notification"
@@ -9,12 +9,21 @@ import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { useNavigate} from 'react-router-dom';
 import { AuthContext } from '../../../context/AuthContext';
-        
+import { useEditProfileContext } from '../../../context/EditProfileContext';
+import { Button } from 'primereact/button';
+import 'primeicons/primeicons.css';
+import PictureSelector from '../../PictureSelector/PictureSelector';
+import { useRefresh } from "../../../context/RefreshContext";
+
+
 const EditProfileInfo = ({ userId }) => {
     const navigate = useNavigate();
     const { token } = useContext(AuthContext);
     const { user } = useContext(UserContext);
     const [allInterests, setAllInterests] = useState(null);
+    const { state, updateField } = useEditProfileContext();
+    const [disableUpload, setDisableUpload] = useState(true);
+    const { triggerRefresh } = useRefresh();
     const [formData, setFormData] = useState({
         first_name: '',
         last_name: '',
@@ -25,6 +34,23 @@ const EditProfileInfo = ({ userId }) => {
         biography: '',
     });
 
+    const handleFirstNameChange = useCallback((e) => {
+        const value = e.target.value;
+        setFormData(prev => ({ ...prev, first_name: value }));
+        updateField('first_name', value);
+    }, []);
+
+    const handleLastNameChange = useCallback((e) => {
+        const value = e.target.value;
+        setFormData(prev => ({ ...prev, last_name: value }));
+    }, []);
+
+    const handleBioChange = useCallback((e) => {
+        const value = e.target.value;
+        setFormData(prev => ({ ...prev, biography: value }));
+        updateField('bio', value);
+    }, []);
+
     const handleRemoveInterest = (interestId) => {
         const array = formData.interests.filter(item => item.id !== interestId);
         setFormData((prevData) => ({
@@ -32,6 +58,12 @@ const EditProfileInfo = ({ userId }) => {
             ['interests']: array,
         }))
     };
+
+    const handleDisableChange = (newValue) => {
+        setDisableUpload(newValue);
+        // window.location.reload();
+    };
+    
 
     const handleSelectChange = (e, field) => {
 		const value = e.target.value;
@@ -45,7 +77,6 @@ const EditProfileInfo = ({ userId }) => {
 
     const handleSave = async () =>
     {
-        // console.log(formData);
         if (formData.email != '')
             formData.status = 'validation';
         axios.put(`${import.meta.env.VITE_API_URL}/update-user`, formData,
@@ -61,12 +92,14 @@ const EditProfileInfo = ({ userId }) => {
             console.error('Error:', error);
             displayAlert('error', 'An error occurred. Please try again later.');
         })
+        await triggerRefresh();
         navigate(`/profile/${user.id}`)
     }
 
     useEffect(() => {
         if (!user) return;
         // Fetch data from the API
+        setDisableUpload(disableUpload);
         const fetchData = async () => {
             setFormData((prevData) => ({
                 ...prevData,
@@ -86,8 +119,15 @@ const EditProfileInfo = ({ userId }) => {
             }
         };
         fetchData();
-        // console.log(formData.sexual_interest);
-    }, [userId, user]);
+        updateField('first_name', user.first_name);
+        updateField('interests', user.interests);
+        updateField('bio', user.biography);
+    }, [userId, user, disableUpload]);
+
+    useEffect(() =>
+    {
+        updateField('interests', formData.interests);
+    }, [formData?.interests])
 
     if (!user || !allInterests) return (
         <div className='bio-Div'>
@@ -101,58 +141,85 @@ const EditProfileInfo = ({ userId }) => {
     );
 
     return (
-    <div className='bio-Div'>   
-        <div className='bio-container'>
-            <InputText type="text" className="p-inputtext-sm inputName" value={formData.first_name || ''} placeholder={`${formData.first_name}`} onChange={(e) => setFormData({...formData, first_name: e.target.value})}></InputText>
-            <InputText type="text" className="p-inputtext-sm inputName" value={formData.last_name || ''} placeholder={`${formData.last_name}`} onChange={(e) => setFormData({...formData, last_name: e.target.value})}></InputText>
-            <div className='bio-age'>{user.age}</div>
-            <Chip className={`bio-smallChip ${formData.gender === 'Male' ? 'highlighted' : 'Hoverable'}`} label={"Male"} key={72} onClick={() => {setFormData(prev => ({
-                ...prev,
-                gender: 'Male'
-            }))}}/>
-            <Chip className={`bio-smallChip ${formData.gender === 'Female' ? 'highlighted' : 'Hoverable'}`} label={"Female"} key={73} onClick={() => {setFormData(prev => ({
-                ...prev,
-                gender: 'Female'
-            }))}}/>
-            <Chip className={`bio-smallChip ${formData.gender === 'Other' ? 'highlighted' : 'Hoverable'}`} label={"Other"} key={74} onClick={() => {setFormData(prev => ({
-                ...prev,
-                gender: 'Other'
-            }))}}/>
-        </div>
-        <div className='bio-container Email'>
-            <InputText type="text" className="p-inputtext-sm inputEmail" value={formData.email || ''} placeholder={`${formData.email}`} onChange={(e) => setFormData({...formData, email: e.target.value})}></InputText>
-        </div>
-        <div className='bio-container bio-sexualInterest'>
-            <div className='bio-info1'>Looking for</div>
-            <Chip className={`bio-smallChip ${formData.sexual_interest === 'Male' ? 'highlighted' : 'Hoverable'}`} label={"Male"} key={69} onClick={() => {setFormData(prev => ({
-                ...prev,
-                sexual_interest: 'Male'
-            }))}}/>
-            <Chip className={`bio-smallChip ${formData.sexual_interest === 'Female' ? 'highlighted' : 'Hoverable'}`} label={"Female"} key={70} onClick={() => {setFormData(prev => ({
-                ...prev,
-                sexual_interest: 'Female'
-            }))}}/>
-            <Chip className={`bio-smallChip ${formData.sexual_interest === 'Any' ? 'highlighted' : 'Hoverable'}`} label={"Any"} key={71} onClick={() => {setFormData(prev => ({
-                ...prev,
-                sexual_interest: 'Any'
-            }))}}/>
-        </div>
-        <div className='aligned-div'>
-            <span className='hobby-selection'>
-                <MultiSelect id='interests' className='hobby-selection-input' value={formData.interests.map(interest => interest.name) || []} options={allInterests} onChange={(e) => handleSelectChange(e, 'interests')}
-                    optionLabel="name" optionValue="name" placeholder='Select your interests' showSelectAll={false} showClear={true}/>
-            </span>
-
-        </div>
-        <div className='bio-containerInterest'>
-                {formData.interests?.map((interest) => (
-                    <Chip className='bio-interest' label={interest.name} key={interest.id} removable onRemove={() => handleRemoveInterest(interest.id)}/>
-                ))}
-        </div>
-        <div className='bio-container biography'>
-            <InputTextarea type="text" className="inputBio" value={formData.biography || ''} placeholder={`${formData.biography}`} onChange={(e) => setFormData({...formData, biography: e.target.value})}></InputTextarea>
+    <div className='bio-Div'>
+        <div className="fixed-div"></div>
+        <div className="scrollable-div">
+            <form>
+                <div className='dualBio'>
+                    <div className='bio-firstPart'>
+                        <div className='editBio'>
+                            <div className='editBioTitle'>First name</div>
+                            <InputText type="text" name='first_name' autoComplete="given-name" className="p-inputtext-sm inputName" value={formData.first_name || ''} placeholder={`${formData.first_name}`} onChange={handleFirstNameChange}></InputText>
+                        </div>
+                        <div className='editBio'>
+                            <div className='editBioTitle'>Last name</div>
+                            <InputText type="text" name='last_name' autoComplete="family-name" className="p-inputtext-sm inputName" value={formData.last_name || ''} placeholder={`${formData.last_name}`} onChange={handleLastNameChange}></InputText>
+                        </div>
+                        <div className='editBio'>
+                            <div className='editBioTitle'>Gender</div>
+                            <Chip className={`bio-smallChip ${formData.gender === 'Male' ? 'highlighted' : 'Hoverable'}`} label={"Male"} key={72} onClick={() => {setFormData(prev => ({
+                                ...prev,
+                                gender: 'Male'
+                            }))}}/>
+                            <Chip className={`bio-smallChip ${formData.gender === 'Female' ? 'highlighted' : 'Hoverable'}`} label={"Female"} key={73} onClick={() => {setFormData(prev => ({
+                                ...prev,
+                                gender: 'Female'
+                            }))}}/>
+                            <Chip className={`bio-smallChip ${formData.gender === 'Other' ? 'highlighted' : 'Hoverable'}`} label={"Other"} key={74} onClick={() => {setFormData(prev => ({
+                                ...prev,
+                                gender: 'Other'
+                            }))}}/>
+                        </div>
+                        <div className='editBio'>
+                            <div className='editBioTitle'>Email</div>
+                            <InputText type="email" name='email' autoComplete="email" className="p-inputtext-sm inputName" value={formData.email || ''} placeholder={`${formData.email}`} onChange={(e) => setFormData({...formData, email: e.target.value})}></InputText>
+                        </div>
+                    </div>
+                    <div className='bio-secondPart'>
+                        <div className='editBio-container'>
+                            <div className='editBioTitle'>Bio</div>
+                            <InputTextarea type="text" className="inputBio" value={formData.biography || ''} placeholder={`${formData.biography}`} onChange={handleBioChange}></InputTextarea>
+                        </div>
+                        <div className='editBio'>
+                            <div className='editBioTitle'>Looking for</div>
+                            <Chip className={`bio-smallChip ${formData.sexual_interest === 'Male' ? 'highlighted' : 'Hoverable'}`} label={"Male"} key={69} onClick={() => {setFormData(prev => ({
+                                ...prev,
+                                sexual_interest: 'Male'
+                            }))}}/>
+                            <Chip className={`bio-smallChip ${formData.sexual_interest === 'Female' ? 'highlighted' : 'Hoverable'}`} label={"Female"} key={70} onClick={() => {setFormData(prev => ({
+                                ...prev,
+                                sexual_interest: 'Female'
+                            }))}}/>
+                            <Chip className={`bio-smallChip ${formData.sexual_interest === 'Any' ? 'highlighted' : 'Hoverable'}`} label={"Any"} key={71} onClick={() => {setFormData(prev => ({
+                                ...prev,
+                                sexual_interest: 'Any'
+                            }))}}/>
+                        </div>
+                        <div className='editBio'>
+                            <Button label="Change location" />
+                        </div>
+                    </div>
+                </div>
+                <div className='editBioInterests'>
+                    <div className='editBioTitle'>Interests</div>
+                    <span className='hobby-selection'>
+                        <MultiSelect id='interests' className='hobby-selection-input' value={formData.interests.map(interest => interest.name) || []} options={allInterests} onChange={(e) => handleSelectChange(e, 'interests')}
+                            optionLabel="name" optionValue="name" placeholder='Select your interests' showSelectAll={false} showClear={true}/>
+                    </span>
+                    <div className='bio-containerInterest'>
+                            {formData.interests?.map((interest) => (
+                                <Chip className='bio-interest' label={interest.name} key={interest.id} removable onRemove={() => handleRemoveInterest(interest.id)}/>
+                            ))}
+                    </div>
+                </div>
+                <div className='editBioUpload'>
+                    <div className='editBioTitle'>Change Pictures</div>
+                    <i className="pi pi-upload uploadButton" onClick={() => setDisableUpload(false)}></i>
+                </div>
+            </form> 
         </div>
         <div className='saveButton' onClick={() => handleSave()}>Save</div>
+        <PictureSelector disabled={disableUpload} onDisabledChange={handleDisableChange}></PictureSelector>
     </div>
     );
     };

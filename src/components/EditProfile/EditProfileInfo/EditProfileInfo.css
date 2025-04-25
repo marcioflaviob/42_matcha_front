@@ -1,139 +1,22 @@
 .bio-Div
 {
-    width: 40vw;
+    width: 60vw;
+    height: auto;
     display: flex;
-    align-items: center;
+    align-items: baseline;
     flex-direction: column;
 }
 
-.bio-container
+.fixed-div
 {
-    display: flex;
-    flex-direction: row;
-    height: 8vh;
-    width: 100%;
-    justify-content: center;
-    align-items: center;
-    margin-top: 5vh;
+    flex: 0 0 auto;
 }
 
-.bio-container.biography
+.bio-smallChip .p-chip-text
 {
-    flex: 1;
-    position: relative;
-    margin-top: 1vh;
+    margin: 0.2vw;
 }
 
-.bio-container.Email
-{
-    margin-top: 1vh;
-}
-
-.bio-sexualInterest
-{   
-    margin-top: 1vh;
-}
-
-.bio-name
-{
-    font-size: min(4.5vh, 2.3vw); /* Scales with BOTH height & width */
-    margin-right: min(0.3vw, 0.6vh); /* Responsive margin */
-    font-weight: 500;
-}
-
-.bio-gender {
-    width: 5vw;
-    height: 4.5vh;
-    object-fit: contain;
-}
-
-.bio-info2
-{
-    font-size: min(2.7vh, 1.5vw); /* Scales with BOTH height & width */
-}
-
-.bio-age
-{
-    font-size: min(4.5vh, 2.3vw);
-    margin-left: 1vw;
-    margin-right: 1vw;
-    color: rgba(65, 65, 65, 0.719);
-}
-
-.bio-info1
-{
-    font-weight: 500;
-    font-size: min(2.7vh, 1.5vw); /* Scales with BOTH height & width */
-    margin-right: min(0.8vw, 1.6vh); /* Responsive margin */
-}
-
-.bio-img
-{
-    font-size: min(2vw, 3vh);  /* Scales with BOTH width & height */
-    aspect-ratio: attr(width) / attr(height); /* Native ratio */
-    object-fit: contain;   /* Prevents distortion */
-    color: rgba(94, 94, 237, 0.491);
-}
-
-.bio-Text
-{
-    font-size: min(2.7vh, 1.5vw); /* Scales with BOTH height & width */
-}
-
-.loadingProfile
-{
-    width: min(10vw, 10vh);
-    height: auto;
-    aspect-ratio: attr(width) / attr(height);
-    object-fit: contain;
-}
-
-.profileEditButton
-{
-    font-size: min(2.7vh, 1.5vw);
-    background-color: none;
-    color: rgba(112, 100, 243, 0.791);
-    border: none;
-    transition: background-color 0.4s ease-in-out;
-    width: min(8vh, 8vw);
-    height: min(5vh, 5vw);
-    text-align: center;
-    border-radius: 10px;
-    margin-top: 2vh;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    margin-left: calc(40vw - 10vw);
-}
-
-.profileEditButton:hover
-{
-    cursor: pointer;
-    background-color: rgba(128, 128, 128, 0.067);
-}
-
-.profileEditButtonHidden
-{
-    display: none;
-}
-
-.bio-containerInterest
-{
-    display: flex;
-    flex-direction: row;
-    max-width: fit-content;
-    flex-wrap: wrap;
-    gap: 1vw;
-    margin-left: 2vw;
-    margin-right: 2vw;
-    margin-top: 3vh;
-}
-
-.bio-interest
-{
-    background-color: rgba(56, 50, 230, 0.251);
-    border-radius: 10px;
-}
 
 .bio-smallChip
 {
@@ -143,6 +26,13 @@
     padding: 0.2vw;
     margin-right: 0.6vw;
     transition: background-color ease 0.5s;
+}
+
+.scrollable-div
+{
+    flex: 1;            /* Takes remaining space */
+    overflow-y: auto;
+    max-height: 100vh;   /* Vertical scroll */
 }
 
 .highlighted
@@ -156,27 +46,105 @@
     background-color: rgba(68, 182, 74, 0.266);
 }
 
-.bio-smallChip .p-chip-text
+
+.bio-firstPart
 {
-    margin: 0.2vw;
+    width: 25vw;
+    height: auto;
+}
+
+.editBio
+{
+    width: 30vw;
+    height: 13vh;
+    padding-top: 4vh;
+    padding-left: 4vw;
+    padding-right: 4vw;
+}
+
+.editBioTitle
+{
+    font-weight: bold;
+    font-size: larger;
+    margin-bottom: 2vh;
 }
 
 .inputName
 {
-    width: 6vw;
-    margin-right: 1vw;
+    width: 20vw;
 }
 
-.inputEmail
+.editBioInterests
 {
-    width: 15vw;
-    line-height: normal; /* Reset line-height */
+    width: 60vw;
+    min-height: 25vh;
+    padding-top: 4vh;
+    padding-left: 4vw;
+    padding-right: 4vw; 
+}
+
+.bio-containerInterest
+{
+    display: flex;
+    flex-direction: row;
+    max-width: fit-content;
+    flex-wrap: wrap;
+    gap: 1vw;
+    margin-right: 2vw;
+    margin-top: 3vh;
+    margin-left: 0;
+}
+
+.dualBio
+{
+    display: flex;
+    flex-direction: row;
+}
+
+.bio-secondPart
+{
+    width: 30vw;
+    height: auto;
 }
 
 .inputBio {
     resize: none;
-    width: calc(100% - 5vw);
-    height: calc(100% - 5vh);
+    width: 30vw;
+    height: 10vh;
+}
+
+.editBio-container
+{
+    width: 35vw;
+    height: 20vh;
+    padding-top: 4vh;
+    padding-left: 4vw;
+    padding-right: 4vw;
+}
+
+.editBioUpload
+{
+    width: 30vw;
+    height: 20vh;
+    padding-top: 4vh;
+    padding-left: 4vw;
+    padding-right: 4vw;
+}
+
+.uploadButton
+{
+    color: #5f5e5e;
+    border: 3px solid rgb(101, 101, 101);
+    padding: 1vw;
+    font-size: 3.5vh;
+    border-radius: 30px;
+    transition: color ease 0.4s;
+}
+
+.uploadButton:hover
+{
+    cursor: pointer;
+    color: #979595ae;
 }
 
 .saveButton
@@ -194,6 +162,7 @@
     box-shadow: 0 3px 3px 0 rgba(0, 0, 0, 0.107), 0 6px 20px 0 rgba(0, 0, 0, 0.036);
     top: calc(100% - 10vh);
     transition: background-color ease 0.3s transform ease 0.3s;
+    left: 27.5vw;
 }
 
 .saveButton:hover
@@ -202,6 +171,8 @@
     transform: scale(1.1);
     cursor: pointer;
 }
+
+
 
 @media (max-width: 768px)
 {

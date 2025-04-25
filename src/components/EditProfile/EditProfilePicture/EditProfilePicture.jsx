@@ -1,15 +1,16 @@
 import React, { useState, useEffect, useRef, useContext } from 'react';
 import './EditProfilePicture.css';
-import { Galleria } from 'primereact/galleria';
 import { UserContext } from '../../../context/UserContext';
-import PictureSelector from '../../PictureSelector/PictureSelector';
+import ProfileCard from '../../HomePage/ProfileCard';
 import 'primeicons/primeicons.css';
+import { useEditProfileContext } from '../../../context/EditProfileContext';
         
 const EditProfilePicture = ({ userId }) => {
 
   const likeRef = useRef(null);
   const { user } = useContext(UserContext);
-  const [disableUpload, setDisableUpload] = useState(true);
+  const { state, getLatestState } = useEditProfileContext();
+  const [shadowUser, setShadowUser] = useState(null)
 
   const likeAnimation = () => {
     if (likeRef.current) {
@@ -35,23 +36,25 @@ const EditProfilePicture = ({ userId }) => {
     }
   };
 
-  const handleDisableChange = (newValue) => {
-    setDisableUpload(newValue);
-    // window.location.reload();
-  };
-
 
   useEffect(() => {
-    setDisableUpload(disableUpload);
-  }, [disableUpload, user?.pictures]);
+    if (user)
+      setShadowUser(user);
+  }, [user?.pictures]);
 
-  const itemTemplate = (item) => {
-    return <img src={`${import.meta.env.VITE_BLOB_URL}/${item.url}`} style={{ width: '100%', objectFit: 'cover', display: 'block', height: '100%', backgroundSize: 'contain'}} />;
-  }
+  useEffect(() => {
+    if (shadowUser && state?.first_name && state.bio) {
+      setShadowUser(prev => ({ ...prev, first_name: state.first_name }));
+      setShadowUser(prev => ({ ...prev, biography: state.bio }));
+    }
+  }, [state?.first_name, state?.bio]); // Now reacts immediately to state.first_name
 
-  const thumbnailTemplate = (item) => {
-    return <img src={item.url} style={{ display: 'block' }} />;
-  }
+  useEffect(() => {
+    const latest = getLatestState();
+    if (shadowUser && latest?.interests) {
+      setShadowUser(prev => ({ ...prev, interests: latest.interests }));
+    }
+  }, [getLatestState()?.interests]); // Now tracks the latest value
 
   if (!user)
   {
@@ -64,22 +67,9 @@ const EditProfilePicture = ({ userId }) => {
 
   return (
     <div className="ProfilePicture-div">
-      <div className="image-container">
-        <Galleria value={user.pictures}
-        style={{ width: '100%', height: '100%'}}
-        numVisible={5}
-        circular 
-        showItemNavigators
-        showItemNavigatorsOnHover
-        showIndicators
-        showThumbnails={false}
-        item={itemTemplate}
-        thumbnail={thumbnailTemplate} />
-      </div>
+      <ProfileCard profile={shadowUser} showLike={false} showBlock={false}/> :
       {/* <LikeLogo className='pfpLikeIcon' onClick={likeAnimation} ref={likeRef}/> */}
-      <div className='pfpLikeCount'>{}</div>
-      <i className="pi pi-upload uploadButton" onClick={() => setDisableUpload(false)}></i>
-      <PictureSelector disabled={disableUpload} onDisabledChange={handleDisableChange}></PictureSelector>
+      {/* <div className='pfpLikeCount'>{}</div> */}
     </div>
   );
 };

@@ -1,0 +1,6 @@
+.chat-page {
+    display: flex;
+    height: calc(100vh - var(--header-height) - var(--footer-height));
+	align-content: center;
+	justify-content: center;
+}

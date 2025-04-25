@@ -2,8 +2,9 @@ import React, { createContext, useContext, useEffect, useState } from 'react';
 import Pusher from 'pusher-js';
 import { AuthContext } from './AuthContext';
 import { UserContext } from './UserContext';
+import axios from 'axios';
 
-const SocketContext = createContext();
+export const SocketContext = createContext(); 
 
 export const SocketProvider = ({ children }) => {
   const [pusher, setPusher] = useState(null);
@@ -13,7 +14,7 @@ export const SocketProvider = ({ children }) => {
   const { user } = useContext(UserContext);
 
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading || !user) return;
 
     if (isAuthenticated && token) {
       // Initialize Pusher
@@ -32,6 +33,11 @@ export const SocketProvider = ({ children }) => {
 
       privateChannel.bind('pusher:subscription_succeeded', () => {
         setConnected(true);
+        axios.post(`${import.meta.env.VITE_API_URL}/status/online`, {}, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
       });
 
       privateChannel.bind('pusher:subscription_error', (error) => {
@@ -39,15 +45,27 @@ export const SocketProvider = ({ children }) => {
         setConnected(false);
       });
 
-      privateChannel.bind('new-message', (message) => {
-        console.log('New message received:', message);
+      privateChannel.bind('status-request', (data) => {
+        axios.post(`${import.meta.env.VITE_API_URL}/status/online`, {}, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
       });
 
       setPusher(pusherInstance);
       setChannel(privateChannel);
 
       return () => {
-        privateChannel.unbind('new-message');
+        if (connected) {
+          axios.post(`${import.meta.env.VITE_API_URL}/status/offline`, {}, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          });
+        }
+
+        privateChannel.unbind('status-request');
         // privateChannel.unsubscribe();
         pusherInstance.disconnect();
       };

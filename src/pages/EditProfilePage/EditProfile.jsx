@@ -10,8 +10,8 @@ const EditProfile = () => {
 
 	return (
 		<div className='profile-container'>
-			<EditProfilePicture userId={userId}></EditProfilePicture>
             <EditProfileInfo userId={userId}></EditProfileInfo>
+			<EditProfilePicture userId={userId}></EditProfilePicture>
 		</div>
 	);
 }

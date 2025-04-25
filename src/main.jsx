@@ -8,17 +8,20 @@ import { UserProvider } from './context/UserContext';
 import { SocketProvider } from './context/SocketContext.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { RefreshProvider } from "./context/RefreshContext";
+import { EditProfileProvider } from './context/EditProfileContext.jsx';
 
 createRoot(document.getElementById('root')).render(
-  <RefreshProvider>
-    <AuthProvider>
-      <UserProvider>
-        <SocketProvider>
-          <Router>
-            <App />
-          </Router>
-        </SocketProvider>
-      </UserProvider>
-    </AuthProvider>
-  </RefreshProvider>,
+  <EditProfileProvider>
+    <RefreshProvider>
+      <AuthProvider>
+        <UserProvider>
+          <SocketProvider>
+            <Router>
+              <App />
+            </Router>
+          </SocketProvider>
+        </UserProvider>
+      </AuthProvider>
+    </RefreshProvider>
+  </EditProfileProvider>
 );

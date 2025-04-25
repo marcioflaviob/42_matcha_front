@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from 'react';
-import axios, { all } from 'axios';
+import axios from 'axios';
 import './YourPreferences.css';
 import { Button } from 'primereact/button';
 import { MultiSelect } from 'primereact/multiselect';
@@ -9,26 +9,34 @@ import { Divider } from 'primereact/divider';
 import { UserContext } from '../../../context/UserContext';
 import { displayAlert } from '../../Notification/Notification';
 import { AuthContext } from '../../../context/AuthContext';
+import { Slider } from 'primereact/slider';
+import { Rating } from 'primereact/rating';
+        
+        
 
 const YourPreferences = ({ setActiveStep }) => {
 	const { user, setUser } = useContext(UserContext);
 	const { token } = useContext(AuthContext);
 	const [isLoading, setIsLoading] = useState(false);
+	const [ageRange, setAgeRange] = useState([18, 99]);
 	const [formData, setFormData] = useState({
 		gender: '',
 		sexual_interest: '',
-		interests: [],
+		interests_tags: [],
+		age_range_min: 18,
+		age_range_max: 99,
+		min_desired_rating: 0,
 		status: 'step_two'
 	});
 	const [touchedFields, setTouchedFields] = useState({
 		gender: false,
 		sexual_interest: false,
-		interests: false,
+		interests_tags: false
 	});
 	const [validFields, setValidFields] = useState({
 		gender: false,
 		sexual_interest: false,
-		interests: false,
+		interests_tags: false
 	});
 	const allFieldsValid = Object.values(validFields).every((isValid) => isValid);
 
@@ -39,6 +47,16 @@ const YourPreferences = ({ setActiveStep }) => {
             ...prevData,
             [field]: value,
         }));
+    };
+
+	const handleAgeRangeChange = (value) => {
+        setTouchedFields((prev) => ({ ...prev, age_range: true }));
+        setAgeRange(value);
+		setFormData((prevData) => ({
+			...prevData,
+			age_range_min: value[0],
+			age_range_max: value[1],
+		}));
     };
 
 	const handleButtonNext = () => {
@@ -83,6 +101,22 @@ const YourPreferences = ({ setActiveStep }) => {
 				<span>
 					<p>I am interested in</p>
 					<SelectButton id='sexual_interest' value={formData.sexual_interest} onChange={(e) => handleSelectChange(e, 'sexual_interest')} optionLabel="name" options={SexualInterest} allowEmpty={false} />
+				</span>
+			</div>
+			<div className='aligned-div'>
+				<span>
+					<p>Desired age range</p>
+					<div className="slider-container">
+                        <Slider id='age_range' value={ageRange} onChange={(e) => handleAgeRangeChange(e.value)} range min={0} max={100} />
+                        <div className="age-range-display">
+                            <span>{formData.age_range_min}</span>
+                            <span>{formData.age_range_max}</span>
+                        </div>
+                    </div>
+				</span>
+				<span>
+					<p>Minimum desired rating</p>
+					<Rating id='min_desired_rating' value={formData.min_desired_rating} onChange={(e) => handleSelectChange(e, 'min_desired_rating')} cancel={false} />
 				</span>
 			</div>
 			<Divider align="center" />

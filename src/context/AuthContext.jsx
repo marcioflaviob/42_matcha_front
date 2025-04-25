@@ -42,6 +42,11 @@ export const AuthProvider = ({ children }) => {
   };
 
   const logout = () => {
+    axios.post(`${import.meta.env.VITE_API_URL}/status/offline`, {}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    });
     localStorage.removeItem('token');
     setToken(null);
     setIsAuthenticated(false);

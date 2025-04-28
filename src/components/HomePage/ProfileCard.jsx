@@ -4,7 +4,7 @@ import './ProfileCard.css';
 import { Chip } from "primereact/chip";
 import { Button } from "primereact/button";
 
-const ProfileCard = ({ profile, handleLike, handleBlock, showLike, showBlock }) => {
+const ProfileCard = ({ profile, handleLike, handleBlock, showButtons }) => {
 
 	if (!profile) {
 		return (
@@ -45,10 +45,10 @@ const ProfileCard = ({ profile, handleLike, handleBlock, showLike, showBlock }) 
           </div>
         </div>
 
-		<div className="match-buttons">
-			<Button icon="pi pi-times" className="match-button reject-match-button" style={{"display": showBlock ? "block" : "none"}} onClick={handleBlock} rounded />
-			<Button icon="pi pi-heart-fill" className="match-button accept-match-button" style={{"display": showLike ? "block" : "none"}} onClick={handleLike} rounded />
-		</div>
+		{showButtons && <div className="match-buttons">
+      <Button icon="pi pi-times" className="match-button reject-match-button" onClick={handleBlock} rounded />
+			<Button icon="pi pi-heart-fill" className="match-button accept-match-button" onClick={handleLike} rounded />
+		</div>}
 
       </div>
     </div>

@@ -51,7 +51,7 @@ const EditProfilePicture = ({ userId, shadowUser, setShadowUser }) => {
 
   return (
     <div className="ProfilePicture-div">
-      <ProfileCard profile={shadowUser} showLike={false} showBlock={false}/> :
+      <ProfileCard profile={shadowUser} showButtons={false} /> :
       {/* <LikeLogo className='pfpLikeIcon' onClick={likeAnimation} ref={likeRef}/> */}
       {/* <div className='pfpLikeCount'>{}</div> */}
     </div>

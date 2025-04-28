@@ -3,14 +3,12 @@ import './EditProfilePicture.css';
 import { UserContext } from '../../../context/UserContext';
 import ProfileCard from '../../HomePage/ProfileCard';
 import 'primeicons/primeicons.css';
-import { useEditProfileContext } from '../../../context/EditProfileContext';
         
-const EditProfilePicture = ({ userId }) => {
+const EditProfilePicture = ({ userId, shadowUser, setShadowUser }) => {
 
   const likeRef = useRef(null);
   const { user } = useContext(UserContext);
-  const { state, getLatestState } = useEditProfileContext();
-  const [shadowUser, setShadowUser] = useState(null)
+  // const { state, getLatestState } = useEditProfileContext();
 
   const likeAnimation = () => {
     if (likeRef.current) {
@@ -40,21 +38,7 @@ const EditProfilePicture = ({ userId }) => {
   useEffect(() => {
     if (user)
       setShadowUser(user);
-  }, [user?.pictures]);
-
-  useEffect(() => {
-    if (shadowUser && state?.first_name && state.bio) {
-      setShadowUser(prev => ({ ...prev, first_name: state.first_name }));
-      setShadowUser(prev => ({ ...prev, biography: state.bio }));
-    }
-  }, [state?.first_name, state?.bio]); // Now reacts immediately to state.first_name
-
-  useEffect(() => {
-    const latest = getLatestState();
-    if (shadowUser && latest?.interests) {
-      setShadowUser(prev => ({ ...prev, interests: latest.interests }));
-    }
-  }, [getLatestState()?.interests]); // Now tracks the latest value
+  }, [user]);
 
   if (!user)
   {

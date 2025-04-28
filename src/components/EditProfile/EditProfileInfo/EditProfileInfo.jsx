@@ -9,21 +9,19 @@ import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { useNavigate} from 'react-router-dom';
 import { AuthContext } from '../../../context/AuthContext';
-import { useEditProfileContext } from '../../../context/EditProfileContext';
 import { Button } from 'primereact/button';
 import 'primeicons/primeicons.css';
 import PictureSelector from '../../PictureSelector/PictureSelector';
-import { useRefresh } from "../../../context/RefreshContext";
 
 
-const EditProfileInfo = ({ userId }) => {
+const EditProfileInfo = ({ userId, shadowUser, setShadowUser }) => {
     const navigate = useNavigate();
     const { token } = useContext(AuthContext);
-    const { user } = useContext(UserContext);
+    const { user, setUser } = useContext(UserContext);
     const [allInterests, setAllInterests] = useState(null);
-    const { state, updateField } = useEditProfileContext();
+    // const { state, updateField } = useEditProfileContext();
     const [disableUpload, setDisableUpload] = useState(true);
-    const { triggerRefresh } = useRefresh();
+    // const { triggerRefresh } = useRefresh();
     const [formData, setFormData] = useState({
         first_name: '',
         last_name: '',
@@ -37,7 +35,8 @@ const EditProfileInfo = ({ userId }) => {
     const handleFirstNameChange = useCallback((e) => {
         const value = e.target.value;
         setFormData(prev => ({ ...prev, first_name: value }));
-        updateField('first_name', value);
+        setShadowUser(prev => ({ ...prev, first_name: value }));
+        // updateField('first_name', value);
     }, []);
 
     const handleLastNameChange = useCallback((e) => {
@@ -48,7 +47,8 @@ const EditProfileInfo = ({ userId }) => {
     const handleBioChange = useCallback((e) => {
         const value = e.target.value;
         setFormData(prev => ({ ...prev, biography: value }));
-        updateField('bio', value);
+        setShadowUser(prev => ({ ...prev, biography: value }));
+        // updateField('bio', value);
     }, []);
 
     const handleRemoveInterest = (interestId) => {
@@ -87,12 +87,12 @@ const EditProfileInfo = ({ userId }) => {
             withCredentials: true,
         })
         .then((response) => {
+            setUser(response.data);
         })
         .catch((error) => {
             console.error('Error:', error);
             displayAlert('error', 'An error occurred. Please try again later.');
         })
-        await triggerRefresh();
         navigate(`/profile/${user.id}`)
     }
 
@@ -119,14 +119,15 @@ const EditProfileInfo = ({ userId }) => {
             }
         };
         fetchData();
-        updateField('first_name', user.first_name);
-        updateField('interests', user.interests);
-        updateField('bio', user.biography);
+        // updateField('first_name', user.first_name);
+        // updateField('interests', user.interests);
+        // updateField('bio', user.biography);
     }, [userId, user, disableUpload]);
 
     useEffect(() =>
     {
-        updateField('interests', formData.interests);
+        // updateField('interests', formData.interests);
+        setShadowUser(prev => ({ ...prev, interests: formData.interests }));
     }, [formData?.interests])
 
     if (!user || !allInterests) return (
@@ -161,10 +162,7 @@ const EditProfileInfo = ({ userId }) => {
                                 ...prev,
                                 gender: 'Male'
                             }))}}/>
-                            <Chip className={`bio-smallChip ${formData.gender === 'Female' ? 'highlighted' : 'Hoverable'}`} label={"Female"} key={73} onClick={() => {setFormData(prev => ({
-                                ...prev,
-                                gender: 'Female'
-                            }))}}/>
+                            <Chip className={`bio-smallChip ${formData.gender === 'Female' ? 'highlighted' : 'Hoverable'}`} label={"Female"} key={73} onClick={() => handleClick("Any")} />
                             <Chip className={`bio-smallChip ${formData.gender === 'Other' ? 'highlighted' : 'Hoverable'}`} label={"Other"} key={74} onClick={() => {setFormData(prev => ({
                                 ...prev,
                                 gender: 'Other'

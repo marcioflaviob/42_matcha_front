@@ -5,7 +5,6 @@ import { UserContext } from '../../context/UserContext';
 import { displayAlert } from '../Notification/Notification';
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
-import { useRefresh } from "../../context/RefreshContext";
 
 const PictureSelector = ({disabled, onDisabledChange}) => {
     const { token } = useContext(AuthContext);
@@ -16,8 +15,8 @@ const PictureSelector = ({disabled, onDisabledChange}) => {
     const [profilePicture, setProfilePicture] = useState(null);
     const uploadUrl = import.meta.env.VITE_API_URL + "/upload/single/";
     const fileInputRef = useRef(null);
-    const { user } = useContext(UserContext);
-    const { triggerRefresh } = useRefresh();
+    const { user, setUser } = useContext(UserContext);
+    // const { triggerRefresh } = useRefresh();
 
     // Handle drag events
     const handleDragEnter = useCallback((e) => {
@@ -89,6 +88,12 @@ const PictureSelector = ({disabled, onDisabledChange}) => {
                     },
                     withCredentials: true,
                 })
+                setUser(prev => {
+                    return {
+                        ...prev,
+                        pictures: prev.pictures.filter(p => p.id !== file.id)
+                    };
+                });
             })
         } catch (error) {
             console.error('Error uploading file:', error);
@@ -110,17 +115,19 @@ const PictureSelector = ({disabled, onDisabledChange}) => {
                     const payload = new FormData();
                     payload.append('isProfilePicture', file === profilePicture);
                     payload.append('picture', file.file);
-                    console.log(payload);
-                    axios.post(uploadUrl, payload, {
+                    const result = await axios.post(uploadUrl, payload, {
                         headers: {
                             Authorization: `Bearer ${token}`,
                             'Content-Type': 'multipart/form-data',
                         },
                         withCredentials: true,
-                    })
-                    .catch((error) => {
-                        console.error('Error uploading file:', error);
-                        displayAlert('error', 'Error uploading file');
+                    });
+                    setUser(prev => {
+                        return {
+                            ...prev,
+                            pictures: [...prev.pictures, result.data],
+                            is_profile: file === profilePicture
+                        };
                     });
                 }
             });
@@ -128,11 +135,8 @@ const PictureSelector = ({disabled, onDisabledChange}) => {
             console.error('Error:', error);
             displayAlert('error', 'An error occurred. Please try again later.');
         } finally {
-            setTimeout(async () =>
-            {
-                await handleDelete();
-                handleClick();
-            }, 500)
+            await handleDelete();
+            handleClick();
         }
     };
 
@@ -165,7 +169,6 @@ const PictureSelector = ({disabled, onDisabledChange}) => {
     }, [disabled, user]);
 
     const handleClick = async () => {
-        await triggerRefresh();
         setDeletedPictures([]);
         setPreviews([]);
         const newValue = !disabled;

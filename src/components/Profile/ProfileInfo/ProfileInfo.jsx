@@ -2,6 +2,7 @@ import React, { useEffect, useContext, useState } from 'react';
 import './ProfileInfo.css';
 import { Chip } from 'primereact/chip';
 import { UserContext } from '../../../context/UserContext';
+import { Map } from '../../Location/Map/map';
 import 'primeicons/primeicons.css';
 import { useNavigate } from 'react-router-dom';
         
@@ -66,6 +67,7 @@ const ProfileInfo = ({ userId, userInfo }) => {
             <div className='profile-info-title'>Fame Rating</div>
             <div className='profile-info-value'>69</div>
         </div>
+        <Map></Map>
     </div>
     );
 };

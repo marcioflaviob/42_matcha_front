@@ -10,7 +10,7 @@ const EditProfile = () => {
   //This is how the profilePictures in the database will look like
 
 	return (
-		<div className='profile-container'>
+		<div className='edit-profile-container'>
             <EditProfileInfo userId={userId} shadowUser={shadowUser} setShadowUser={setShadowUser} />
 			<EditProfilePicture userId={userId} shadowUser={shadowUser} setShadowUser={setShadowUser} />
 		</div>

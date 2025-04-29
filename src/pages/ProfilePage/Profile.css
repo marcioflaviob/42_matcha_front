@@ -1,7 +1,7 @@
 .profile-container
 {
     width: 100vw;
-    height: calc(100vh - 1rem - 100px - 15px);
+    height: calc(100vh - var(--footer-height) - var(--header-height));
     display: flex;
 }
 
@@ -9,7 +9,7 @@
 {
     .profile-container
     {
+        height: 210vh;
         flex-direction: column;
-        height: 100vh;
     }
 }

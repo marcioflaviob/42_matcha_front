@@ -1,79 +1,22 @@
-.bio-Div
+.profile-info-container
 {
-    width: 40vw;
     display: flex;
-    align-items: center;
     flex-direction: column;
-}
-
-.bio-container
-{
-    display: flex;
-    flex-direction: row;
-    height: 8vh;
     width: 100%;
-    justify-content: center;
-    align-items: center;
-    margin-top: 5vh;
-}
-
-.bio-sexualInterest
-{   
-    margin-top: 1vh;
-}
-
-.bio-name
-{
-    font-size: min(4.5vh, 2.3vw); /* Scales with BOTH height & width */
-    margin-right: min(0.3vw, 0.6vh); /* Responsive margin */
-    font-weight: 500;
-}
-
-.bio-gender {
-    width: 5vw;
-    height: 4.5vh;
-    object-fit: contain;
-}
-
-.bio-info2
-{
-    font-size: min(2.7vh, 1.5vw); /* Scales with BOTH height & width */
-}
-
-.bio-age
-{
-    font-size: min(4.5vh, 2.3vw);
-    margin-left: 1vw;
-    margin-right: 1vw;
-    color: rgba(65, 65, 65, 0.719);
-}
-
-.bio-info1
-{
-    font-weight: 500;
-    font-size: min(2.7vh, 1.5vw); /* Scales with BOTH height & width */
-    margin-right: min(0.8vw, 1.6vh); /* Responsive margin */
-}
-
-.bio-img
-{
-    font-size: min(2vw, 3vh);  /* Scales with BOTH width & height */
-    aspect-ratio: attr(width) / attr(height); /* Native ratio */
-    object-fit: contain;   /* Prevents distortion */
-    color: rgba(94, 94, 237, 0.491);
-}
-
-.bio-Text
-{
-    font-size: min(2.7vh, 1.5vw); /* Scales with BOTH height & width */
-}
-
-.loadingProfile
-{
-    width: min(10vw, 10vh);
+    flex-wrap: wrap;
+    box-shadow: rgba(17, 17, 26, 0.05) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 0px 8px;;
+    border-radius: 20px;
+    margin-top: 3vh;
+    margin-bottom: 3vh;
+    margin-left: 2vw;
+    margin-right: 2vw;
+    justify-content: flex-start;
+    align-items: flex-start;
+    gap: 10vh;
     height: auto;
-    aspect-ratio: attr(width) / attr(height);
-    object-fit: contain;
+    padding-top: 5vh;
+    padding-bottom: 5vh;
+    padding-left: 7vh;
 }
 
 .profileEditButton
@@ -88,10 +31,12 @@
     text-align: center;
     border-radius: 10px;
     margin-top: 2vh;
+    position: absolute;
     display: flex;
     justify-content: center;
     align-items: center;
-    margin-left: calc(40vw - 10vw);
+    left: calc(100% - 9vw);
+    top: calc(var(--header-height) + 2vh);
 }
 
 .profileEditButton:hover
@@ -105,85 +50,89 @@
     display: none;
 }
 
-.bio-containerInterest
-{
-    display: flex;
-    flex-direction: row;
-    max-width: fit-content;
-    flex-wrap: wrap;
-    gap: 1vw;
-    margin-left: 2vw;
-    margin-right: 2vw;
-    margin-top: 3vh;
-}
-
-.bio-interest
-{
-    background-color: rgba(56, 50, 230, 0.251);
-    border-radius: 10px;
-}
-
-.bio-smallChip
+.profile-small-chip
 {
     background-color: rgba(13, 114, 154, 0.251);
     border-radius: 10px;
-    font-size: min(2vh, 1vw);
+    font-size: min(2.8vh, 1.2vw);
     padding: 0.2vw;
 }
 
-.bio-smallChip .p-chip-text
+.profile-small-chip .p-chip-text
 {
     margin: 0.2vw;
 }
 
+.profile-info-div
+{
+    display: flex;
+    flex-direction: row;
+    width: 40%;
+}
+
+.profile-info-interests-div
+{
+    display: flex;
+    flex-direction: column;
+    width: 40%;
+    gap: 2vw;
+}
+
+.profile-info-title
+{
+    font-weight: 600;
+    font-size: min(2.7vh, 1.5vw); /* Scales with BOTH height & width */
+    margin-right: min(1.6vw, 3.2vh); /* Responsive margin */
+    display: flex;
+    align-items: center;
+}
+
+.profile-info-interests-value
+{
+    display: flex;
+    gap: 1vw;
+    flex-wrap: wrap;
+}
+
+.profile-info-value
+{
+    font-size: min(2.7vh, 1.5vw); /* Scales with BOTH height & width */
+}
+
 @media (max-width: 768px)
 {
-    .bio-Div
+    .profile-info-container
     {
-        width: 100vw;
+        width: 96vw;
+        margin-top: 0;
     }
-    .bio-name
+
+    .profile-info-title
     {
-        font-size: min(3vh, 6vw); /* Scales with BOTH height & width */
-        margin-right: min(2vw, 1vh); /* Responsive margin */
+        font-size: min(2.7vh, 5.4vw);
+        margin-right: min(6.4vw, 3.2vh);
     }
-    .bio-img
-    {
-        font-size: min(8vw, 3vh);  /* Scales with BOTH width & height */
-    }
-    .bio-age
-    {
-        font-size: min(3vh, 8vw);
-    }
-    .bio-info1
-    {
-        font-weight: 500;
-        font-size: min(2.7vh, 5.4vw); /* Scales with BOTH height & width */
-        margin-right: min(3.2vw, 1.6vh); /* Responsive margin */
-    }
-    .bio-info2
+
+    .profile-info-value
     {
         font-size: min(2.7vh, 5.4vw); /* Scales with BOTH height & width */
     }
-    .bio-Text
+
+    .profile-info-div
     {
-        font-size: min(2.7vh, 5.4vw); /* Scales with BOTH height & width */
+        width: 90%;
     }
-    .p-galleria-item-wrapper
+
+    .profile-small-chip
     {
-        width: 100vw;
+        font-size: min(2vh, 4vw);
+        padding: 0.5vh;
     }
-    .bio-container
+    .profileEditButton
     {
-        margin-top: 2vh;
-    }
-    .bio-containerInterest
-    {
-        gap: 4vw;
-    }
-    .bio-interest
-    {
-        padding-left: 2vw;
-        padding-right: 2vw;
+        left: calc(100% - 9vw);
+        top: calc(var(--header-height) + 85vh);
+        left: calc(100% - 15vw);
+        font-size: min(2.7vh, 5.4vw);
     }
 }

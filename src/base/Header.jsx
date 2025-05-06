@@ -10,6 +10,7 @@ import { OverlayPanel } from 'primereact/overlaypanel';
 import axios from 'axios';
 import { displayAlert, displayNotification } from '../components/Notification/Notification';
 import { SocketContext } from '../context/SocketContext';
+import PopulatedMap from '../components/Location/PopulatedMap/PopulatedMap';
 
 const Header = () => {
 	const { user } = useContext(UserContext);
@@ -20,6 +21,7 @@ const Header = () => {
 	const navigate = useNavigate();
 	const overlayPanelRef = useRef(null);
 	const [notifications, setNotifications] = useState(null);
+	const [showMap, setShowMap] = useState(false);
 
 	const unseenNotifications = () => notifications?.filter(notification => !notification.seen).length || null;
 
@@ -106,6 +108,10 @@ const Header = () => {
 			<div className="header-right">
 				{user ? (
 					<div className="user-nav">
+						<span className='material-symbols-outlined header-map-button' onClick={() => setShowMap(true)} >
+							public
+						</span>
+						{showMap && <PopulatedMap setShowMap={setShowMap} showMap={showMap}></PopulatedMap>}
 						<Button className='nav-button chat-button' label='Chat' onClick={() => navigate('/chat')} />
 						
 						<div className="notification-container">

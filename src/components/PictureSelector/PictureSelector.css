@@ -1,0 +1,183 @@
+.outerSelectorDiv
+{
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    z-index: 200;
+    top: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+}
+
+@keyframes progressiveBlur {
+    from
+    {
+        background-color: none;
+        backdrop-filter: blur(0px);
+        opacity: 0;
+    }
+    to
+    {
+        backdrop-filter: blur(5px);
+        opacity: 1;
+    }
+}
+
+.blurDiv
+{
+    background-color: rgba(0, 0, 0, 0.566);
+    z-index: 100;
+    width: 100vw;
+    height: 100vh;
+    position: absolute;
+    top: 0;
+    left: 0;
+    animation: progressiveBlur 0.5s forwards;
+}
+
+.outerMenuSelector
+{
+    width: 60vw;
+    height: 50vh;
+    background-color: aliceblue;
+    border-radius: 20px;
+    z-index: 200;
+    display: flex;
+    flex-direction: row;
+}
+
+.outerUploadDiv
+{
+    width: 20vw;
+    height: 100%;
+    border-right: 1px rgba(128, 128, 128, 0.456) solid;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
+}
+
+.uploadButtonSelector
+{
+    font-size: 3vh;
+    padding: 2vh;
+    border: 1px solid rgba(27, 27, 27, 0.555);
+    border-radius: 30px;
+    transition: border-color 0.4s ease, color 0.4s ease;
+}
+
+.uploadButtonSelector:hover
+{
+    cursor: pointer;
+    border-color: rgba(36, 15, 63, 0.483);
+    color: rgba(36, 15, 63, 0.483);
+}
+
+.uploadTextSelector
+{
+    font-size: 1.3vh;
+    margin-top: 2vh;
+    color: rgb(57, 57, 57);
+}
+
+.previewSelectorDiv
+{
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    padding-left: 2vw;
+    padding-right: 2vw;
+    padding-top: 2vh;
+    padding-bottom: 2vh;
+    gap: 2vw;
+}
+
+.imagePreviewSelector
+{
+    width: 100%;
+    height: 100%;
+    object-fit:cover;
+    /* border-radius: '8px'; */
+    /* box-shadow: rgba(0, 0, 0, 0.05) 0px 0px 0px 1px; */
+}
+
+.remove-preview-btn
+{
+    position: absolute;
+    border-color: aliceblue;
+    background-color: rgba(178, 34, 34, 0);
+    color: rgb(190, 188, 188);
+    box-shadow: rgba(17, 17, 26, 0.05) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 0px 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border: 3px solid white;
+    border-radius: 25px;
+    width: 25px;
+    transition: border-color 0.3s ease, color 0.3s ease;
+    margin-left: 10vw;
+    margin-top: 0.5vh;
+}
+
+.remove-preview-btn:hover
+{
+    cursor: pointer;
+    border-color: red;
+    color: red;
+}
+
+.preview-container
+{
+    max-width: 12vw;
+    max-height: 19vh;
+}
+
+.buttonSaveSelector
+{
+    /* width: 4vw; */
+    height: 5vh;
+    background-color: rgb(47, 228, 47);
+    color: white;
+    z-index: 201;
+    position: absolute;
+    margin-top: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 10px;
+    transition: transform 0.2s ease, background-color 0.3s ease, color 0.3s ease;
+    padding: 1vw;
+}
+
+.buttonSaveSelector:hover
+{
+    transform: scale(1.1);
+    cursor: pointer;
+    color: rgb(47, 228, 47);
+    background-color: white;
+}
+
+.buttonSaveSelectorDisabled
+{
+    height: 5vh;
+    background-color: rgb(178, 176, 176);
+    color: rgba(81, 79, 79, 0.412);
+    z-index: 201;
+    position: absolute;
+    margin-top: 50vh;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    border-radius: 10px;
+    /* border: 3px solid rgba(101, 101, 101, 0.426); */
+    padding: 1vw;
+    cursor: default;
+}

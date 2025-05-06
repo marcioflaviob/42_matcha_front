@@ -4,7 +4,7 @@ import './YourPreferences.css';
 import { Button } from 'primereact/button';
 import { MultiSelect } from 'primereact/multiselect';
 import { SelectButton } from 'primereact/selectbutton';
-import { Gender, Interests, SexualInterest } from './constants';
+import { Gender, SexualInterest } from './constants';
 import { Divider } from 'primereact/divider';
 import { UserContext } from '../../../context/UserContext';
 import { displayAlert } from '../../Notification/Notification';
@@ -114,6 +114,7 @@ const YourPreferences = ({ setActiveStep }) => {
 			}
 		}
 		fetchData();
+		getLocation();
 	}, []);
 
 	useEffect(() => {
@@ -137,33 +138,17 @@ const YourPreferences = ({ setActiveStep }) => {
 		const sendLocation = async () => {
 			if (locationData.length === 0) return; // Check if location is available
 			try { 
-				console.log('Location data:', locationData);
 				const response = await axios.post(`${import.meta.env.VITE_API_URL}/location/${user.id}`, locationData, {
 					headers: {
 						Authorization: `Bearer ${token}`,
 					},
 					withCredentials: true,
 				});
-				console.log('Location sent successfully:', response.data);
 			} catch (err) {
 				displayAlert('error', 'Error fetching information'); // Handle errors
 			}
 		}
-		const getLocation = async () => {
-			try { 
-				const response = await axios.get(`${import.meta.env.VITE_API_URL}/location/${user.id}`, {
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-					withCredentials: true,
-				});
-				return response.data;
-			} catch (err) {
-				displayAlert('error', 'Error fetching information'); // Handle errors
-			}
-		}
-		const location = getLocation();
-		if (!location)
+		if (!user?.location)
 			sendLocation();
 	}, [locationData?.latitude, locationData?.city]);
 

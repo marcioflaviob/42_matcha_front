@@ -3,6 +3,7 @@
     width: 100vw;
     height: calc(100vh - var(--footer-height) - var(--header-height));
     display: flex;
+    overflow: hidden;
 }
 
 @media (max-width: 768px)

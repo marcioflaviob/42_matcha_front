@@ -2,7 +2,6 @@ import React, { useEffect, useContext, useState } from 'react';
 import './ProfileInfo.css';
 import { Chip } from 'primereact/chip';
 import { UserContext } from '../../../context/UserContext';
-import { Map } from '../../Location/Map/map';
 import 'primeicons/primeicons.css';
 import { useNavigate } from 'react-router-dom';
         
@@ -30,13 +29,13 @@ const ProfileInfo = ({ userId, userInfo }) => {
     <div className='profile-info-container'>
         <div className={showEditButton ? 'profileEditButton' : 'profileEditButtonHidden'} onClick={() => handleEditButton()}>Edit</div>
         <div className='profile-info-div'>
-            <div className='profile-info-title'>First Name</div>
-            <div className='profile-info-value'>{userInfo.first_name}</div>
+            <div className='profile-info-title'>Name</div>
+            <div className='profile-info-value'>{userInfo.first_name} {userInfo.last_name}</div>
         </div>
-        <div className='profile-info-div'>
+        {/* <div className='profile-info-div'>
             <div className='profile-info-title'>Last Name</div>
             <div className='profile-info-value'>{userInfo.last_name}</div>
-        </div>
+        </div> */}
         <div className='profile-info-div'>
             <div className='profile-info-title'>Gender</div>
             <Chip className='profile-small-chip' label={userInfo.gender} key={userId}/>
@@ -51,10 +50,10 @@ const ProfileInfo = ({ userId, userInfo }) => {
                 <div className='profile-info-value'>{userInfo.email}</div>
             </div>
         )}
-        <div className='profile-info-div'>
+        {/* <div className='profile-info-div'>
             <div className='profile-info-title'>Bio</div>
             <div className='profile-info-value'>{userInfo.biography}</div>
-        </div>
+        </div> */}
         <div className='profile-info-interests-div'>
             <div className='profile-info-title'>Interests</div>
             <div className='profile-info-interests-value'>
@@ -67,7 +66,6 @@ const ProfileInfo = ({ userId, userInfo }) => {
             <div className='profile-info-title'>Fame Rating</div>
             <div className='profile-info-value'>69</div>
         </div>
-        <Map></Map>
     </div>
     );
 };

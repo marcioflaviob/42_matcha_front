@@ -120,6 +120,7 @@ const EditProfileInfo = ({ userId, shadowUser, setShadowUser }) => {
             }
         };
         fetchData();
+        console.log(user.interests);
     }, [userId, user, disableUpload]);
 
     useEffect(() =>

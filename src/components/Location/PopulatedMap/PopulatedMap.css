@@ -1,0 +1,57 @@
+.map-container
+{
+    position: absolute;
+    z-index: 20;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: calc(100vh - var(--header-height));
+    width: 100vw;
+    left: 0;
+    top: var(--header-height);
+}
+
+.grabbable-div
+{
+    position: absolute;
+    z-index: 21;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 50px;
+    width: 100vw;
+    left: 0;
+    top: 0;
+}
+
+.grabbable-div:hover {
+    cursor: grab;
+}
+
+.grabbable-div::before {
+    content: '';
+    display: block;
+    width: 10vw; /* Adjust width of the bar */
+    height: 4px; /* Adjust height of the bar */
+    background-color: #ffffff; /* Bar color */
+    border-radius: 10px; /* Rounded edges */
+    z-index: 21;
+}
+
+.map-div
+{
+    height: 100%;
+    width: 100%;
+    border-radius: 50px;
+    z-index: 20;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.circular-icon .icon-wrapper {
+    width: 32px;
+    height: 32px;
+    background-size: cover;
+    background-position: center;
+    border-radius: 50%; /* Makes the image circular */
+    border: 2px solid black; /* Optional: Add a border */
+}

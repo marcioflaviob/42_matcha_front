@@ -11,7 +11,7 @@ import axios from 'axios';
 import { displayAlert, displayNotification } from '../components/Notification/Notification';
 import { SocketContext } from '../context/SocketContext';
 
-const Header = () => {
+const Header = ({ potentialMatches, setPotentialMatches }) => {
 	const { user } = useContext(UserContext);
 	const { token } = useContext(AuthContext);
 	const { logout } = useContext(AuthContext);
@@ -23,10 +23,38 @@ const Header = () => {
 
 	const unseenNotifications = () => notifications?.filter(notification => !notification.seen).length || null;
 
-	const redirectUser = (notification) => {
+	const redirectUser = async (notification) => {
 		if (notification.type == 'new-message') navigate('/chat');
 		if (notification.type == 'new-match') navigate('/chat');
-		if (notification.type == 'new-like') navigate('/');
+		if (notification.type == 'new-like')
+		{
+			try {
+				const response = await axios.get(`${import.meta.env.VITE_API_URL}/users/${notification.concerned_user_id}`, {}, {
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				});
+				setPotentialMatches((prevMatches) => {
+					const existingIndex = prevMatches?.findIndex(
+						(match) => match.id === response.data.id
+					);
+
+					if (existingIndex !== -1) {
+						const updatedMatches = [...prevMatches];
+						updatedMatches.splice(existingIndex, 1);
+						return [response.data, ...updatedMatches];
+					} else {
+						return [response.data, ...(prevMatches || [])];
+					}
+				});
+				setNotifications((prevNotifications) =>
+					prevNotifications.filter((n) => n.id !== notification.id)
+				);
+			}
+			catch (error) {
+				displayAlert('error', 'Error liking match');
+			}
+		}
 		if (notification.type == 'new-block') navigate('/');
 		if (notification.type == 'new-profile-view') navigate('/profile/' + notification.user_id);
 	}

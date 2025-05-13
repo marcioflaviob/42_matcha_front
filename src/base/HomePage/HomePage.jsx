@@ -1,14 +1,15 @@
 import React, { useContext, useEffect, useState } from 'react';
 import './HomePage.css';
 import axios from 'axios';
+import { useOutletContext } from 'react-router-dom';
 import { displayAlert } from '../../components/Notification/Notification';
 import { AuthContext } from '../../context/AuthContext';
 import ProfileCard from '../../components/HomePage/ProfileCard';
 import GuestHomePage from './GuestHomePage';
 
 const HomePage = () => {
-	const [potentialMatches, setPotentialMatches] = useState(null);
 	const { token } = useContext(AuthContext);
+	const { potentialMatches, setPotentialMatches } = useOutletContext(); // Access context from Outlet
 	const [matchIndex, setMatchIndex] = useState(0);
 	const { isAuthenticated, isLoading } = useContext(AuthContext);
 	

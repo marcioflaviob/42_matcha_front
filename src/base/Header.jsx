@@ -1,5 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import './Header.css';
+import PropTypes from 'prop-types';
 import { UserContext } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../context/AuthContext';
@@ -53,6 +54,7 @@ const Header = ({ potentialMatches, setPotentialMatches }) => {
 			}
 			catch (error) {
 				displayAlert('error', 'Error liking match');
+				console.error('Error liking match:', error);
 			}
 		}
 		if (notification.type == 'new-block') navigate('/');
@@ -193,6 +195,11 @@ const Header = ({ potentialMatches, setPotentialMatches }) => {
 			</div>
 		</div>
 	);
+};
+
+Header.propTypes = {
+    potentialMatches: PropTypes.arrayOf(PropTypes.object), // Array of objects
+    setPotentialMatches: PropTypes.func.isRequired, // Function
 };
 
 export default Header;

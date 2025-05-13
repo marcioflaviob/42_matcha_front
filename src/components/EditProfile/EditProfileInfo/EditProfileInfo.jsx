@@ -12,6 +12,7 @@ import { AuthContext } from '../../../context/AuthContext';
 import { Button } from 'primereact/button';
 import 'primeicons/primeicons.css';
 import PictureSelector from '../../PictureSelector/PictureSelector';
+import { getCityAndCountry } from '../../Location/AskLocation/AskLocation';
 
 
 const EditProfileInfo = ({ userId, shadowUser, setShadowUser }) => {
@@ -20,6 +21,7 @@ const EditProfileInfo = ({ userId, shadowUser, setShadowUser }) => {
     const { user, setUser } = useContext(UserContext);
     const [allInterests, setAllInterests] = useState(null);
     const [disableUpload, setDisableUpload] = useState(true);
+    const addressRef = useRef({ city: '', country: '' }); // Use useRef for synchronous access
     const [formData, setFormData] = useState({
         first_name: '',
         last_name: '',
@@ -28,6 +30,7 @@ const EditProfileInfo = ({ userId, shadowUser, setShadowUser }) => {
         gender: '',
         sexual_interest: '',
         biography: '',
+        location: [],
     });
 
     const handleChipClick = (value) => {
@@ -66,7 +69,39 @@ const EditProfileInfo = ({ userId, shadowUser, setShadowUser }) => {
         setDisableUpload(newValue);
     };
     
+    const handleRequestLocation = async (e) => {
+        e.preventDefault(); // Prevent the default form submission behavior
 
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                async (position) => {
+                    const { latitude, longitude } = position.coords;
+                    
+                    setFormData((prevData) => ({
+                        ...prevData,
+                        location: { latitude, longitude },
+                    }));
+                    const newAddress = await getCityAndCountry(latitude, longitude);
+                    addressRef.current = newAddress;
+                    setFormData((prevData) => ({
+                            ...prevData,
+                            location: { ...prevData.location, city: addressRef.current.city, country: addressRef.current.country },
+                    }));                },
+                (error) => {
+                    console.error('Error getting location:', error);
+                    displayAlert('error', 'Unable to retrieve location. Please try again.');
+                },
+                {
+                    enableHighAccuracy: true, // Request high accuracy (e.g., GPS)
+                    maximumAge: 0, // Force the browser to fetch a fresh location
+                    timeout: 10000, // Timeout after 10 seconds
+                }
+            );
+        } else {
+            displayAlert('error', 'Geolocation is not supported by your browser.');
+        }
+    };
+    
     const handleSelectChange = (e, field) => {
 		const value = e.target.value;
         const valueSet = new Set(value);
@@ -77,10 +112,7 @@ const EditProfileInfo = ({ userId, shadowUser, setShadowUser }) => {
         }));
     };
 
-    const handleSave = async () =>
-    {
-        if (formData.email != '')
-            formData.status = 'validation';
+    const updateUser = async () => {
         axios.put(`${import.meta.env.VITE_API_URL}/update-user`, formData,
         {
             headers: {
@@ -95,6 +127,13 @@ const EditProfileInfo = ({ userId, shadowUser, setShadowUser }) => {
             console.error('Error:', error);
             displayAlert('error', 'An error occurred. Please try again later.');
         })
+    };
+
+    const handleSave = async () =>
+    {
+        if (formData.email != '')
+            formData.status = 'validation';
+        await updateUser();
         navigate(`/profile/${user.id}`)
     }
 
@@ -111,6 +150,7 @@ const EditProfileInfo = ({ userId, shadowUser, setShadowUser }) => {
                 ['last_name']: user.last_name,
                 ['email']: user.email,
                 ['biography']: user.biography,
+                ['location']: user.location,
             }))
             try {
                 const response = await axios.get(`${import.meta.env.VITE_API_URL}/interests`);
@@ -120,13 +160,12 @@ const EditProfileInfo = ({ userId, shadowUser, setShadowUser }) => {
             }
         };
         fetchData();
-        console.log(user.interests);
     }, [userId, user, disableUpload]);
 
     useEffect(() =>
     {
-        setShadowUser(prev => ({ ...prev, interests: formData.interests }));
-    }, [formData?.interests])
+        setShadowUser(prev => ({ ...prev, interests: formData.interests, location: formData.location }));
+    }, [formData?.interests, formData?.location?.city]);
 
     if (!user || !allInterests) return (
         <div className='edit-profile-info-container'>
@@ -180,7 +219,7 @@ const EditProfileInfo = ({ userId, shadowUser, setShadowUser }) => {
                             }))}}/>
                         </div>
                         <div className='edit-bio'>
-                            <Button label="Change location" />
+                            <Button label="Change location" type="button" onClick={handleRequestLocation}/>
                         </div>
                     </div>
                 </div>

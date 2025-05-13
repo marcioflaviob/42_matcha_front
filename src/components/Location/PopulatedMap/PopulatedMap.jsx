@@ -161,11 +161,11 @@ const PopulatedMap = ({ setShowMap, showMap }) => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
         />
 
-        {matches.map((user) => (
-          <Marker key={user.id} position={[user.location.latitude, user.location.longitude]} icon={user.icon} style={{ cursor: 'pointer'}}>
+        {matches.map((match) => (
+          <Marker key={match.id} position={[match.location.latitude, match.location.longitude]} icon={match.icon} style={{ cursor: 'pointer'}}>
             <Popup>
-              <h3>{user.first_name}</h3>
-              <p>{user.biography}</p>
+              <h3>{match.first_name}</h3>
+              <p>{match.biography}</p>
             </Popup>
           </Marker>
         ))}

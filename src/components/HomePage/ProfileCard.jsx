@@ -24,7 +24,7 @@ const ProfileCard = ({ profile, handleLike, handleBlock, showButtons }) => {
             </div>
             <div className="profile-location">
               <i className="pi pi-map-marker location-icon"></i>
-              <span>Paris, France</span>
+              <span>{profile?.location?.city}, {profile?.location?.country}</span>
             </div>
           </div>
           <div className="profile-header-right">

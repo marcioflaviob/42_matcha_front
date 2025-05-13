@@ -19,7 +19,7 @@ const YourPreferences = ({ setActiveStep }) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [ageRange, setAgeRange] = useState([18, 99]);
 	const [allInterests, setAllInterests] = useState(null);
-	const {location, error, loading, getLocation, addressRef} = AskLocation();
+	const {location, getLocation, addressRef} = AskLocation();
 	const [locationData, setLocationData] = useState([]); // State to store address
 	const [formData, setFormData] = useState({
 		gender: '',

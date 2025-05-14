@@ -112,7 +112,7 @@ const Header = () => {
 							public
 						</span>
 						{showMap && <PopulatedMap setShowMap={setShowMap} showMap={showMap}></PopulatedMap>}
-						<Button className='nav-button chat-button' label='Chat' onClick={() => navigate('/chat')} />
+						<Button className='nav-button chat-button' label='Chat' role='button' onClick={() => navigate('/chat')} />
 						
 						<div className="notification-container">
 							<i className="pi pi-bell p-overlay-badge nav-button notification-button" onClick={toggleNotifications}>

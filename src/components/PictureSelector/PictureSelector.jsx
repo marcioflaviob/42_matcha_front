@@ -6,169 +6,114 @@ import { displayAlert } from '../Notification/Notification';
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
 
-const PictureSelector = ({disabled, onDisabledChange}) => {
+const PictureSelector = ({ disabled, onDisabledChange }) => {
     const { token } = useContext(AuthContext);
-    const [isDragging, setIsDragging] = useState(false);
+    const { user, setUser } = useContext(UserContext);
     const [isDisabled, setIsDisabled] = useState(disabled);
     const [previews, setPreviews] = useState([]);
     const [deletedPictures, setDeletedPictures] = useState([]);
     const [profilePicture, setProfilePicture] = useState(null);
-    const uploadUrl = import.meta.env.VITE_API_URL + "/upload/single/";
     const fileInputRef = useRef(null);
-    const { user, setUser } = useContext(UserContext);
-    // const { triggerRefresh } = useRefresh();
+    const uploadUrl = import.meta.env.VITE_API_URL + "/upload/single/";
 
-    // Handle drag events
-    const handleDragEnter = useCallback((e) => {
+    // Drag event handlers
+    const handleDragEnter = useCallback((e) => handleDragEvent(e), []);
+    const handleDragLeave = useCallback((e) => handleDragEvent(e), []);
+    const handleDragOver = useCallback((e) => handleDragEvent(e), []);
+
+    const handleDragEvent = (e) => {
         e.preventDefault();
         e.stopPropagation();
-        setIsDragging(true);
-    }, []);
-  
-    const handleDragLeave = useCallback((e) => {
-        e.preventDefault();
-        e.stopPropagation();
-        setIsDragging(false);
-    }, []);
-  
-    const handleDragOver = useCallback((e) => {
-        e.preventDefault();
-        e.stopPropagation();
-    }, []);
+    };
 
     const triggerFileInput = () => {
-        if (previews.length == 5)
-        {
+        if (previews.length === 5) {
             displayAlert('error', 'Cannot have more than 5 pictures');
             return;
         }
         fileInputRef.current.click();
     };
-  
-    // Process dropped files
+
     const handleDrop = useCallback((e) => {
-        if (previews.length == 5)
-        {
+        handleDragEvent(e);
+        if (previews.length === 5) {
             displayAlert('error', 'Cannot have more than 5 pictures');
             return;
         }
-        e.preventDefault();
-        e.stopPropagation();
-        setIsDragging(false);
-      
-        const files = Array.from(e.dataTransfer.files)
-          .filter(file => file.type.startsWith('image/')); // Only accept images
-      
+        const files = Array.from(e.dataTransfer.files).filter(file => file.type.startsWith('image/'));
         if (files.length === 0) {
-          displayAlert('error', 'Please drop only image files');
-          return;
+            displayAlert('error', 'Please drop only image files');
+            return;
         }
-      
-        // Process all dropped files
-        const newPreviews = files.map(file => {
-          return {
-            id: URL.createObjectURL(file), // Use URL as unique ID
-            url: URL.createObjectURL(file), // Create preview URL
-            file, // Store original file for upload
-            name: file.name
-          };
-        });
-      
-        setPreviews(prev => [...prev, ...newPreviews]);
-    }, []);
+        addPreviews(files);
+    }, [previews]);
 
-    const handleDelete = async () =>
-    {
+    const addPreviews = (files) => {
+        const newPreviews = files.map(file => ({
+            id: URL.createObjectURL(file),
+            url: URL.createObjectURL(file),
+            file,
+            name: file.name,
+        }));
+        setPreviews(prev => [...prev, ...newPreviews]);
+    };
+
+    const handleDelete = async () => {
         try {
-            deletedPictures.forEach(async (file) =>
-            {
+            for (const file of deletedPictures) {
                 await axios.delete(`${import.meta.env.VITE_API_URL}/pictures/${file.user_id}/${file.id}`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    headers: { Authorization: `Bearer ${token}` },
                     withCredentials: true,
-                })
-                setUser(prev => {
-                    return {
-                        ...prev,
-                        pictures: prev.pictures.filter(p => p.id !== file.id)
-                    };
                 });
-            })
+                setUser(prev => ({
+                    ...prev,
+                    pictures: prev.pictures.filter(p => p.id !== file.id),
+                }));
+            }
         } catch (error) {
-            console.error('Error uploading file:', error);
+            console.error('Error deleting file:', error);
             displayAlert('error', 'Error deleting file');
         }
-    }
+    };
 
     const handleUpload = async () => {
-        if (previews.every(preview => !preview.file) && deletedPictures.length === 0)
-            return;
-        try {
-            previews.forEach(async (file) => {
-                if (!file.file)
-                {
+        if (previews.every(preview => !preview.file) && deletedPictures.length === 0) return;
 
-                }
-                else
-                {
-                    const payload = new FormData();
-                    payload.append('isProfilePicture', file === profilePicture);
-                    payload.append('picture', file.file);
-                    const result = await axios.post(uploadUrl, payload, {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                            'Content-Type': 'multipart/form-data',
-                        },
-                        withCredentials: true,
-                    });
-                    setUser(prev => {
-                        return {
-                            ...prev,
-                            pictures: [...prev.pictures, result.data],
-                            is_profile: file === profilePicture
-                        };
-                    });
-                }
-            });
+        try {
+            await uploadFiles();
+            await handleDelete();
+            resetState();
         } catch (error) {
             console.error('Error:', error);
             displayAlert('error', 'An error occurred. Please try again later.');
-        } finally {
-            await handleDelete();
-            handleClick();
         }
     };
 
-    const handleUploadClick = (e) => {
-        const files = Array.from(e.target.files);
-        if (files.length > 0) {
-        //   console.log('Selected files:', files);
-          // Process your files here
+    const uploadFiles = async () => {
+        for (const file of previews) {
+            if (!file.file) continue;
+
+            const payload = new FormData();
+            payload.append('isProfilePicture', file === profilePicture);
+            payload.append('picture', file.file);
+
+            const result = await axios.post(uploadUrl, payload, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data',
+                },
+                withCredentials: true,
+            });
+
+            setUser(prev => ({
+                ...prev,
+                pictures: [...prev.pictures, result.data],
+                is_profile: file === profilePicture,
+            }));
         }
-        const newPreviews = files.map(file => {
-            return {
-              id: URL.createObjectURL(file), // Use URL as unique ID
-              url: URL.createObjectURL(file), // Create preview URL
-              file, // Store original file for upload
-              user_id: user.id,
-              name: file.name
-            };
-        });
-        
-        setPreviews(prev => [...prev, ...newPreviews]);
-        // Reset the input to allow selecting the same files again
-        e.target.value = null;
     };
 
-    useEffect(() => {
-        setPreviews(user.pictures);
-        setIsDisabled(disabled);
-        // console.log(previews);
-        // console.log(deletedPictures);
-    }, [disabled, user]);
-
-    const handleClick = async () => {
+    const resetState = () => {
         setDeletedPictures([]);
         setPreviews([]);
         const newValue = !disabled;
@@ -176,52 +121,87 @@ const PictureSelector = ({disabled, onDisabledChange}) => {
         setIsDisabled(true);
     };
 
-    if (isDisabled || !user)
-    {
-        return (
-            <div>
+    const handleUploadClick = (e) => {
+        const files = Array.from(e.target.files);
+        if (files.length > 0) addPreviews(files);
+        e.target.value = null; // Reset input to allow selecting the same files again
+    };
 
-            </div>
-        )
-    }
-
-    const handleXButton = (preview) =>
-    {
-        if (previews.length == 1)
-        {
-            displayAlert('error', 'You need to have at list 1 picture');
+    const handleXButton = (preview) => {
+        if (previews.length === 1) {
+            displayAlert('error', 'You need to have at least 1 picture');
             return;
         }
-        if (!preview.file)
-            setDeletedPictures(prev => [...prev, preview]);
+        if (!preview.file) setDeletedPictures(prev => [...prev, preview]);
         setPreviews(prev => prev.filter(p => p.id !== preview.id));
         setProfilePicture(previews[0]);
+    };
+
+    useEffect(() => {
+        setPreviews(user.pictures);
+        setIsDisabled(disabled);
+    }, [disabled, user]);
+
+    if (isDisabled || !user) {
+        return <div></div>;
     }
-    
+
     return (
-        <div className="outerSelectorDiv" onDragEnter={handleDragEnter} onDragLeave={handleDragLeave} onDragOver={handleDragOver} onDrop={handleDrop}>
-            <div className="blurDiv" onClick={handleClick}></div>
+        <div
+            className="outerSelectorDiv"
+            onDragEnter={handleDragEnter}
+            onDragLeave={handleDragLeave}
+            onDragOver={handleDragOver}
+            onDrop={handleDrop}
+        >
+            <div className="blurDiv" onClick={resetState}></div>
             <div className="outerMenuSelector">
-                <div className='outerUploadDiv'>
-                    <input ref={fileInputRef} type="file" onChange={handleUploadClick} multiple style={{ display: 'none' }}/>
-                    <i className="pi pi-upload uploadButtonSelector" onClick={triggerFileInput}>
-                    </i>
-                    <div className='uploadTextSelector'>Click or drag and drop</div>
+                <div className="outerUploadDiv">
+                    <input
+                        ref={fileInputRef}
+                        type="file"
+                        onChange={handleUploadClick}
+                        multiple
+                        style={{ display: 'none' }}
+                    />
+                    <i className="pi pi-upload uploadButtonSelector" onClick={triggerFileInput}></i>
+                    <div className="uploadTextSelector">Click or drag and drop</div>
                 </div>
-                <div className='previewSelectorDiv'>
+                <div className="previewSelectorDiv">
                     {previews?.map(preview => (
-                        <div key={preview.id} className="preview-container">
-                            <div  onClick={() => handleXButton(preview)} className="remove-preview-btn" >
-                            ×
-                            </div>
-                            <img src={preview.file ? preview.url : `${import.meta.env.VITE_BLOB_URL}/${preview.url}`} alt={`Preview - ${preview.name}`} className="imagePreviewSelector" />
-                        </div>
+                        <PreviewItem
+                            key={preview.id}
+                            preview={preview}
+                            handleXButton={handleXButton}
+                        />
                     ))}
                 </div>
             </div>
-            <div className={previews.every(preview => !preview.file) && deletedPictures.length === 0 ? 'buttonSaveSelectorDisabled' : 'buttonSaveSelector'} disabled={previews.every(preview => !preview.file)} onClick={handleUpload}>Save</div>
+            <div
+                className={
+                    previews.every(preview => !preview.file) && deletedPictures.length === 0
+                        ? 'buttonSaveSelectorDisabled'
+                        : 'buttonSaveSelector'
+                }
+                onClick={handleUpload}
+            >
+                Save
+            </div>
         </div>
-    )
+    );
 };
+
+const PreviewItem = ({ preview, handleXButton }) => (
+    <div className="preview-container">
+        <div onClick={() => handleXButton(preview)} className="remove-preview-btn">
+            ×
+        </div>
+        <img
+            src={preview.file ? preview.url : `${import.meta.env.VITE_BLOB_URL}/${preview.url}`}
+            alt={`Preview - ${preview.name}`}
+            className="imagePreviewSelector"
+        />
+    </div>
+);
 
 export default PictureSelector;

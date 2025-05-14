@@ -4,7 +4,7 @@
     flex-direction: column;
     width: 100%;
     flex-wrap: wrap;
-    box-shadow: rgba(17, 17, 26, 0.05) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 0px 8px;;
+    box-shadow: rgba(17, 17, 26, 0.05) 0px 1px 0px, rgba(17, 17, 26, 0.1) 0px 0px 8px;
     border-radius: 20px;
     margin-top: 3vh;
     margin-bottom: 3vh;
@@ -130,7 +130,6 @@
     }
     .profileEditButton
     {
-        left: calc(100% - 9vw);
         top: calc(var(--header-height) + 85vh);
         left: calc(100% - 15vw);
         font-size: min(2.7vh, 5.4vw);

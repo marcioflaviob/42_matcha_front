@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useContext, useRef, useCallback} from 'react';
 import './EditProfileInfo.css';
-import axios, { formToJSON } from 'axios';
+import axios from 'axios';
 import { Chip } from 'primereact/chip';
 import { UserContext } from '../../../context/UserContext';
 import { displayAlert }  from "../../Notification/Notification"
@@ -81,12 +81,21 @@ const EditProfileInfo = ({ userId, shadowUser, setShadowUser }) => {
                         ...prevData,
                         location: { latitude, longitude },
                     }));
+                    setShadowUser((prevData) => ({
+                        ...prevData,
+                        location: { latitude, longitude },
+                    }));
                     const newAddress = await getCityAndCountry(latitude, longitude);
                     addressRef.current = newAddress;
                     setFormData((prevData) => ({
                             ...prevData,
                             location: { ...prevData.location, city: addressRef.current.city, country: addressRef.current.country },
-                    }));                },
+                    }));
+                    setShadowUser((prevData) => ({
+                            ...prevData,
+                            location: { ...prevData.location, city: addressRef.current.city, country: addressRef.current.country },
+                    }));           
+                },
                 (error) => {
                     console.error('Error getting location:', error);
                     displayAlert('error', 'Unable to retrieve location. Please try again.');
@@ -139,7 +148,6 @@ const EditProfileInfo = ({ userId, shadowUser, setShadowUser }) => {
 
     useEffect(() => {
         if (!user) return;
-        setDisableUpload(disableUpload);
         const fetchData = async () => {
             setFormData((prevData) => ({
                 ...prevData,
@@ -156,7 +164,8 @@ const EditProfileInfo = ({ userId, shadowUser, setShadowUser }) => {
                 const response = await axios.get(`${import.meta.env.VITE_API_URL}/interests`);
                 setAllInterests(response.data);
             } catch (err) {
-                displayAlert('error', 'Error fetching information'); // Handle errors
+                displayAlert('error', 'Error fetching information');
+                console.error('Error fetching information:', err);
             }
         };
         fetchData();
@@ -241,7 +250,7 @@ const EditProfileInfo = ({ userId, shadowUser, setShadowUser }) => {
                 </div>
             </form> 
         </div>
-        <div className='save-button' onClick={() => handleSave()}>Save</div>
+        <div className='save-button' role='button' onClick={() => handleSave()}>Save</div>
         <PictureSelector disabled={disableUpload} onDisabledChange={handleDisableChange}></PictureSelector>
     </div>
     );

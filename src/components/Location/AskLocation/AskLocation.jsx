@@ -66,6 +66,7 @@ export const AskLocation = () => {
       addressRef.current = newAddress;
       setError(null);
     } catch (err) {
+      console.error('Error getting location', err);
       setError('Unable to fetch location from IP.');
     }
   };

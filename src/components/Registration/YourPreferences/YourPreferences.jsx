@@ -1,4 +1,4 @@
-import React, { use, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import axios from 'axios';
 import './YourPreferences.css';
 import { Button } from 'primereact/button';
@@ -53,14 +53,28 @@ const YourPreferences = ({ setActiveStep }) => {
 
 	const handleInterestChange = (e, field) => {
 		const value = e.selectedOption;
-		setFormData((prevData) => ({
-			...prevData,
-			[field]: Array.isArray(prevData[field])
-			? prevData[field].some((item) => item.id === value.id)
-			? prevData[field].filter((item) => item.id !== value.id)
-			: [...prevData[field], value] // Append if it doesn't exist
-			: [value], // Initialize as an array if undefined
-		}));
+
+		setFormData((prevData) => {
+			let updatedField;
+
+			if (Array.isArray(prevData[field])) {
+				if (prevData[field].some((item) => item.id === value.id)) {
+					// Remove the item if it already exists
+					updatedField = prevData[field].filter((item) => item.id !== value.id);
+				} else {
+					// Append the item if it doesn't exist
+					updatedField = [...prevData[field], value];
+				}
+			} else {
+				// Initialize as an array if undefined
+				updatedField = [value];
+			}
+
+			return {
+				...prevData,
+				[field]: updatedField,
+			};
+		});
 	};
 
 	const handleAgeRangeChange = (value) => {
@@ -111,6 +125,7 @@ const YourPreferences = ({ setActiveStep }) => {
 				setAllInterests(response.data);
 			} catch (err) {
 				displayAlert('error', 'Error fetching information'); // Handle errors
+				console.error('Error fetching information:', err);
 			}
 		}
 		fetchData();
@@ -138,7 +153,7 @@ const YourPreferences = ({ setActiveStep }) => {
 		const sendLocation = async () => {
 			if (locationData.length === 0) return; // Check if location is available
 			try { 
-				const response = await axios.post(`${import.meta.env.VITE_API_URL}/location/${user.id}`, locationData, {
+				await axios.post(`${import.meta.env.VITE_API_URL}/location/${user.id}`, locationData, {
 					headers: {
 						Authorization: `Bearer ${token}`,
 					},
@@ -146,6 +161,7 @@ const YourPreferences = ({ setActiveStep }) => {
 				});
 			} catch (err) {
 				displayAlert('error', 'Error fetching information'); // Handle errors
+				console.error('Error fetching information:', err);
 			}
 		}
 		if (!user?.location)

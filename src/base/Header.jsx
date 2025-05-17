@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { use, useContext, useEffect, useRef, useState } from 'react';
 import './Header.css';
 import { UserContext } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
@@ -11,7 +11,7 @@ import axios from 'axios';
 import { displayAlert, displayNotification } from '../components/Notification/Notification';
 import { SocketContext } from '../context/SocketContext';
 
-const Header = () => {
+const Header = ({ potentialMatches, setPotentialMatches }) => {
 	const { user } = useContext(UserContext);
 	const { token } = useContext(AuthContext);
 	const { logout } = useContext(AuthContext);
@@ -23,10 +23,42 @@ const Header = () => {
 
 	const unseenNotifications = () => notifications?.filter(notification => !notification.seen).length || null;
 
-	const redirectUser = (notification) => {
+	const redirectUser = async (notification) => {
 		if (notification.type == 'new-message') navigate('/chat');
 		if (notification.type == 'new-match') navigate('/chat');
-		if (notification.type == 'new-like') navigate('/');
+		if (notification.type == 'new-like')
+		{
+			const updatePotentialMatches = async () => {
+				try {
+					const prevMatches = potentialMatches || [];
+					const existingIndex = prevMatches.findIndex(
+						(match) => match.id === notification.concerned_user_id
+					);
+
+					if (existingIndex !== -1) {
+						const updatedMatches = [...prevMatches];
+						const existingMatch = updatedMatches[existingIndex];
+						updatedMatches.splice(existingIndex, 1);
+						setPotentialMatches([existingMatch, ...updatedMatches]);
+					} else {
+						const response = await axios.get(`${import.meta.env.VITE_API_URL}/users/${notification.concerned_user_id}`, {}, {
+							headers: {
+								Authorization: `Bearer ${token}`,
+							},
+						});
+						setPotentialMatches([response.data, ...prevMatches]);
+					}
+				} catch (error) {
+					displayAlert('error', 'Error fetching user data');
+					console.error('Error fetching user data:', error);
+				}
+			};
+			
+			updatePotentialMatches();
+			setNotifications((prevNotifications) =>
+				prevNotifications.filter((n) => n.id !== notification.id)
+			);
+		}
 		if (notification.type == 'new-block') navigate('/');
 		if (notification.type == 'new-profile-view') navigate('/profile/' + notification.user_id);
 	}
@@ -93,6 +125,10 @@ const Header = () => {
 			}
 		}
 	}, [connected, channel]);
+
+	useEffect(() => {
+		console.log('potentiel matches', potentialMatches);
+	}, [potentialMatches]);
 
 	return (
 		<div className="header">

@@ -93,7 +93,6 @@ const PopulatedMap = ({ setShowMap, showMap }) => {
     if (positionRef.current < window.innerHeight) {
       requestAnimationFrame(animateToBottom); // Continue animation
     } else {
-      console.log('Animation completed');
       isAnimating.current = false; // Stop the animation
       setShowMap(false); // Hide the map
     }
@@ -129,6 +128,11 @@ const PopulatedMap = ({ setShowMap, showMap }) => {
         }
       };
 
+      ('Map coordinates:', {
+        latitude: user.location.latitude,
+        longitude: user.location.longitude
+      });
+
       fetchUsers();
       isAnimating.current = true; // Set the animation flag to true
       animateToTop(); // Start the animation
@@ -152,8 +156,8 @@ const PopulatedMap = ({ setShowMap, showMap }) => {
         onMouseLeave={handleMouseUp}
       ></div>
       <MapContainer
-        center={[48.8499, 2.6370]}
-        zoom={8}
+        center={[user.location.latitude, user.location.longitude]}
+        zoom={12}
         className="map-div"
       >
         <TileLayer

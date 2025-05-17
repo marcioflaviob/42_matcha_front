@@ -3,9 +3,13 @@ import React, { useState, useRef } from 'react';
 // Utility function moved outside
 export const getCityAndCountry = async (latitude, longitude) => {
   try {
-    const response = await fetch(
-      `https://api.opencagedata.com/geocode/v1/json?q=${latitude}+${longitude}&key=${import.meta.env.VITE_GEOCODE_API_KEY}`
-    );
+    const response = axios.get(`${import.meta.env.VITE_API_URL}/location/city?latitude=${latitude}&longitude=${longitude}`,
+    {
+      headers: {
+          Authorization: `Bearer ${token}`,
+      },
+      withCredentials: true,
+    })
     const data = await response.json();
     if (data.results) {
       const components = data.results[0].components;
@@ -59,10 +63,16 @@ export const AskLocation = () => {
 
   const getLocationFromIP = async () => {
     try {
-      const response = await fetch('https://ipapi.co/json/');
+      const response = axios.get(`${import.meta.env.VITE_API_URL}/location/ip`,
+      {
+          headers: {
+              Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+      })
       const data = await response.json();
       setLocation({ latitude: data.latitude, longitude: data.longitude });
-      const newAddress = await getCityAndCountry(data.latitude, data.longitude);
+      const newAddress = { city: data.city, country: data.country };
       addressRef.current = newAddress;
       setError(null);
     } catch (err) {

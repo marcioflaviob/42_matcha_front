@@ -69,45 +69,90 @@ const EditProfileInfo = ({ userId, shadowUser, setShadowUser }) => {
         setDisableUpload(newValue);
     };
     
+    const getLocationFromIP = async () => {
+        try {
+            displayAlert('info', 'Trying to get location from IP address...');
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/location/ip`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            
+            const { latitude, longitude, city, country } = response.data;
+            setFormData((prevData) => ({
+                ...prevData,
+                location: { latitude, longitude, city, country },
+            }));
+            setShadowUser((prevData) => ({
+                ...prevData,
+                location: { latitude, longitude, city, country },
+            }));
+            addressRef.current = { city, country };
+        } catch (err) {
+            console.error('Error getting location from IP:', err);
+            displayAlert('error', 'Unable to get your location. Please try again later or check your network connection.');
+        }
+    };
+
     const handleRequestLocation = async (e) => {
-        e.preventDefault(); // Prevent the default form submission behavior
+        e.preventDefault();
 
         if (navigator.geolocation) {
-            navigator.geolocation.getCurrentPosition(
-                async (position) => {
-                    const { latitude, longitude } = position.coords;
-                    
-                    setFormData((prevData) => ({
-                        ...prevData,
-                        location: { latitude, longitude },
-                    }));
-                    setShadowUser((prevData) => ({
-                        ...prevData,
-                        location: { latitude, longitude },
-                    }));
-                    const newAddress = await getCityAndCountry(latitude, longitude);
-                    addressRef.current = newAddress;
-                    setFormData((prevData) => ({
-                            ...prevData,
-                            location: { ...prevData.location, city: addressRef.current.city, country: addressRef.current.country },
-                    }));
-                    setShadowUser((prevData) => ({
-                            ...prevData,
-                            location: { ...prevData.location, city: addressRef.current.city, country: addressRef.current.country },
-                    }));           
-                },
-                (error) => {
-                    console.error('Error getting location:', error);
-                    displayAlert('error', 'Unable to retrieve location. Please try again.');
-                },
-                {
-                    enableHighAccuracy: true, // Request high accuracy (e.g., GPS)
-                    maximumAge: 0, // Force the browser to fetch a fresh location
-                    timeout: 10000, // Timeout after 10 seconds
-                }
-            );
+            try {
+                displayAlert('info', 'Requesting your location...');
+                const position = await new Promise((resolve, reject) => {
+                    navigator.geolocation.getCurrentPosition(
+                        resolve,
+                        (error) => {
+                            if (error.code === error.POSITION_UNAVAILABLE || 
+                                error.code === error.TIMEOUT ||
+                                error.code === error.UNKNOWN_ERROR) {
+                                displayAlert('info', 'Could not get precise location. Using IP-based location instead...');
+                                reject(new Error('Location unavailable'));
+                            } else if (error.code === error.PERMISSION_DENIED) {
+                                displayAlert('info', 'Location permission denied. Using IP-based location instead...');
+                                reject(new Error('Permission denied'));
+                            } else {
+                                reject(error);
+                            }
+                        },
+                        {
+                            enableHighAccuracy: false,
+                            maximumAge: 30000,
+                            timeout: 5000
+                        }
+                    );
+                });
+
+                const { latitude, longitude } = position.coords;
+                const newAddress = await getCityAndCountry(latitude, longitude);
+                
+                setFormData((prevData) => ({
+                    ...prevData,
+                    location: { 
+                        latitude, 
+                        longitude,
+                        city: newAddress.city,
+                        country: newAddress.country 
+                    },
+                }));
+                setShadowUser((prevData) => ({
+                    ...prevData,
+                    location: { 
+                        latitude, 
+                        longitude,
+                        city: newAddress.city,
+                        country: newAddress.country 
+                    },
+                }));
+                addressRef.current = newAddress;
+                displayAlert('success', 'Location updated successfully');
+            } catch (error) {
+                getLocationFromIP();
+            }
         } else {
-            displayAlert('error', 'Geolocation is not supported by your browser.');
+            displayAlert('info', 'Geolocation is not supported by your browser. Using IP-based location...');
+            getLocationFromIP();
         }
     };
     
@@ -122,29 +167,46 @@ const EditProfileInfo = ({ userId, shadowUser, setShadowUser }) => {
     };
 
     const updateUser = async () => {
-        axios.put(`${import.meta.env.VITE_API_URL}/update-user`, formData,
-        {
-            headers: {
-                Authorization: `Bearer ${token}`,
-            },
-            withCredentials: true,
-        })
-        .then((response) => {
-            setUser(response.data);
-        })
-        .catch((error) => {
+        try {
+            await axios.put(`${import.meta.env.VITE_API_URL}/update-user`, formData,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                    withCredentials: true,
+                }
+            );
+            
+            // Get fresh user data from the server
+            const userResponse = await axios.get(`${import.meta.env.VITE_API_URL}/auth/me`, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+            
+            if (userResponse.data.user) {
+                setUser(userResponse.data.user);
+                displayAlert('success', 'Profile updated successfully');
+                // Small delay to ensure state updates have propagated
+                setTimeout(() => {
+                    navigate(`/profile/${userResponse.data.user.id}`);
+                }, 100);
+            }
+        } catch (error) {
             console.error('Error:', error);
             displayAlert('error', 'An error occurred. Please try again later.');
-        })
+            throw error;
+        }
     };
 
-    const handleSave = async () =>
-    {
-        if (formData.email != '')
-            formData.status = 'validation';
-        await updateUser();
-        navigate(`/profile/${user.id}`)
-    }
+    const handleSave = async () => {
+        try {
+            if (formData.email !== '') {
+                formData.status = 'validation';
+            }
+            await updateUser();
+        } catch (error) {
+            displayAlert('error', 'Failed to update profile');
+        }
+    };
 
     useEffect(() => {
         if (!user) return;

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { use, useContext, useEffect, useRef, useState } from 'react';
 import './Header.css';
 import { UserContext } from '../context/UserContext';
 import { useNavigate } from 'react-router-dom';
@@ -28,33 +28,36 @@ const Header = ({ potentialMatches, setPotentialMatches }) => {
 		if (notification.type == 'new-match') navigate('/chat');
 		if (notification.type == 'new-like')
 		{
-			try {
-				const response = await axios.get(`${import.meta.env.VITE_API_URL}/users/${notification.concerned_user_id}`, {}, {
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				});
-				setPotentialMatches((prevMatches) => {
-					const existingIndex = prevMatches?.findIndex(
-						(match) => match.id === response.data.id
+			const updatePotentialMatches = async () => {
+				try {
+					const prevMatches = potentialMatches || [];
+					const existingIndex = prevMatches.findIndex(
+						(match) => match.id === notification.concerned_user_id
 					);
 
 					if (existingIndex !== -1) {
 						const updatedMatches = [...prevMatches];
+						const existingMatch = updatedMatches[existingIndex];
 						updatedMatches.splice(existingIndex, 1);
-						return [response.data, ...updatedMatches];
+						setPotentialMatches([existingMatch, ...updatedMatches]);
 					} else {
-						return [response.data, ...(prevMatches || [])];
+						const response = await axios.get(`${import.meta.env.VITE_API_URL}/users/${notification.concerned_user_id}`, {}, {
+							headers: {
+								Authorization: `Bearer ${token}`,
+							},
+						});
+						setPotentialMatches([response.data, ...prevMatches]);
 					}
-				});
-				setNotifications((prevNotifications) =>
-					prevNotifications.filter((n) => n.id !== notification.id)
-				);
-			}
-			catch (error) {
-				displayAlert('error', 'Error liking match');
-				console.error('Error liking match:', error);
-			}
+				} catch (error) {
+					displayAlert('error', 'Error fetching user data');
+					console.error('Error fetching user data:', error);
+				}
+			};
+			
+			updatePotentialMatches();
+			setNotifications((prevNotifications) =>
+				prevNotifications.filter((n) => n.id !== notification.id)
+			);
 		}
 		if (notification.type == 'new-block') navigate('/');
 		if (notification.type == 'new-profile-view') navigate('/profile/' + notification.user_id);
@@ -122,6 +125,10 @@ const Header = ({ potentialMatches, setPotentialMatches }) => {
 			}
 		}
 	}, [connected, channel]);
+
+	useEffect(() => {
+		console.log('potentiel matches', potentialMatches);
+	}, [potentialMatches]);
 
 	return (
 		<div className="header">

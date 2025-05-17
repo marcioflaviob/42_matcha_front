@@ -8,7 +8,7 @@ import { Badge } from 'primereact/badge';
 import { Button } from 'primereact/button';
 import { OverlayPanel } from 'primereact/overlaypanel';
 import axios from 'axios';
-import { displayAlert, displayNotification } from '../components/Notification/Notification';
+import { clearNotifications, displayAlert, displayCall, displayNotification } from '../components/Notification/Notification';
 import { SocketContext } from '../context/SocketContext';
 
 const Header = () => {
@@ -24,8 +24,8 @@ const Header = () => {
 	const unseenNotifications = () => notifications?.filter(notification => !notification.seen).length || null;
 
 	const redirectUser = (notification) => {
-		if (notification.type == 'new-message') navigate('/chat');
-		if (notification.type == 'new-match') navigate('/chat');
+		if (notification.type == 'new-message') navigate('/chat?id=' + notification.concerned_user_id);
+		if (notification.type == 'new-match') navigate('/chat?id=' + notification.concerned_user_id);
 		if (notification.type == 'new-like') navigate('/');
 		if (notification.type == 'new-block') navigate('/');
 		if (notification.type == 'new-profile-view') navigate('/profile/' + notification.user_id);
@@ -42,7 +42,6 @@ const Header = () => {
 		if (!unseenNotifications()) return;
 
 		setNotifications(notifications.map(notification => ({ ...notification, seen: true })));
-
 
 		try {
 			await axios.patch(`${import.meta.env.VITE_API_URL}/notifications/`, {}, {
@@ -79,10 +78,17 @@ const Header = () => {
 	useEffect(() => {
 		if (connected && channel) {
 			channel.bind('new-notification', (data) => {
-				setNotifications((prevNotifications) => {
-					return [...prevNotifications, data];
-				});
-				displayNotification('info', data.title, data.message);
+				if (data.type == 'new-call') {
+					console.log('New call received:', data);
+					displayCall(data);
+				} else if (data.type == 'stop-call') {
+					clearNotifications();
+				} else {
+					setNotifications((prevNotifications) => {
+						return [...prevNotifications, data];
+					});
+					displayNotification('info', data.title, data.message);
+				}
 			});
 		}
 

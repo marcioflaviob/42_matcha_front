@@ -29,8 +29,15 @@ export const UserProvider = ({ children }) => {
         }
     }, [isAuthenticated, token, isLoading]);
 
+    const updateUser = (newUserData) => {
+        setUser(prevUser => ({
+            ...prevUser,
+            ...newUserData
+        }));
+    };
+
     return (
-        <UserContext.Provider value={{ user, setUser }}>
+        <UserContext.Provider value={{ user, setUser: updateUser }}>
             {children}
         </UserContext.Provider>
     );

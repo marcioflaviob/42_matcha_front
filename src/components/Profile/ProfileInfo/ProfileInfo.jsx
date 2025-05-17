@@ -11,46 +11,60 @@ const ProfileInfo = ({ userId, userInfo }) => {
     const [showEditButton, setShowEditButton] = useState(false);
 
     useEffect(() => {
-        // Fetch data from the API
         if (user && Number(user.id) === Number(userId))
             setShowEditButton(true);
     }, [userId, user]);
 
     const handleEditButton = () =>
     {
-        navigate(`/editprofile/${userId}`);
+        navigate(`/edit-profile/${userId}`);
     }
 
     if (!userInfo || !user) return (
         <div className='bio-Div'>
-            {/* <DotLottieReact
-                src="https://lottie.host/de177ab8-5b7f-47a7-89e4-bd45eb2bf030/DS595uJPq0.lottie"
-                loop
-                autoplay
-                className="loadingProfile"
-            /> */}
         </div>
     );
 
     return (
-    <div className='bio-Div'>
+    <div className='profile-info-container'>
         <div className={showEditButton ? 'profileEditButton' : 'profileEditButtonHidden'} onClick={() => handleEditButton()}>Edit</div>
-        <div className='bio-container'>
-            <div className='bio-name'>{userInfo.first_name} {userInfo.last_name}</div>
-            <div className='bio-age'>{userInfo.age}</div>
-            <Chip className='bio-smallChip' label={userInfo.gender} key={userId}/>
+        <div className='profile-info-div'>
+            <div className='profile-info-title'>Name</div>
+            <div className='profile-info-value'>{userInfo.first_name} {userInfo.last_name}</div>
         </div>
-        <div className='bio-container bio-sexualInterest'>
-            <div className='bio-info1'>Looking for</div>
-            <Chip className='bio-smallChip' label={userInfo.sexual_interest} key={userId}/>
+        {/* <div className='profile-info-div'>
+            <div className='profile-info-title'>Last Name</div>
+            <div className='profile-info-value'>{userInfo.last_name}</div>
+        </div> */}
+        <div className='profile-info-div'>
+            <div className='profile-info-title'>Gender</div>
+            <Chip className='profile-small-chip' label={userInfo.gender} key={userId}/>
         </div>
-        <div className='bio-containerInterest'>
+        <div className='profile-info-div bio-sexual-interest'>
+            <div className='profile-info-title'>Looking for</div>
+            <Chip className='profile-small-chip' label={userInfo.sexual_interest} key={userId}/>
+        </div>
+        {userId == user.id && (
+            <div className='profile-info-div'>
+                <div className='profile-info-title'>email</div>
+                <div className='profile-info-value'>{userInfo.email}</div>
+            </div>
+        )}
+        {/* <div className='profile-info-div'>
+            <div className='profile-info-title'>Bio</div>
+            <div className='profile-info-value'>{userInfo.biography}</div>
+        </div> */}
+        <div className='profile-info-interests-div'>
+            <div className='profile-info-title'>Interests</div>
+            <div className='profile-info-interests-value'>
                 {userInfo.interests?.map((interest) => (
-                    <Chip className='bio-interest' label={interest.name} key={interest.id}/>
+                    <Chip className='profile-small-chip' label={interest.name} key={interest.id}/>
                 ))}
+            </div>
         </div>
-        <div className='bio-container'>
-            <div className='bio-Text'>{userInfo.biography}</div>
+        <div className='profile-info-div'>
+            <div className='profile-info-title'>Fame Rating</div>
+            <div className='profile-info-value'>69</div>
         </div>
     </div>
     );

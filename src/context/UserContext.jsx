@@ -8,7 +8,12 @@ export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [potentialMatches, setPotentialMatches] = useState(null);
     const { token, isAuthenticated, isLoading } = useContext(AuthContext);
-    const props = useMemo({ user, setUser, potentialMatches, setPotentialMatches });
+    const props = useMemo(() => ({
+        user, 
+        setUser, 
+        potentialMatches, 
+        setPotentialMatches
+    }), [user, potentialMatches]);
 
     useEffect(() => {
         if (isLoading) return;

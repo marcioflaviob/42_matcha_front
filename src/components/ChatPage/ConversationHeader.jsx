@@ -18,7 +18,6 @@ const ConversationHeader = ({ selectedUser, setSelectedUser, setUsers }) => {
 	const navigate = useNavigate();
 
 	const handleCall = () => {
-		// displayAlert('info', 'This feature is not available yet');
 		setIsCalling(true);
 	}
 	

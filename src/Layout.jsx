@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef } from 'react';
 import Header from './base/Header/Header'
 import Footer from './base/Footer'
 import { Outlet } from 'react-router-dom';

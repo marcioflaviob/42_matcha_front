@@ -70,8 +70,8 @@ const Conversation = ({ selectedUser, setSelectedUser, setUsers }) => {
                 });
                 setUsers((prevUsers) => {
                     return prevUsers.map(user => {
-                        if (user.id === selectedUser.id) {
-                            const updatedMessages = user.messages.map(msg => ({ ...msg, is_read: true }));
+                        if (user?.id === selectedUser.id) {
+                            const updatedMessages = user?.messages?.map(msg => ({ ...msg, is_read: true }));
                             return { ...user, messages: updatedMessages };
                         }
                         return user;

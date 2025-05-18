@@ -1,0 +1,21 @@
+.permission-prompt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+    text-align: center;
+}
+
+.permission-message {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+}
+
+.permission-icon {
+    font-size: 3rem;
+    color: #1890ff;
+    animation: pulse 2s infinite;
+}

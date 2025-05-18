@@ -3,16 +3,12 @@ import './PhotoCarousel.css'; // Import the CSS file
 import { Button } from "primereact/button";
 
 const PhotoCarousel = ({ photos, name }) => {
-  // Fallback placeholder image
   const placeholderImage = "https://placehold.co/500x700/f3f4f6/a1a1aa?text=No+Image";
 
-  // Use the photos array if it has items, otherwise use the placeholder
   const displayedPhotos = photos?.length > 0 ? photos : [placeholderImage];
 
-  // State to track the current photo index
   const [currentIndex, setCurrentIndex] = useState(0);
 
-  // Handlers for navigation
   const handlePrev = () => {
     setCurrentIndex((prevIndex) =>
       prevIndex === 0 ? displayedPhotos.length - 1 : prevIndex - 1

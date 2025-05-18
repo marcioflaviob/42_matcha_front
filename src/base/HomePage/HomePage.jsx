@@ -5,9 +5,10 @@ import { displayAlert } from '../../components/Notification/Notification';
 import { AuthContext } from '../../context/AuthContext';
 import ProfileCard from '../../components/HomePage/ProfileCard';
 import GuestHomePage from './GuestHomePage';
+import { UserContext } from '../../context/UserContext';
 
 const HomePage = () => {
-	const [potentialMatches, setPotentialMatches] = useState(null);
+	const { potentialMatches, setPotentialMatches } = useContext(UserContext);
 	const { token } = useContext(AuthContext);
 	const [matchIndex, setMatchIndex] = useState(0);
 	const { isAuthenticated, isLoading } = useContext(AuthContext);
@@ -72,7 +73,7 @@ const HomePage = () => {
 	return (
 		<div className='home-page-container'>
 			{potentialMatches.length > matchIndex ?
-				<ProfileCard profile={potentialMatches[matchIndex]} handleLike={handleLike} handleBlock={handleBlock} /> :
+				<ProfileCard profile={potentialMatches[matchIndex]} handleLike={handleLike} handleBlock={handleBlock} showButtons={true} /> :
 				<div className='no-matches'>
 					<img src={import.meta.env.VITE_BLOB_URL + '/' + 'sad_cat-wXhqHEgDRcBPGjsOb5copxfaDG1wrr.jpg'}
 						alt="Sad Cat" style={{width:'300px'}} />

@@ -4,25 +4,27 @@ import './YourPreferences.css';
 import { Button } from 'primereact/button';
 import { MultiSelect } from 'primereact/multiselect';
 import { SelectButton } from 'primereact/selectbutton';
-import { Gender, Interests, SexualInterest } from './constants';
+import { Gender, SexualInterest } from './constants';
 import { Divider } from 'primereact/divider';
 import { UserContext } from '../../../context/UserContext';
 import { displayAlert } from '../../Notification/Notification';
 import { AuthContext } from '../../../context/AuthContext';
 import { Slider } from 'primereact/slider';
 import { Rating } from 'primereact/rating';
-        
-        
+import AskLocation from '../../Location/AskLocation/AskLocation';
 
 const YourPreferences = ({ setActiveStep }) => {
 	const { user, setUser } = useContext(UserContext);
 	const { token } = useContext(AuthContext);
 	const [isLoading, setIsLoading] = useState(false);
 	const [ageRange, setAgeRange] = useState([18, 99]);
+	const [allInterests, setAllInterests] = useState(null);
+	const {location, getLocation, addressRef} = AskLocation();
+	const [locationData, setLocationData] = useState([]); // State to store address
 	const [formData, setFormData] = useState({
 		gender: '',
 		sexual_interest: '',
-		interests_tags: [],
+		interests: [],
 		age_range_min: 18,
 		age_range_max: 99,
 		min_desired_rating: 0,
@@ -31,12 +33,12 @@ const YourPreferences = ({ setActiveStep }) => {
 	const [touchedFields, setTouchedFields] = useState({
 		gender: false,
 		sexual_interest: false,
-		interests_tags: false
+		interests: false
 	});
 	const [validFields, setValidFields] = useState({
 		gender: false,
 		sexual_interest: false,
-		interests_tags: false
+		interests: false
 	});
 	const allFieldsValid = Object.values(validFields).every((isValid) => isValid);
 
@@ -48,6 +50,29 @@ const YourPreferences = ({ setActiveStep }) => {
             [field]: value,
         }));
     };
+
+	const handleInterestChange = (e, field) => {
+		const value = e.selectedOption;
+
+		setFormData((prevData) => {
+			let updatedField;
+
+			if (Array.isArray(prevData[field])) {
+				if (prevData[field].some((item) => item.id === value.id)) {
+					updatedField = prevData[field].filter((item) => item.id !== value.id);
+				} else {
+					updatedField = [...prevData[field], value];
+				}
+			} else {
+				updatedField = [value];
+			}
+
+			return {
+				...prevData,
+				[field]: updatedField,
+			};
+		});
+	};
 
 	const handleAgeRangeChange = (value) => {
         setTouchedFields((prev) => ({ ...prev, age_range: true }));
@@ -86,9 +111,59 @@ const YourPreferences = ({ setActiveStep }) => {
 		setValidFields({
 			gender: formData.gender !== '',
 			sexual_interest: formData.sexual_interest !== '',
-			interests_tags: formData.interests_tags.length > 0,
+			interests: formData.interests.length > 0,
 		});
 	}, [formData]);
+
+	useEffect(() => {
+		const fetchData = async () => {
+			try {
+				const response = await axios.get(`${import.meta.env.VITE_API_URL}/interests`);
+				setAllInterests(response.data);
+			} catch (err) {
+				displayAlert('error', 'Error fetching information'); // Handle errors
+				console.error('Error fetching information:', err);
+			}
+		}
+		fetchData();
+		getLocation();
+	}, []);
+
+	useEffect(() => {
+		const checkAddressRef = setInterval(() => {
+		  if (addressRef.current.city && addressRef.current.country && location?.longitude) {
+			setLocationData({
+				userId : user.id,
+				city : addressRef.current.city,
+				country : addressRef.current.country,
+				longitude : location.longitude,
+				latitude : location.latitude
+			});
+			clearInterval(checkAddressRef);
+		  }
+		}, 100);
+	  
+		return () => clearInterval(checkAddressRef);
+	}, [location?.longitude, addressRef.current.city, addressRef.current.country]);
+
+	useEffect(() => {
+		const sendLocation = async () => {
+			if (locationData.length === 0) return; // Check if location is available
+			try { 
+				await axios.post(`${import.meta.env.VITE_API_URL}/location/${user.id}`, locationData, {
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+					withCredentials: true,
+				});
+			} catch (err) {
+				displayAlert('error', 'Error fetching information'); // Handle errors
+				console.error('Error fetching information:', err);
+			}
+		}
+		if (!user?.location)
+			sendLocation();
+	}, [locationData?.latitude, locationData?.city]);
 
 	return (
 		<div className='your-preferences-panel'>
@@ -123,8 +198,8 @@ const YourPreferences = ({ setActiveStep }) => {
 			<div className='aligned-div'>
 				<span className='hobby-selection'>
 					<p>My hobbies</p>
-					<MultiSelect id='interests_tags' className='hobby-selection-input' value={formData.interests_tags} options={Interests} onChange={(e) => handleSelectChange(e, 'interests_tags')}
-						optionLabel="name" optionValue="value" display="chip" placeholder='Select your interests' showSelectAll={false} filter invalid={touchedFields.interests_tags && !validFields.interests_tags} />
+					<MultiSelect id='interests' className='hobby-selection-input' value={formData.interests.map(interest => interest.name) || []} options={allInterests} onChange={(e) => handleInterestChange(e, 'interests')}
+						optionLabel="name" optionValue="name" placeholder='Select your interests' showSelectAll={false} showClear={true} invalid={touchedFields.interests && !validFields.interests}/>
 				</span>
 
 			</div>

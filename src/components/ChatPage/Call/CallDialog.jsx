@@ -1,17 +1,17 @@
+import React, { useContext, useState, useEffect, useRef, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
+import SimplePeer from 'simple-peer';
+import axios from 'axios';
 import { Dialog } from 'primereact/dialog';
-import React, { useContext, useEffect, useState, useRef } from 'react';
-import { displayAlert } from '../../Notification/Notification';
 import { SocketContext } from '../../../context/SocketContext';
 import { UserContext } from '../../../context/UserContext';
-import SimplePeer from 'simple-peer';
-import './CallDialog.css';
+import { AuthContext } from '../../../context/AuthContext';
+import { displayAlert } from '../../Notification/Notification';
 import AwaitingPermissions from './AwaitingPermissions';
 import AwaitingCall from './AwaitingCall';
 import AwaitingAcceptance from './AwaitingAcceptance';
-import axios from 'axios';
-import { AuthContext } from '../../../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
 import ConnectedCall from './ConnectedCall';
+import './CallDialog.css';
 
 const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
     const { connected, pusher } = useContext(SocketContext);
@@ -55,26 +55,6 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
         navigate('/chat');
     };
 
-    useEffect(() => {
-        if (stream && localVideoRef.current) {
-            localVideoRef.current.srcObject = stream;
-            
-            const playPromise = localVideoRef.current.play();
-            
-            if (playPromise !== undefined) {
-                playPromise
-                    .catch(err => {
-                        console.error('Error playing local video:', err);
-                        // Try again after a short delay
-                        setTimeout(() => {
-                            localVideoRef.current.play()
-                                .catch(err => console.error('Second attempt error:', err));
-                        }, 1000);
-                    });
-            }
-        }
-    }, [stream, localVideoRef]);
-
     // Initialize channel and request media permissions
     useEffect(() => {
         if (connected && pusher) {
@@ -90,26 +70,6 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
             const newChannel = pusher.subscribe(channelName);
             setChannel(newChannel);
             
-            
-            // Request camera and microphone permissions
-            // navigator.mediaDevices
-            //     .getUserMedia({ 
-            //         video: {
-            //             width: { ideal: 640 },
-            //             height: { ideal: 480 },
-            //             facingMode: "user"
-            //         }, 
-            //         audio: true 
-            //     })
-            //     .then((mediaStream) => {
-            //         console.log("Media stream obtained successfully");
-            //         setStream(mediaStream);
-            //         setPermissionGranted(true);
-            //     })
-            //     .catch((err) => {
-            //         console.error('Media access error:', err);
-            //         displayAlert('error', 'Unable to access camera or microphone. Please grant permissions.');
-            //     });
 
             return () => {
                 newChannel.unbind_all();
@@ -120,61 +80,9 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
                 }
             };
         }
-    }, [connected, pusher]);
+    }, [connected, pusher, peer, selectedUser.id, stream, user.id]);
 
-    useEffect(() => {
-        if (channel && stream && !peer) {
-            initializePeerConnection();
-        } else {
-            console.log('Peer already initialized or channel/stream not available');
-        }
-    }, [channel, stream]);
-
-    // Set up channel event bindings
-    useEffect(() => {
-        if (channel && stream) { // TODO Peer shouldn't be checked here because I want it to be created only when the call is accepted
-            console.log('Channel created');
-            // Listen for call acceptance
-            channel.bind('client-call-accepted', (data) => {
-                console.log('Call accepted:', data);
-                if (data.receiver_id === user.id && data.sender_id === selectedUser.id) {
-                    console.log('Call accepted by remote user');
-                    setCallAccepted(true);
-                }
-            });
-
-            // Listen for call ended
-            channel.bind('client-call-ended', (data) => {
-                if (data.receiver_id === user.id && data.sender_id === selectedUser.id) {
-                    displayAlert('info', `${selectedUser.first_name} ended the call`);
-                    handleHangUp();
-                }
-            });
-
-            // Listen for incoming signals (only process after peer is created)
-            channel.bind('client-signal', (data) => {
-                console.log('Received signal from remote peer:', data.signal);
-                if (data.receiver_id === user.id && data.sender_id === selectedUser.id && peer) {
-                    try {
-                        peer.signal(data.signal);
-                    } catch (err) {
-                        console.error('Error processing signal:', err);
-                    }
-                }
-            });
-        }
-        
-        return () => {
-            if (channel) {
-                channel.unbind('client-call-accepted');
-                channel.unbind('client-call-ended');
-                channel.unbind('client-signal');
-            }
-        };
-    }, [channel, stream]);
-
-    // Initialize the peer connection when accepted
-    const initializePeerConnection = () => {
+    const initializePeerConnection = useCallback(() => {
         console.log('Initializing peer connection');
         
         // Create the SimplePeer instance
@@ -231,10 +139,9 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
         });
 
         setPeer(newPeer);
-    };
+    }, [channel, selectedUser.id, stream, user.id, handleHangUp]);
 
-    // Handle accept call
-    const handleAcceptCall = () => {
+    const handleAcceptCall = useCallback(() => {
         if (!callAccepted) {
             console.log('Accepting call');
             setCallAccepted(true);
@@ -244,13 +151,83 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
             });
             // initializePeerConnection();
         }
-    };
+    }, [callAccepted, channel, selectedUser.id, setCallAccepted, user.id]);
 
+    useEffect(() => {
+        if (stream && localVideoRef.current) {
+            localVideoRef.current.srcObject = stream;
+            const playPromise = localVideoRef.current.play();
+            if (playPromise !== undefined) {
+                playPromise.catch(() => {}); // ignore error
+            }
+        }
+    }, [stream, localVideoRef]);
+
+    useEffect(() => {
+        if (connected && pusher) {
+            let channelName;
+            if (user.id > selectedUser.id) {
+                channelName = `presence-video-call-${user.id}-${selectedUser.id}`;
+            } else {
+                channelName = `presence-video-call-${selectedUser.id}-${user.id}`;
+            }
+            console.log('Subscribing to channel:', channelName);
+            const newChannel = pusher.subscribe(channelName);
+            setChannel(newChannel);
+            return () => {
+                newChannel.unbind_all();
+                pusher.unsubscribe(channelName);
+                if (peer) peer.destroy();
+                if (stream) { /* cleanup stream if needed */ }
+            };
+        }
+    }, [connected, pusher, peer, selectedUser.id, stream, user.id]);
+
+    // Only initialize peer after call is accepted
+    useEffect(() => {
+        if (callAccepted && channel && stream && !peer) {
+            initializePeerConnection();
+        }
+    }, [callAccepted, channel, stream, peer, initializePeerConnection]);
+
+    // Set up channel event bindings
+    useEffect(() => {
+        if (channel) {
+            // Listen for call acceptance
+            channel.bind('client-call-accepted', (data) => {
+                if (data.receiver_id === user.id && data.sender_id === selectedUser.id) {
+                    setCallAccepted(true);
+                }
+            });
+            // Listen for call ended
+            channel.bind('client-call-ended', (data) => {
+                if (data.receiver_id === user.id && data.sender_id === selectedUser.id) {
+                    displayAlert('info', `${selectedUser.first_name} ended the call`);
+                    handleHangUp();
+                }
+            });
+            // Listen for incoming signals
+            channel.bind('client-signal', (data) => {
+                if (data.receiver_id === user.id && data.sender_id === selectedUser.id && peer) {
+                    peer.signal(data.signal);
+                }
+            });
+        }
+        return () => {
+            if (channel) {
+                channel.unbind('client-call-accepted');
+                channel.unbind('client-call-ended');
+                channel.unbind('client-signal');
+            }
+        };
+    }, [channel, handleHangUp, peer, selectedUser.first_name, selectedUser.id, user.id]);
+
+    // Accept call if invited
     useEffect(() => {
         if (channel && isInvited) {
             handleAcceptCall();
         }
-    }, [isInvited, channel]);
+    }, [isInvited, channel, handleAcceptCall]);
 
     useEffect(() => {
         if (remoteStream && remoteVideoRef.current) {
@@ -258,7 +235,7 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
             remoteVideoRef.current.play()
                 .catch(err => console.error('Error playing remote video:', err));
         }
-    }, [remoteStream]);
+    }, [remoteStream, remoteVideoRef]);
 
     return (
         <Dialog 

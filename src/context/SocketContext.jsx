@@ -17,7 +17,6 @@ export const SocketProvider = ({ children }) => {
     if (isLoading || !user) return;
 
     if (isAuthenticated && token) {
-      // Initialize Pusher
       const pusherInstance = new Pusher(import.meta.env.VITE_PUSHER_KEY, {
         cluster: import.meta.env.VITE_PUSHER_CLUSTER,
         authEndpoint: `${import.meta.env.VITE_API_URL}/auth/pusher`,
@@ -28,7 +27,6 @@ export const SocketProvider = ({ children }) => {
         },
       });
 
-      // Subscribe to a private channel
       const privateChannel = pusherInstance.subscribe(`private-user-${user?.id}`);
 
       privateChannel.bind('pusher:subscription_succeeded', () => {

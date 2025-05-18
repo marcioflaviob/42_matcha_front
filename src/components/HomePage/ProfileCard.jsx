@@ -4,7 +4,7 @@ import './ProfileCard.css';
 import { Chip } from "primereact/chip";
 import { Button } from "primereact/button";
 
-const ProfileCard = ({ profile, handleLike, handleBlock }) => {
+const ProfileCard = ({ profile, handleLike, handleBlock, showButtons }) => {
 
 	if (!profile) {
 		return (
@@ -24,7 +24,7 @@ const ProfileCard = ({ profile, handleLike, handleBlock }) => {
             </div>
             <div className="profile-location">
               <i className="pi pi-map-marker location-icon"></i>
-              <span>Paris, France</span>
+              <span>{profile?.location?.city}, {profile?.location?.country}</span>
             </div>
           </div>
           <div className="profile-header-right">
@@ -45,10 +45,10 @@ const ProfileCard = ({ profile, handleLike, handleBlock }) => {
           </div>
         </div>
 
-		<div className="match-buttons">
-			<Button icon="pi pi-times" className="match-button reject-match-button" onClick={handleBlock} rounded />
+		{showButtons && <div className="match-buttons">
+      <Button icon="pi pi-times" className="match-button reject-match-button" onClick={handleBlock} rounded />
 			<Button icon="pi pi-heart-fill" className="match-button accept-match-button" onClick={handleLike} rounded />
-		</div>
+		</div>}
 
       </div>
     </div>

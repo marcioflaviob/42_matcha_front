@@ -6,7 +6,7 @@ import { AuthContext } from '../../context/AuthContext';
 import logoMatcha from '/logo_matcha.png';
 import { Button } from 'primereact/button';
 import NotificationButton from './NotificationButton';
-import PopulatedMap from '../components/Location/PopulatedMap/PopulatedMap';
+import PopulatedMap from '../../components/Location/PopulatedMap/PopulatedMap';
 
 const Header = () => {
 	const { user } = useContext(UserContext);
@@ -37,7 +37,7 @@ const Header = () => {
 							public
 						</span>
 						{showMap && <PopulatedMap setShowMap={setShowMap} showMap={showMap}></PopulatedMap>}
-						
+
 						<Button className='nav-button chat-button' label='Chat' onClick={() => navigate('/chat')} />
 						
 						<NotificationButton />

@@ -53,6 +53,10 @@ const ConversationHeader = ({ selectedUser, setSelectedUser, setUsers }) => {
 			displayAlert('error', 'Error blocking user');
 		}
 	}
+
+	const handleProfileClick = async () => {
+		navigate('/profile/' + selectedUser.id);
+	}
 	
 	useEffect(() => {
 		const calling = searchParams.get('call');
@@ -69,7 +73,7 @@ const ConversationHeader = ({ selectedUser, setSelectedUser, setUsers }) => {
 		<div className="conversation-header">
 			<ConfirmDialog />
 			{isCalling && <CallDialog selectedUser={selectedUser} setIsCalling={setIsCalling} isInvited={isInvited} />}
-			<div className='user-info-header' onClick={() => navigate('/profile/' + selectedUser.id)}>
+			<div className='user-info-header' onClick={handleProfileClick}>
 				<Avatar image={import.meta.env.VITE_BLOB_URL + '/' + profilePicture} shape="circle" size='xlarge' />
 				<div className="header-info">
 					<span className="header-name">{selectedUser.first_name} {selectedUser.last_name}</span>

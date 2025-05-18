@@ -149,7 +149,7 @@ const PopulatedMap = ({ setShowMap, showMap }) => {
         onMouseLeave={handleMouseUp}
       ></div>
       <MapContainer
-        center={[user.location.latitude, user.location.longitude]}
+        center={[user?.location?.latitude, user?.location?.longitude]}
         zoom={12}
         className="map-div"
       >

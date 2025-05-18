@@ -10,7 +10,7 @@ export const UserProvider = ({ children }) => {
     const { token, isAuthenticated, isLoading } = useContext(AuthContext);
     const props = useMemo(() => ({
         user, 
-        setUser, 
+        setUser: updateUser, 
         potentialMatches, 
         setPotentialMatches
     }), [user, potentialMatches]);
@@ -35,6 +35,13 @@ export const UserProvider = ({ children }) => {
             setUser(null);
         }
     }, [isAuthenticated, token, isLoading]);
+
+    const updateUser = (newUserData) => {
+        setUser(prevUser => ({
+            ...prevUser,
+            ...newUserData
+        }));
+    };
 
     return (
         <UserContext.Provider value={props}>

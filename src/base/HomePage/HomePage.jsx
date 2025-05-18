@@ -73,7 +73,7 @@ const HomePage = () => {
 	return (
 		<div className='home-page-container'>
 			{potentialMatches.length > matchIndex ?
-				<ProfileCard profile={potentialMatches[matchIndex]} handleLike={handleLike} handleBlock={handleBlock} /> :
+				<ProfileCard profile={potentialMatches[matchIndex]} handleLike={handleLike} handleBlock={handleBlock} showButtons={true} /> :
 				<div className='no-matches'>
 					<img src={import.meta.env.VITE_BLOB_URL + '/' + 'sad_cat-wXhqHEgDRcBPGjsOb5copxfaDG1wrr.jpg'}
 						alt="Sad Cat" style={{width:'300px'}} />

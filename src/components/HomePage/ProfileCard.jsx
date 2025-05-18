@@ -1,16 +1,56 @@
-import React from "react";
+import React, { useRef, useContext } from "react";
 import PhotoCarousel from "../../components/HomePage/PhotoCarousel";
 import './ProfileCard.css'; 
 import { Chip } from "primereact/chip";
 import { Button } from "primereact/button";
+import { Menu } from "primereact/menu";
+import { displayAlert } from '../Notification/Notification';
+import { UserContext } from '../../context/UserContext';
 
-const ProfileCard = ({ profile, handleLike, handleBlock, showButtons }) => {
+
+const ProfileCard = ({ profile, handleLike, handleBlock, showButtons, showUnlike }) => {
+
+  const menuRef = useRef(null);
+  const {user} = useContext(UserContext);
+
+  let items = [
+    {
+      label: 'Report',
+      icon: 'pi pi-fw pi-flag',
+      command: () => handleReport()
+    },
+    {
+      label: 'Block',
+      icon: 'pi pi-fw pi-ban',
+      command: () => profileBlock()
+    },
+    ...(showUnlike ? [{
+      label: 'Unlike',
+      icon: 'pi pi-fw pi-heart',
+      command: () => profileBlock()
+    }] : [])
+  ];
 
 	if (!profile) {
 		return (
 			<p className="loading-message">Loading...</p>
 		);
 	}
+
+  const profileBlock = () => {
+    displayAlert("info", "User blocked successfully");
+    handleBlock();
+  }
+
+  const profileLike = () => {
+    displayAlert("info", "User liked successfully");
+    handleLike();
+  }
+
+  const handleReport = () => {
+    displayAlert("info", "User reported successfully");
+    handleBlock();
+  }
 
   return (
     <div className="profile-card">
@@ -28,7 +68,9 @@ const ProfileCard = ({ profile, handleLike, handleBlock, showButtons }) => {
             </div>
           </div>
           <div className="profile-header-right">
-            {profile.liked_me && <Chip label="liked you" className="liked-you-chip" /> }
+            {profile.liked_me && <div className="profile-card-liked-you">liked you <i className="pi pi-heart-fill profile-card-liked-you-heart"></i></div>}
+            <Button icon="pi pi-ellipsis-v" className="profile-card-dropdown-button" onClick={(e) => menuRef.current.toggle(e)} />
+            <Menu ref={menuRef} model={items} popup className="profile-card-dropdown"/>
           </div>
         </div>
 
@@ -46,8 +88,8 @@ const ProfileCard = ({ profile, handleLike, handleBlock, showButtons }) => {
         </div>
 
 		{showButtons && <div className="match-buttons">
-      <Button icon="pi pi-times" className="match-button reject-match-button" onClick={handleBlock} rounded />
-			<Button icon="pi pi-heart-fill" className="match-button accept-match-button" onClick={handleLike} rounded />
+      <Button icon="pi pi-times" className="match-button reject-match-button" onClick={profileBlock} rounded />
+			<Button icon="pi pi-heart-fill" className="match-button accept-match-button" onClick={profileLike} rounded />
 		</div>}
 
       </div>

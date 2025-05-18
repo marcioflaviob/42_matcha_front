@@ -95,7 +95,7 @@
 .interest-item {
   background-color: #f3f4f6;
   padding: 0rem 0.7rem; 
-  border-radius: 9999px; 
+  border-radius: 99px; 
   font-size: 0.875rem;
   white-space: nowrap;
 }
@@ -155,4 +155,37 @@
 
 .reject-match-button {
 	color: rgb(78, 78, 78);
+}
+
+.profile-card-liked-you
+{
+  color: rgba(54, 54, 54, 0.38);
+  font-size: small;
+}
+
+.profile-card-liked-you-heart
+{
+  color: rgba(255, 0, 0, 0.549);
+  font-size: small;
+}
+
+.profile-card-dropdown-button {
+  background-color: transparent;
+  justify-content: end;
+  color: #374151;
+  border-color: transparent;
+  transition: none;
+  margin-left: auto;
+  transform: none;
+}
+
+.profile-card-dropdown-button:focus {
+  box-shadow: none;
+}
+
+.profile-card-dropdown
+{
+  position: absolute;
+  z-index: 10;
+  
 }

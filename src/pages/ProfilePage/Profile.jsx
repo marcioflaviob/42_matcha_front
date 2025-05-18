@@ -19,13 +19,11 @@ const Profile = () => {
 		}
 	};
 
-	useEffect(() =>
-	{
+	useEffect(() => {
 		fetchData();
-	}, []);
+	}, [userId]);
 
-	if (!currentUser) 
-	{
+	if (!currentUser) {
 		return(
 			<div></div>
 	)};

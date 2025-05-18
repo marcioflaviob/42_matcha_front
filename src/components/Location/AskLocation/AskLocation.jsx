@@ -1,7 +1,11 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useContext, useRef } from 'react';
+import { displayAlert }  from "../../Notification/Notification";
+import { AuthContext } from '../../../context/AuthContext';
 
-// Utility function moved outside
-export const getCityAndCountry = async (latitude, longitude) => {
+import axios from 'axios';
+
+// Utility functions
+export const getCityAndCountry = async (latitude, longitude, token) => {
   try {
     const response = axios.get(`${import.meta.env.VITE_API_URL}/location/city?latitude=${latitude}&longitude=${longitude}`,
     {
@@ -28,60 +32,68 @@ export const getCityAndCountry = async (latitude, longitude) => {
 
 // AskLocation component
 export const AskLocation = () => {
+  const { token } = useContext(AuthContext);
   const [location, setLocation] = useState(null);
-  const [error, setError] = useState(null);
   const [loading, setLoading] = useState(false);
   const addressRef = useRef({ city: '', country: '' });
+
+  const getLocationFromIP = async () => {
+    try {
+      const response = await axios.get(`${import.meta.env.VITE_API_URL}/location/ip`, {
+          headers: {
+              Authorization: `Bearer ${token}`,
+          },
+      });
+      setLocation({ latitude: response.data.latitude, longitude: response.data.longitude });
+      const newAddress = { city: response.data.city, country: response.data.country };
+      addressRef.current = newAddress;
+      setLoading(false);
+    } catch (err) {
+      console.error('Error getting location from IP:', err);
+      displayAlert('error', 'Unable to get your location. Please try again later or check your network connection.');
+    }
+  };
 
   const getLocation = async () => {
     setLoading(true);
     if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        async (position) => {
+        try {
+          const position = await new Promise((resolve, reject) => {
+              navigator.geolocation.getCurrentPosition(
+                resolve,
+                (error) => {
+                  if (error.code === error.POSITION_UNAVAILABLE || 
+                      error.code === error.TIMEOUT ||
+                      error.code === error.UNKNOWN_ERROR) {
+                      reject(new Error('Location unavailable'));
+                  } else if (error.code === error.PERMISSION_DENIED) {
+                      reject(new Error('Permission denied'));
+                  } else {
+                      reject(error);
+                  }
+                },
+                {
+                  enableHighAccuracy: false,
+                  maximumAge: 30000,
+                  timeout: 5000
+                }
+              );
+          });
+
           const { latitude, longitude } = position.coords;
-          setLocation({ latitude, longitude });
           const newAddress = await getCityAndCountry(latitude, longitude);
           addressRef.current = newAddress;
-          setError(null);
+          displayAlert('success', 'Location updated successfully');
           setLoading(false);
-        },
-        (err) => {
-          if (err.code === err.PERMISSION_DENIED) {
-            getLocationFromIP();
-          } else {
-            setError(err.message);
-          }
-          setLoading(false);
-        },
-        { enableHighAccuracy: true, timeout: 10000, maximumAge: 0 }
-      );
+        } catch (error) {
+          getLocationFromIP();
+        }
     } else {
-      setError('Geolocation is not supported by this browser.');
-      setLoading(false);
+      getLocationFromIP();
     }
   };
 
-  const getLocationFromIP = async () => {
-    try {
-      const response = axios.get(`${import.meta.env.VITE_API_URL}/location/ip`,
-      {
-          headers: {
-              Authorization: `Bearer ${token}`,
-          },
-          withCredentials: true,
-      })
-      const data = await response.json();
-      setLocation({ latitude: data.latitude, longitude: data.longitude });
-      const newAddress = { city: data.city, country: data.country };
-      addressRef.current = newAddress;
-      setError(null);
-    } catch (err) {
-      console.error('Error getting location', err);
-      setError('Unable to fetch location from IP.');
-    }
-  };
-
-  return { location, error, loading, getLocation, getLocationFromIP, addressRef };
+  return { location, loading, getLocation, getLocationFromIP, addressRef };
 };
 
 export default AskLocation;

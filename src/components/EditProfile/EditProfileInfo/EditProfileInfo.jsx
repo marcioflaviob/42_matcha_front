@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useContext, useRef, useCallback} from 'react';
+import React, { useState, useEffect, useContext, useCallback} from 'react';
 import './EditProfileInfo.css';
 import axios from 'axios';
 import { Chip } from 'primereact/chip';
@@ -13,15 +13,16 @@ import { Button } from 'primereact/button';
 import 'primeicons/primeicons.css';
 import PictureSelector from '../../PictureSelector/PictureSelector';
 import { getCityAndCountry } from '../../Location/AskLocation/AskLocation';
+import AskLocation from '../../Location/AskLocation/AskLocation';
 
 
-const EditProfileInfo = ({ userId, shadowUser, setShadowUser }) => {
+const EditProfileInfo = ({ userId, setShadowUser }) => {
     const navigate = useNavigate();
     const { token } = useContext(AuthContext);
     const { user, setUser } = useContext(UserContext);
     const [allInterests, setAllInterests] = useState(null);
     const [disableUpload, setDisableUpload] = useState(true);
-    const addressRef = useRef({ city: '', country: '' }); // Use useRef for synchronous access
+    const {location, getLocation, addressRef} = AskLocation();
     const [formData, setFormData] = useState({
         first_name: '',
         last_name: '',
@@ -68,92 +69,10 @@ const EditProfileInfo = ({ userId, shadowUser, setShadowUser }) => {
     const handleDisableChange = (newValue) => {
         setDisableUpload(newValue);
     };
-    
-    const getLocationFromIP = async () => {
-        try {
-            displayAlert('info', 'Trying to get location from IP address...');
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/location/ip`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            
-            const { latitude, longitude, city, country } = response.data;
-            setFormData((prevData) => ({
-                ...prevData,
-                location: { latitude, longitude, city, country },
-            }));
-            setShadowUser((prevData) => ({
-                ...prevData,
-                location: { latitude, longitude, city, country },
-            }));
-            addressRef.current = { city, country };
-        } catch (err) {
-            console.error('Error getting location from IP:', err);
-            displayAlert('error', 'Unable to get your location. Please try again later or check your network connection.');
-        }
-    };
 
     const handleRequestLocation = async (e) => {
         e.preventDefault();
-
-        if (navigator.geolocation) {
-            try {
-                displayAlert('info', 'Requesting your location...');
-                const position = await new Promise((resolve, reject) => {
-                    navigator.geolocation.getCurrentPosition(
-                        resolve,
-                        (error) => {
-                            if (error.code === error.POSITION_UNAVAILABLE || 
-                                error.code === error.TIMEOUT ||
-                                error.code === error.UNKNOWN_ERROR) {
-                                displayAlert('info', 'Could not get precise location. Using IP-based location instead...');
-                                reject(new Error('Location unavailable'));
-                            } else if (error.code === error.PERMISSION_DENIED) {
-                                displayAlert('info', 'Location permission denied. Using IP-based location instead...');
-                                reject(new Error('Permission denied'));
-                            } else {
-                                reject(error);
-                            }
-                        },
-                        {
-                            enableHighAccuracy: false,
-                            maximumAge: 30000,
-                            timeout: 5000
-                        }
-                    );
-                });
-
-                const { latitude, longitude } = position.coords;
-                const newAddress = await getCityAndCountry(latitude, longitude);
-                
-                setFormData((prevData) => ({
-                    ...prevData,
-                    location: { 
-                        latitude, 
-                        longitude,
-                        city: newAddress.city,
-                        country: newAddress.country 
-                    },
-                }));
-                setShadowUser((prevData) => ({
-                    ...prevData,
-                    location: { 
-                        latitude, 
-                        longitude,
-                        city: newAddress.city,
-                        country: newAddress.country 
-                    },
-                }));
-                addressRef.current = newAddress;
-                displayAlert('success', 'Location updated successfully');
-            } catch (error) {
-                getLocationFromIP();
-            }
-        } else {
-            displayAlert('info', 'Geolocation is not supported by your browser. Using IP-based location...');
-            getLocationFromIP();
-        }
+        await getLocation();
     };
     
     const handleSelectChange = (e, field) => {
@@ -237,6 +156,30 @@ const EditProfileInfo = ({ userId, shadowUser, setShadowUser }) => {
     {
         setShadowUser(prev => ({ ...prev, interests: formData.interests, location: formData.location }));
     }, [formData?.interests, formData?.location?.city]);
+
+    useEffect(() => {
+        if (addressRef.current.city && addressRef.current.country && location?.longitude) {
+            setFormData((prevData) => ({
+                ...prevData,
+                location: { 
+                    latitude: location.latitude, 
+                    longitude: location.longitude,
+                    city: addressRef.current.city,
+                    country: addressRef.current.country 
+                },
+            }));
+            setShadowUser((prevData) => ({
+                ...prevData,
+                location: { 
+                    latitude: location.latitude, 
+                    longitude: location.longitude,
+                    city: addressRef.current.city,
+                    country: addressRef.current.country 
+                },
+            }));
+            displayAlert('success', 'Location updated successfully');
+        }
+    }, [location, addressRef.current])
 
     if (!user || !allInterests) return (
         <div className='edit-profile-info-container'>

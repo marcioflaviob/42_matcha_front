@@ -1,10 +1,14 @@
 import React, { forwardRef, useEffect, useRef } from 'react';
 import './Notification.css';
 import { Toast } from 'primereact/toast';
-
+import { getContent } from './CallActions';
 let notificationInstance = null;
 
 // Severity options: success, info, warn, error
+
+export const clearNotifications = () => {
+	notificationInstance.clear();
+}
 
 export const displayAlert = (severity, message) => {
 	notificationInstance.show({ severity, summary: message, life: 3000 });
@@ -12,6 +16,19 @@ export const displayAlert = (severity, message) => {
 
 export const displayNotification = (severity, title, message) => {
 	notificationInstance.show({ severity, summary: title, detail: message, life: 10000 });
+}
+
+export const displayCall = (data) => {
+    const content = getContent(data);
+
+    notificationInstance.show({ 
+        severity: 'info', 
+        summary: 'Incoming Call', 
+        detail: content, 
+        life: 100000, 
+        closable: false,
+        sticky: true 
+    });
 }
 
 const Notification = forwardRef (( props, ref ) => {

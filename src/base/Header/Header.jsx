@@ -6,12 +6,14 @@ import { AuthContext } from '../../context/AuthContext';
 import logoMatcha from '/logo_matcha.png';
 import { Button } from 'primereact/button';
 import NotificationButton from './NotificationButton';
+import PopulatedMap from '../components/Location/PopulatedMap/PopulatedMap';
 
 const Header = () => {
 	const { user } = useContext(UserContext);
 	const { logout } = useContext(AuthContext);
 	const profilePicture = user?.pictures?.find(picture => picture.is_profile);
 	const navigate = useNavigate();
+	const [showMap, setShowMap] = useState(false);
 	
 	const handleLogout = async () => {
 		logout();
@@ -30,6 +32,12 @@ const Header = () => {
 			<div className="header-right">
 				{user ? (
 					<div className="user-nav">
+
+						<span className='material-symbols-outlined header-map-button' onClick={() => setShowMap(true)} >
+							public
+						</span>
+						{showMap && <PopulatedMap setShowMap={setShowMap} showMap={showMap}></PopulatedMap>}
+						
 						<Button className='nav-button chat-button' label='Chat' onClick={() => navigate('/chat')} />
 						
 						<NotificationButton />

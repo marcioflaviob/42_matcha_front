@@ -35,7 +35,7 @@ const ProfileCard = ({ profile, handleLike, handleBlock, showButtons, showUnlike
 	}
 
   const profileBlock = () => {
-    displayAlert("info", "User blocked successfully");
+    displayAlert("info", `${profile.first_name} blocked successfully`);
     handleBlock();
   }
 
@@ -44,7 +44,7 @@ const ProfileCard = ({ profile, handleLike, handleBlock, showButtons, showUnlike
   }
 
   const handleReport = () => {
-    displayAlert("info", "User reported successfully");
+    displayAlert("info", `${profile.first_name} reported successfully`);
     handleBlock();
   }
 

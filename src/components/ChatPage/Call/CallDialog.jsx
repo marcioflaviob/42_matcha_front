@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useRef, useCallback } from 'react';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SimplePeer from 'simple-peer';
 import axios from 'axios';
@@ -186,6 +186,18 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
         }
     }, [isInvited, channel, callStarted, handleAcceptCall]);
 
+    const renderDialog = () => {
+        if (!permissionGranted) {
+            return <AwaitingPermissions setStream={setStream} setPermissionGranted={setPermissionGranted} />;
+        } else if (!callStarted) {
+            return <AwaitingCall isInvited={isInvited} selectedUser={selectedUser} setCallStarted={setCallStarted} stream={stream} channel={channel} handleHangUp={handleHangUp} />;
+        } else if (waitingForAcceptance) {
+            return <AwaitingAcceptance selectedUser={selectedUser} stream={stream} handleHangUp={handleHangUp} />;
+        } else {
+            return <ConnectedCall selectedUser={selectedUser} remoteStream={remoteStream} localStream={stream} handleHangUp={handleHangUp} connectionEstablished={connectionEstablished} />;
+        }
+    };
+
     return (
         <Dialog 
             visible={true} 
@@ -194,12 +206,7 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
             className="call-dialog-container"
             closable={true}
         >
-            {
-                !permissionGranted ? <AwaitingPermissions setStream={setStream} setPermissionGranted={setPermissionGranted} /> :
-                !callStarted ? <AwaitingCall isInvited={isInvited} selectedUser={selectedUser} setCallStarted={setCallStarted} stream={stream} channel={channel} handleHangUp={handleHangUp} /> :
-                callStarted && waitingForAcceptance ? <AwaitingAcceptance selectedUser={selectedUser} stream={stream} handleHangUp={handleHangUp} /> :
-                <ConnectedCall selectedUser={selectedUser} remoteStream={remoteStream} localStream={stream} handleHangUp={handleHangUp} connectionEstablished={connectionEstablished} />
-            }
+            { renderDialog() }
         </Dialog>
     );
 };

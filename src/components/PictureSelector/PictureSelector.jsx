@@ -16,7 +16,6 @@ const PictureSelector = ({ disabled, onDisabledChange }) => {
     const fileInputRef = useRef(null);
     const uploadUrl = import.meta.env.VITE_API_URL + "/upload/single/";
 
-    // Drag event handlers
     const handleDragEnter = useCallback((e) => handleDragEvent(e), []);
     const handleDragLeave = useCallback((e) => handleDragEvent(e), []);
     const handleDragOver = useCallback((e) => handleDragEvent(e), []);

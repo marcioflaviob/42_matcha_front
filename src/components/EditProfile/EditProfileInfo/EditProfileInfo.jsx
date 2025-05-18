@@ -12,7 +12,6 @@ import { AuthContext } from '../../../context/AuthContext';
 import { Button } from 'primereact/button';
 import 'primeicons/primeicons.css';
 import PictureSelector from '../../PictureSelector/PictureSelector';
-import { getCityAndCountry } from '../../Location/AskLocation/AskLocation';
 import AskLocation from '../../Location/AskLocation/AskLocation';
 
 
@@ -96,7 +95,6 @@ const EditProfileInfo = ({ userId, setShadowUser }) => {
                 }
             );
             
-            // Get fresh user data from the server
             const userResponse = await axios.get(`${import.meta.env.VITE_API_URL}/auth/me`, {
                 headers: { Authorization: `Bearer ${token}` },
             });
@@ -104,7 +102,6 @@ const EditProfileInfo = ({ userId, setShadowUser }) => {
             if (userResponse.data.user) {
                 setUser(userResponse.data.user);
                 displayAlert('success', 'Profile updated successfully');
-                // Small delay to ensure state updates have propagated
                 setTimeout(() => {
                     navigate(`/profile/${userResponse.data.user.id}`);
                 }, 100);
@@ -123,6 +120,7 @@ const EditProfileInfo = ({ userId, setShadowUser }) => {
             }
             await updateUser();
         } catch (error) {
+            console.error('Error updating profile:', error);
             displayAlert('error', 'Failed to update profile');
         }
     };

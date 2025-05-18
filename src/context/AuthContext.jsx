@@ -23,7 +23,6 @@ export const AuthProvider = ({ children }) => {
         setIsAuthenticated(true);
       } catch (error) {
         console.error('Invalid token:', error);
-        // Clear invalid token
         localStorage.removeItem('token');
         setToken(null);
         setIsAuthenticated(false);

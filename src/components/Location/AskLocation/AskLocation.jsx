@@ -4,7 +4,6 @@ import { AuthContext } from '../../../context/AuthContext';
 
 import axios from 'axios';
 
-// Utility functions
 export const getCityAndCountry = async (latitude, longitude, token) => {
   try {
     const response = axios.get(`${import.meta.env.VITE_API_URL}/location/city?latitude=${latitude}&longitude=${longitude}`,
@@ -30,7 +29,6 @@ export const getCityAndCountry = async (latitude, longitude, token) => {
   }
 };
 
-// AskLocation component
 export const AskLocation = () => {
   const { token } = useContext(AuthContext);
   const [location, setLocation] = useState(null);
@@ -86,6 +84,7 @@ export const AskLocation = () => {
           displayAlert('success', 'Location updated successfully');
           setLoading(false);
         } catch (error) {
+          console.error('Error getting location:', error);
           getLocationFromIP();
         }
     } else {

@@ -59,14 +59,11 @@ const YourPreferences = ({ setActiveStep }) => {
 
 			if (Array.isArray(prevData[field])) {
 				if (prevData[field].some((item) => item.id === value.id)) {
-					// Remove the item if it already exists
 					updatedField = prevData[field].filter((item) => item.id !== value.id);
 				} else {
-					// Append the item if it doesn't exist
 					updatedField = [...prevData[field], value];
 				}
 			} else {
-				// Initialize as an array if undefined
 				updatedField = [value];
 			}
 

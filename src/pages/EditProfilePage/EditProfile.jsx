@@ -7,7 +7,6 @@ import EditProfileInfo from '../../components/EditProfile/EditProfileInfo/EditPr
 const EditProfile = () => {
   const { userId } = useParams();
   const [shadowUser, setShadowUser] = useState(null);
-  //This is how the profilePictures in the database will look like
 
 	return (
 		<div className='edit-profile-container'>

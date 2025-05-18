@@ -24,19 +24,19 @@ const PopulatedMap = ({ setShowMap, showMap }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ y: 0 });
   const [position, setPosition] = useState({ y: window.innerHeight });
-  const positionRef = useRef(position.y); // Ref to track the current position
-  const isAnimating = useRef(false); // Ref to track if animation is running
+  const positionRef = useRef(position.y);
+  const isAnimating = useRef(false);
   const [matches, setMatches] = useState([]);
   const { token } = useContext(AuthContext);
 
   useEffect(() => {
-    positionRef.current = position.y; // Update the ref whenever position changes
+    positionRef.current = position.y;
   }, [position]);
 
   const handleMouseDown = (e) => {
     setIsDragging(true);
     setDragStart({ y: e.clientY });
-    isAnimating.current = false; // Stop any ongoing animation when dragging starts
+    isAnimating.current = false;
   };
 
   const handleMouseMove = (e) => {
@@ -45,7 +45,7 @@ const PopulatedMap = ({ setShowMap, showMap }) => {
 
     setPosition((prev) => {
       const newY = prev.y + dy;
-      return { y: Math.max(newY, 0) }; // Ensure the position does not go below 0
+      return { y: Math.max(newY, 0) };
     });
 
     setDragStart({ y: e.clientY });
@@ -57,44 +57,43 @@ const PopulatedMap = ({ setShowMap, showMap }) => {
     const screenHeight = window.innerHeight;
 
     if (position.y >= screenHeight / 6) {
-      // Start animation to bottom
       isAnimating.current = true;
       animateToBottom();
     }
   };
 
   const animateToTop = () => {
-    if (!isAnimating.current) return; // Stop animation if the flag is false
+    if (!isAnimating.current) return;
 
     setPosition((prev) => {
       if (prev.y > 0) {
-        const newY = Math.max(prev.y - 10, 0); // Decrease position by 10px per frame
-        positionRef.current = newY; // Update the ref with the new position
+        const newY = Math.max(prev.y - 10, 0);
+        positionRef.current = newY;
         return { y: newY };
       }
-      isAnimating.current = false; // Stop the animation when it reaches 0
+      isAnimating.current = false;
       return prev;
     });
 
     if (positionRef.current > 0) {
-      requestAnimationFrame(animateToTop); // Continue animation
+      requestAnimationFrame(animateToTop);
     }
   };
 
   const animateToBottom = () => {
-    if (!isAnimating.current) return; // Stop animation if the flag is false
+    if (!isAnimating.current) return;
 
     setPosition((prev) => {
-      const newY = Math.min(prev.y + 10, window.innerHeight); // Increment position by 10px per frame
-      positionRef.current = newY; // Update the ref with the new position
+      const newY = Math.min(prev.y + 10, window.innerHeight);
+      positionRef.current = newY;
       return { y: newY };
     });
 
     if (positionRef.current < window.innerHeight) {
-      requestAnimationFrame(animateToBottom); // Continue animation
+      requestAnimationFrame(animateToBottom);
     } else {
-      isAnimating.current = false; // Stop the animation
-      setShowMap(false); // Hide the map
+      isAnimating.current = false;
+      setShowMap(false);
     }
   };
 
@@ -108,34 +107,28 @@ const PopulatedMap = ({ setShowMap, showMap }) => {
             },
           });
           const allUsers = [...response.data, user];
-          // Append the user and add an Icon object to each user
           const updatedMatches = allUsers.map((match) => {
-            const firstPictureUrl = match.pictures?.[0]?.url || ''; // Safely access the first picture's URL
+            const firstPictureUrl = match.pictures?.[0]?.url || '';
             const userIcon = new L.divIcon({
-              className: 'circular-icon', // Custom class for styling
+              className: 'circular-icon',
               html: `<div class="icon-wrapper" style="background-image: url('${import.meta.env.VITE_BLOB_URL + '/' + firstPictureUrl}');"></div>`,
-              iconUrl: import.meta.env.VITE_BLOB_URL + '/' + firstPictureUrl, // Use the first picture's URL
-              iconSize: [32, 32], // Set the size of the icon
-              iconAnchor: [16, 32], // Anchor point of the icon
-              popupAnchor: [0, -32], // Anchor point for the popup
+              iconUrl: import.meta.env.VITE_BLOB_URL + '/' + firstPictureUrl,
+              iconSize: [32, 32],
+              iconAnchor: [16, 32],
+              popupAnchor: [0, -32],
             });
-            return { ...match, icon : userIcon}; // Append the Icon object to the user
+            return { ...match, icon : userIcon};
           });
-          setMatches(updatedMatches); // Update the matches state
+          setMatches(updatedMatches);
         } catch (err) {
           console.error('Error fetching matches:', err);
           displayAlert('error', 'Error fetching matches');
         }
       };
 
-      ('Map coordinates:', {
-        latitude: user.location.latitude,
-        longitude: user.location.longitude
-      });
-
       fetchUsers();
-      isAnimating.current = true; // Set the animation flag to true
-      animateToTop(); // Start the animation
+      isAnimating.current = true;
+      animateToTop();
     }
   }, [showMap]);
 

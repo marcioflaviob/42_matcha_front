@@ -44,7 +44,6 @@ const WebcamVideo = ({ stream, name }) => {
                     ref={localVideoRef} 
                     autoPlay 
                     playsInline
-                    muted
                     className="local-video"
                 />
                 <div className="video-label">{name}</div>

@@ -1,31 +1,20 @@
 import React from 'react';
+import WebcamVideo from './WebcamVideo';
 
-const ConnectedCall = ({ selectedUser, remoteVideoRef, localVideoRef, connectionEstablished, handleHangUp }) => {
+const ConnectedCall = ({ selectedUser, remoteStream, localStream, handleHangUp, connectionEstablished }) => {
+
+    if(!connectionEstablished) {
+        return (
+            <h2>Connecting...</h2>
+        );
+    }
+
     return (
         <div className="call-dialog">
             <h2>Video Call with {selectedUser.first_name}</h2>
             <div className="video-container">
-                <div className="video-wrapper remote">
-                    <video 
-                        ref={remoteVideoRef} 
-                        autoPlay 
-                        playsInline
-                        className="remote-video" 
-                    />
-                    <div className="video-label">
-                        {connectionEstablished ? selectedUser.first_name : 'Connecting...'}
-                    </div>
-                </div>
-                <div className="video-wrapper local">
-                    <video 
-                        ref={localVideoRef} 
-                        autoPlay 
-                        muted 
-                        playsInline
-                        className="local-video small" 
-                    />
-                    <div className="video-label">You</div>
-                </div>
+                <WebcamVideo stream={remoteStream} name={selectedUser.first_name} />
+                <WebcamVideo stream={localStream} name={"You"} />
             </div>
             <div className="call-buttons">
                 <button className="hangup-button" onClick={handleHangUp}>

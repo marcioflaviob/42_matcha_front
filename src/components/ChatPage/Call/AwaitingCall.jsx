@@ -1,11 +1,11 @@
 import React, { useContext } from 'react';
 import './CallDialog.css';
 import { displayAlert } from '../../Notification/Notification';
-import { UserContext } from '../../../context/UserContext';
 import axios from 'axios';
 import { AuthContext } from '../../../context/AuthContext';
+import WebcamVideo from './WebcamVideo';
 
-const AwaitingCall = ({ isInvited, selectedUser, localVideoRef, setWaitingForAcceptance, setCallStarted, channel, handleHangUp }) => {
+const AwaitingCall = ({ isInvited, selectedUser, stream, setCallStarted, channel, handleHangUp }) => {
     const { token } = useContext(AuthContext);
 
     const handleCallClick = async () => {
@@ -23,7 +23,6 @@ const AwaitingCall = ({ isInvited, selectedUser, localVideoRef, setWaitingForAcc
                     displayAlert('error', 'Error making call');
                 });
             }
-            setWaitingForAcceptance(true);
             setCallStarted(true);
         }
     };
@@ -31,18 +30,9 @@ const AwaitingCall = ({ isInvited, selectedUser, localVideoRef, setWaitingForAcc
     return (
         <div className="call-dialog">
             <h2>Call {selectedUser.first_name}?</h2>
-            <div className="video-container preview">
-                <div className="video-wrapper local">
-                    <video 
-                        ref={localVideoRef} 
-                        autoPlay 
-                        playsInline
-                        muted
-                        className="local-video"
-                    />
-                    <div className="video-label">You</div>
-                </div>
-            </div>
+
+            <WebcamVideo stream={stream} name={"You"} />
+
             <div className="call-buttons">
                 <button className="call-button" onClick={handleCallClick}>
                     {isInvited ? 'Join' : 'Call'}

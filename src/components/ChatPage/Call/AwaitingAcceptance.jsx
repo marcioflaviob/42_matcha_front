@@ -1,21 +1,14 @@
-import React from 'react';
+import React, { useEffect, useRef } from 'react';
 import './CallDialog.css'
+import WebcamVideo from './WebcamVideo';
 
-const AwaitingAcceptance = ({ selectedUser, localVideoRef, handleHangUp }) => {
+const AwaitingAcceptance = ({ selectedUser, stream, handleHangUp }) => {
+
     return (
         <div className="call-dialog">
             <h2>Calling {selectedUser.first_name}...</h2>
             <div className="video-container">
-                <div className="video-wrapper local">
-                    <video 
-                        ref={localVideoRef} 
-                        autoPlay 
-                        muted 
-                        playsInline
-                        className="local-video" 
-                    />
-                    <div className="video-label">You</div>
-                </div>
+                <WebcamVideo stream={stream} name={"You"} />
                 <div className="waiting-overlay">
                     <div className="calling-status">Waiting for {selectedUser.first_name} to answer...</div>
                 </div>

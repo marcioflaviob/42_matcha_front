@@ -4,7 +4,7 @@ import { OverlayPanel } from 'primereact/overlaypanel';
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import { SocketContext } from '../../context/SocketContext';
-import { displayAlert, displayNotification } from '../../components/Notification/Notification';
+import { clearNotifications, displayAlert, displayCall, displayNotification } from '../../components/Notification/Notification';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
 import axios from 'axios';
@@ -102,13 +102,18 @@ const NotificationButton = () => {
 	useEffect(() => {
 		if (connected && channel) {
 			channel.bind('new-notification', (data) => {
-				setNotifications((prevNotifications) => {
-					return [...prevNotifications, data];
-				});
-				displayNotification('info', data.title, data.message);
+                if (data.type == 'new-call') {
+					displayCall(data);
+				} else if (data.type == 'stop-call') {
+					clearNotifications();
+				} else {
+					setNotifications((prevNotifications) => {
+						return [...prevNotifications, data];
+					});
+					displayNotification('info', data.title, data.message);
+				}
 			});
 		}
-
 
 		return () => {
 			if (connected && channel) {

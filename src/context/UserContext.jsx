@@ -1,4 +1,4 @@
-import React, { createContext, useState, useEffect, useContext } from 'react';
+import React, { createContext, useState, useEffect, useContext, useMemo } from 'react';
 import axios from 'axios';
 import { AuthContext } from './AuthContext';
 
@@ -6,7 +6,14 @@ export const UserContext = createContext();
 
 export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
+    const [potentialMatches, setPotentialMatches] = useState(null);
     const { token, isAuthenticated, isLoading } = useContext(AuthContext);
+    const props = useMemo(() => ({
+        user, 
+        setUser, 
+        potentialMatches, 
+        setPotentialMatches
+    }), [user, potentialMatches]);
 
     useEffect(() => {
         if (isLoading) return;
@@ -30,7 +37,7 @@ export const UserProvider = ({ children }) => {
     }, [isAuthenticated, token, isLoading]);
 
     return (
-        <UserContext.Provider value={{ user, setUser }}>
+        <UserContext.Provider value={props}>
             {children}
         </UserContext.Provider>
     );

@@ -1,17 +1,14 @@
-import React, { useRef, useContext } from "react";
+import { useRef } from "react";
 import PhotoCarousel from "../../components/HomePage/PhotoCarousel";
 import './ProfileCard.css'; 
 import { Chip } from "primereact/chip";
 import { Button } from "primereact/button";
 import { Menu } from "primereact/menu";
 import { displayAlert } from '../Notification/Notification';
-import { UserContext } from '../../context/UserContext';
-
 
 const ProfileCard = ({ profile, handleLike, handleBlock, showButtons, showUnlike }) => {
 
   const menuRef = useRef(null);
-  const {user} = useContext(UserContext);
 
   let items = [
     {
@@ -43,7 +40,6 @@ const ProfileCard = ({ profile, handleLike, handleBlock, showButtons, showUnlike
   }
 
   const profileLike = () => {
-    displayAlert("info", "User liked successfully");
     handleLike();
   }
 

@@ -19,7 +19,6 @@ export const displayNotification = (severity, title, message) => {
 }
 
 export const displayCall = (data) => {
-	console.log('Incoming call data:', data);
     const content = getContent(data);
 
     notificationInstance.show({ 

@@ -15,7 +15,6 @@ export const CallActions = ({ userId }) => {
   };
   
   const handleRefuse = () => {
-    console.log('Call refused');
     axios.post(`${import.meta.env.VITE_API_URL}/refuse-call/${userId}`, {}, {
       headers: {
         Authorization: `Bearer ${token}`,

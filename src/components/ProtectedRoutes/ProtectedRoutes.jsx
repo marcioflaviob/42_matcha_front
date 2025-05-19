@@ -1,28 +1,36 @@
 import React, { useContext } from 'react';
-import { Navigate, Outlet } from 'react-router-dom';
+import { Navigate, Outlet, useLocation } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
 import { AuthContext } from '../../context/AuthContext';
 
 const ProtectedRoutes = () => {
-    const { user } = useContext(UserContext);
-    const { isLoading } = useContext(AuthContext);
+    const { user, loading } = useContext(UserContext);
+    const { isAuthenticated, isLoading } = useContext(AuthContext);
+    const location = useLocation();
+    
+    if (isLoading || loading) {
+        return <div />;
+    }
 
-    // if (isLoading) {
-    //     return <div>Loading...</div>;
-    // }
+    const publicRoutes = ['/', '/login', '/register', '/auth/google/callback', '/reset-password'];
+    const isPublicRoute = publicRoutes.includes(location.pathname) || 
+                           location.pathname.startsWith('/auth/google/');
+    
+    // If user is not authenticated and trying to access a protected route
+    if (!isAuthenticated && !isPublicRoute) {
+        return <Navigate to="/login" state={{ from: location }} replace />;
+    }
+    
+    // If user is authenticated but email not yet validated
+    if (user && user.status !== 'complete' && location.pathname !== '/register') {
+        return <Navigate to="/register" replace />;
+    }
 
-    // // Redirect to home page if not authenticated
-    // if (!user) {
-    //     console.log('User not authenticated');
-    //     return <Navigate to="/" replace />;
-    // }
+    // If user is authenticated and has completed registration
+    if (user && user.status === 'complete' && location.pathname === '/register' || location.pathname === '/login') {
+        return <Navigate to="/" replace />;
+    }
 
-    // if (user && user.status !== 'step_two') {
-    //     // Redirect to register page if user is not complete
-    //     return <Navigate to="/register" replace />;
-    // }
-
-    // Allow access to protected routes
     return <Outlet />;
 };
 

@@ -124,13 +124,20 @@
     width: 100%;
 }
 
+.google-signup .p-button-icon {
+    margin-right: 8px;
+    color: #4285F4;
+    font-size: 1.2rem;
+  }
+  
+  .google-signup .p-button-label {
+    flex-grow: 0;
+    white-space: nowrap;
+    font-weight: normal;
+  }
+
 .google-signup:hover {
     background-color: #f2f8f5;
     border-color: #2a815b;
     color: #2a815b;
-}
-
-.google-signup i {
-    color: #4285F4;
-    font-size: 1.2rem;
 }

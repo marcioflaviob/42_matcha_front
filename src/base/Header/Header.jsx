@@ -36,7 +36,7 @@ const Header = () => {
 						<span className='material-symbols-outlined header-map-button' onClick={() => setShowMap(true)} >
 							public
 						</span>
-						{showMap && <PopulatedMap setShowMap={setShowMap} showMap={showMap}></PopulatedMap>}
+						{showMap && <PopulatedMap setShowMap={setShowMap} showMap={showMap} dateBool={false}></PopulatedMap>}
 
 						<Button className='nav-button chat-button' label='Chat' onClick={() => navigate('/chat')} />
 						

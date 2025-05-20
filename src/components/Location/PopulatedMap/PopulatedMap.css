@@ -55,3 +55,107 @@
     border-radius: 50%; /* Makes the image circular */
     border: 2px solid black; /* Optional: Add a border */
 }
+
+.map-date-location-title
+{
+    position: absolute;
+    top: calc(var(--header-height) + 20px);
+    z-index: 22;
+    color: #385a21c6;
+    font-size: 1.5em;
+    font-weight: 700;
+    background-color: rgb(248, 248, 240);
+    padding: 8px;
+    border-radius: 20px;
+    border: 2px solid #385a21c6;
+    animation: grow 7s infinite ease-in-out;
+}
+
+@keyframes grow {
+  0% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.06);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+.map-date-calendar-container
+{
+    position: absolute;
+    width: 40vw;
+    height: 100vh;
+    left: 100vw;
+    top: 0;
+    z-index: 25;
+    background-color: rgb(255, 255, 255);
+    animation: slide-in 0.8s ease-in-out forwards;
+    display: flex;
+    flex-direction: column;
+    padding: 50px;
+    box-shadow: -12px 0 24px -8px rgba(0, 0, 0, 0.141); /* left-only shadow */
+    align-items: center;
+}
+
+.map-date-calendar-container.slide-out-animation
+{
+    animation: slide-out 0.8s ease-in-out forwards;
+}
+
+@keyframes slide-out {
+  from {
+    left: 60vw;
+  }
+  to {
+    left: 100vw;
+  }
+}
+
+@keyframes slide-in {
+  from {
+    left: 100vw;
+  }
+  to {
+    left: 60vw;
+  }
+}
+
+.map-date-calendar-container:hover
+{
+    cursor: default;
+}
+
+.map-adress-title
+{
+    margin-bottom: 5vh;
+    margin-top: 2vh;
+}
+
+.p-datepicker table td.p-datepicker-today > span
+{
+    background-color: aliceblue;
+}
+
+.p-datepicker table td > span.p-highlight
+{
+    background-color: #0f853b53;
+}
+
+.map-calendar-close-button
+{
+    position: absolute;
+    top: 10px;
+    left: 10px;
+    cursor: pointer;
+    font-size: 25px;
+}
+
+.map-date-button
+{
+    width: 13vw;
+    margin-top: 30px;
+    color: #385a21c6;
+}

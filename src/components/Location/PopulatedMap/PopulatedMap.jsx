@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState, useContext } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import React, { useEffect, useRef, useState, useContext, use } from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMapEvent } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './PopulatedMap.css';
@@ -10,6 +10,10 @@ import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import { AuthContext } from '../../../context/AuthContext';
 import { UserContext } from '../../../context/UserContext';
+import { getAdress } from '../AskLocation/AskLocation';
+import { Calendar } from 'primereact/calendar';
+import { Button } from 'primereact/button';
+import 'primeicons/primeicons.css';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -18,28 +22,39 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
-const PopulatedMap = ({ setShowMap, showMap }) => {
+const PopulatedMap = ({ setShowMap, showMap, dateBool }) => {
   const { user } = useContext(UserContext);
   const mapContainerRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ y: 0 });
   const [position, setPosition] = useState({ y: window.innerHeight });
   const positionRef = useRef(position.y);
-  const isAnimating = useRef(false);
+  const isAnimating = useRef(true);
   const [matches, setMatches] = useState([]);
   const { token } = useContext(AuthContext);
+  const [clickedPosition, setClickedPosition] = useState(null);
+  const calendarRef = useRef(null);
+  const [slideOut, setSlideOut] = useState(false);
+  const [date, setDate] = useState({
+    senderId: '',
+    receiverId: '',
+    dateData: '',
+    adress: '',
+  });
 
   useEffect(() => {
     positionRef.current = position.y;
   }, [position]);
 
   const handleMouseDown = (e) => {
+    if (isAnimating.current) return;
     setIsDragging(true);
     setDragStart({ y: e.clientY });
     isAnimating.current = false;
   };
 
   const handleMouseMove = (e) => {
+    if (isAnimating.current) return;
     if (!isDragging) return;
     const dy = e.clientY - dragStart.y;
 
@@ -52,6 +67,7 @@ const PopulatedMap = ({ setShowMap, showMap }) => {
   };
 
   const handleMouseUp = () => {
+    if (isAnimating.current) return;
     setIsDragging(false);
 
     const screenHeight = window.innerHeight;
@@ -63,8 +79,6 @@ const PopulatedMap = ({ setShowMap, showMap }) => {
   };
 
   const animateToTop = () => {
-    if (!isAnimating.current) return;
-
     setPosition((prev) => {
       if (prev.y > 0) {
         const newY = Math.max(prev.y - 10, 0);
@@ -96,6 +110,20 @@ const PopulatedMap = ({ setShowMap, showMap }) => {
       setShowMap(false);
     }
   };
+
+  const handleDate = async () => {
+    
+  }
+
+  function MapClickHandler({setClickedPosition, isDragging}) {
+    useMapEvent('click', (event) => {
+      if (!isDragging) {
+        setClickedPosition([event.latlng.lat, event.latlng.lng ]);
+
+      }
+    });
+    return null;
+  }
 
   useEffect(() => {
     if (showMap) {
@@ -132,6 +160,29 @@ const PopulatedMap = ({ setShowMap, showMap }) => {
     }
   }, [showMap]);
 
+  useEffect(() => {
+    const setAdress = async () => {
+      const adress = await getAdress(clickedPosition[0], clickedPosition[1], token);
+      setDate(prev => ({
+        ...prev,
+        adress: adress,
+      }));
+    }
+    if (clickedPosition) {
+      setAdress();
+    }
+  }, [clickedPosition]);
+
+  useEffect(() => {
+    if (slideOut) {
+      const timeout = setTimeout(() => {
+        setClickedPosition(null);
+        setSlideOut(false);
+      }, 800);
+      return () => clearTimeout(timeout);
+    }
+  }, [slideOut, calendarRef.current]);
+
   return (
     <div
       className="map-container"
@@ -153,6 +204,8 @@ const PopulatedMap = ({ setShowMap, showMap }) => {
         zoom={12}
         className="map-div"
       >
+        <MapClickHandler setClickedPosition={setClickedPosition} isDragging={isDragging} />
+
         <TileLayer
           url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
@@ -166,7 +219,35 @@ const PopulatedMap = ({ setShowMap, showMap }) => {
             </Popup>
           </Marker>
         ))}
+
+        {dateBool && clickedPosition && (
+          <Marker position={clickedPosition} icon={new L.Icon.Default()}>
+            <Popup>
+              <span>Selected Location</span>
+            </Popup>
+          </Marker>
+        )}
       </MapContainer>
+      {dateBool && <div className="map-date-location-title">Choose a Location</div>}
+      {dateBool && clickedPosition && 
+      <div ref={calendarRef} className={`map-date-calendar-container ${slideOut ? 'slide-out-animation' : ''}`}>
+        <i className="pi pi-angle-left map-calendar-close-button" onClick={() => {setSlideOut(true)}}/>
+        <div className='map-adress-title'>{date.adress}</div>
+        <Calendar
+          value={date.dateData}
+          onChange={(e) => {
+            setDate((prev) => ({
+              ...prev,
+              dateData: e.value,  
+            }));
+          }}
+          inline
+          className="map-calendar"
+          hourFormat='24'
+          showTime
+          />
+          <Button label="Schedule date" disabled={!date.dateData} className='map-date-button' text onClick={handleDate}/>
+      </div>}
     </div>
   );
 };

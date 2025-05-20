@@ -59,7 +59,6 @@ const NotificationButton = () => {
 		if (notification.type == 'new-profile-view') navigate('/profile/' + notification.user_id);
 	}
 
-
 	const toggleNotifications = async (e) => {
 		overlayPanelRef.current.toggle(e);
 

@@ -7,6 +7,7 @@ export const UserContext = createContext();
 export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [potentialMatches, setPotentialMatches] = useState(null);
+    const [loading, setLoading] = useState(true);
     const { token, isAuthenticated, isLoading } = useContext(AuthContext);
 
     const updateUser = (newUserData) => {
@@ -18,29 +19,32 @@ export const UserProvider = ({ children }) => {
     
     const props = useMemo(() => ({
         user, 
-        setUser: updateUser, 
+        setUser: updateUser,
+        loading,
         potentialMatches, 
         setPotentialMatches
-    }), [user, potentialMatches]);
+    }), [user, potentialMatches, loading]);
 
     useEffect(() => {
         if (isLoading) return;
-
+        
         if (isAuthenticated && token) {
             axios
-                .get(`${import.meta.env.VITE_API_URL}/auth/me`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                })
-                .then((response) => {
-                    if (response.data.user.id) {
-                        setUser(response.data.user);
-                    } else {
-                        setUser(null);
-                    }
-                })
-                .catch(() => setUser(null));
+            .get(`${import.meta.env.VITE_API_URL}/auth/me`, {
+                headers: { Authorization: `Bearer ${token}` },
+            })
+            .then((response) => {
+                if (response.data.user.id) {
+                    setUser(response.data.user);
+                } else {
+                    setUser(null);
+                }
+                setLoading(false);
+            })
+            .catch(() => setUser(null));
         } else {
             setUser(null);
+            setLoading(false);
         }
     }, [isAuthenticated, token, isLoading]);
 

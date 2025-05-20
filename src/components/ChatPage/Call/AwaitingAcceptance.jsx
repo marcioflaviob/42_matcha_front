@@ -8,7 +8,7 @@ const AwaitingAcceptance = ({ selectedUser, stream, handleHangUp }) => {
         <div className="call-dialog">
             <h2>Calling {selectedUser.first_name}...</h2>
             <div className="video-container">
-                <WebcamVideo stream={stream} name={"You"} />
+                <WebcamVideo stream={stream} name={"You"} mute={true} />
                 <div className="waiting-overlay">
                     <div className="calling-status">Waiting for {selectedUser.first_name} to answer...</div>
                 </div>

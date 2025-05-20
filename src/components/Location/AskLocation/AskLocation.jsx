@@ -29,7 +29,7 @@ export const getCityAndCountry = async (latitude, longitude, token) => {
   }
 };
 
-export const getAdress = async (latitude, longitude, token) => {
+export const getAddress = async (latitude, longitude, token) => {
   try {
     const response = await axios.get(`${import.meta.env.VITE_API_URL}/location/city?latitude=${latitude}&longitude=${longitude}`,
     {

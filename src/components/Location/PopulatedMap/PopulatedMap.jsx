@@ -10,7 +10,7 @@ import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import { AuthContext } from '../../../context/AuthContext';
 import { UserContext } from '../../../context/UserContext';
-import { getAdress } from '../AskLocation/AskLocation';
+import { getAddress } from '../AskLocation/AskLocation';
 import { Calendar } from 'primereact/calendar';
 import { Button } from 'primereact/button';
 import 'primeicons/primeicons.css';
@@ -39,7 +39,7 @@ const PopulatedMap = ({ setShowMap, showMap, dateBool }) => {
     senderId: '',
     receiverId: '',
     dateData: '',
-    adress: '',
+    address: '',
   });
 
   useEffect(() => {
@@ -112,7 +112,7 @@ const PopulatedMap = ({ setShowMap, showMap, dateBool }) => {
   };
 
   const handleDate = async () => {
-    
+
   }
 
   function MapClickHandler({setClickedPosition, isDragging}) {
@@ -161,15 +161,15 @@ const PopulatedMap = ({ setShowMap, showMap, dateBool }) => {
   }, [showMap]);
 
   useEffect(() => {
-    const setAdress = async () => {
-      const adress = await getAdress(clickedPosition[0], clickedPosition[1], token);
+    const setAddress = async () => {
+      const address = await getaddress(clickedPosition[0], clickedPosition[1], token);
       setDate(prev => ({
         ...prev,
-        adress: adress,
+        address: address,
       }));
     }
     if (clickedPosition) {
-      setAdress();
+      setAddress();
     }
   }, [clickedPosition]);
 
@@ -232,7 +232,7 @@ const PopulatedMap = ({ setShowMap, showMap, dateBool }) => {
       {dateBool && clickedPosition && 
       <div ref={calendarRef} className={`map-date-calendar-container ${slideOut ? 'slide-out-animation' : ''}`}>
         <i className="pi pi-angle-left map-calendar-close-button" onClick={() => {setSlideOut(true)}}/>
-        <div className='map-adress-title'>{date.adress}</div>
+        <div className='map-address-title'>{date.address}</div>
         <Calendar
           value={date.dateData}
           onChange={(e) => {

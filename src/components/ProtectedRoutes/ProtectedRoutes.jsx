@@ -27,7 +27,7 @@ const ProtectedRoutes = () => {
     }
 
     // If user is authenticated and has completed registration
-    if (user && user.status === 'complete' && location.pathname === '/register' || location.pathname === '/login') {
+    if (user && user.status === 'complete' && (location.pathname === '/register' || location.pathname === '/login')) {
         return <Navigate to="/" replace />;
     }
 

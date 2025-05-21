@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState, useContext, use } from 'react';
+import { useEffect, useRef, useState, useContext} from 'react';
 import { MapContainer, TileLayer, Marker, Popup, useMapEvent } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
@@ -22,7 +22,7 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
-const PopulatedMap = ({ setShowMap, showMap, dateBool }) => {
+const PopulatedMap = ({ setShowMap, showMap, dateBool, matchId, showDateId, setShowDateId, setUpdatedNotifications, setAllUnansweredDates}) => {
   const { user } = useContext(UserContext);
   const mapContainerRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
@@ -35,11 +35,17 @@ const PopulatedMap = ({ setShowMap, showMap, dateBool }) => {
   const [clickedPosition, setClickedPosition] = useState(null);
   const calendarRef = useRef(null);
   const [slideOut, setSlideOut] = useState(false);
+  const [allDates, setAllDates] = useState([]);
+  const [currentDate, setCurrentDate] = useState(null);
+  const markerRefs = useRef({});
+  const [refuse, setRefuse] = useState(false);
   const [date, setDate] = useState({
     senderId: '',
     receiverId: '',
     dateData: '',
     address: '',
+    latitude: 0,
+    longitude: 0
   });
 
   useEffect(() => {
@@ -111,8 +117,38 @@ const PopulatedMap = ({ setShowMap, showMap, dateBool }) => {
     }
   };
 
-  const handleDate = async () => {
+  const handleSendDate = async () => {
+    console.log(date);
+    try {
+      const response = await axios.post(import.meta.env.VITE_API_URL + '/notifications/date', date, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      if (response.status === 200) {
+        console.log(response.data);
+        displayAlert('success', 'Date planned !');
+        setClickedPosition('');
+        await fetchDates();
+      }
+    } catch (err) {
+      console.error('Error sending date:', err);
+      displayAlert('error', 'Error sending date');
+    }
+  }
 
+  const fetchDates = async () => {
+    try {
+      const response = await axios.get(import.meta.env.VITE_API_URL + '/dates', {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      setAllDates(response.data);
+    } catch (err) {
+      console.error('Error fetching dates:', err);
+      displayAlert('error', 'Error fetching matches');
+    }
   }
 
   function MapClickHandler({setClickedPosition, isDragging}) {
@@ -155,23 +191,87 @@ const PopulatedMap = ({ setShowMap, showMap, dateBool }) => {
       };
 
       fetchUsers();
+      fetchDates();
       isAnimating.current = true;
       animateToTop();
+      setDate((prev => ({
+        ...prev,
+        receiverId: matchId,
+        senderId: user.id
+      })));
     }
   }, [showMap]);
 
   useEffect(() => {
     const setAddress = async () => {
-      const address = await getaddress(clickedPosition[0], clickedPosition[1], token);
+      const address = await getAddress(clickedPosition[0], clickedPosition[1], token);
       setDate(prev => ({
         ...prev,
         address: address,
+        latitude: clickedPosition[0],
+        longitude: clickedPosition[1]
       }));
     }
     if (clickedPosition) {
       setAddress();
     }
   }, [clickedPosition]);
+
+  useEffect(() => {
+    const fetchDate = async () =>
+    {
+      try {
+        const response = await axios.get(`${import.meta.env.VITE_API_URL}/date/${showDateId}`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setCurrentDate(response.data);
+      } catch (error) {
+        console.error("error getting Date:", error);
+        displayAlert("error", "error getting Date");
+      }
+    }
+    if (showDateId)
+    {
+      fetchDate();
+      if (showDateId && markerRefs.current[showDateId]) {
+        markerRefs.current[showDateId].openPopup();
+      }
+    }
+  }, [showDateId, currentDate]);
+
+  const handleAcceptDate = async (dateId) => {
+		try {
+			await axios.patch(`${import.meta.env.VITE_API_URL}/dates/accept/${dateId}`, {}, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+      });
+      setUpdatedNotifications((prev) => prev.filter(n => n.dateId !== dateId));
+      setShowDateId(null);
+		} catch (error) {
+			console.error("error accepting date:", error);
+			displayAlert("error", "error accepting date");
+		}
+	}
+
+  const handleRefuseDate = async (dateId) => {
+		try {
+			await axios.delete(`${import.meta.env.VITE_API_URL}/dates/remove/${dateId}`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+      });
+      setShowDateId(null);
+      setUpdatedNotifications((prev) => prev.filter(n => n.dateId !== dateId));
+      setAllUnansweredDates([]);
+      setRefuse(true);
+		} catch (error) {
+			console.error("error refusing date:", error);
+			displayAlert("error", "error refusing date");
+		}
+	}
 
   useEffect(() => {
     if (slideOut) {
@@ -181,7 +281,11 @@ const PopulatedMap = ({ setShowMap, showMap, dateBool }) => {
       }, 800);
       return () => clearTimeout(timeout);
     }
-  }, [slideOut, calendarRef.current]);
+  }, [slideOut]);
+
+  if (showDateId && !currentDate) {
+    return null; // or null/spinner
+  }
 
   return (
     <div
@@ -200,7 +304,7 @@ const PopulatedMap = ({ setShowMap, showMap, dateBool }) => {
         onMouseLeave={handleMouseUp}
       ></div>
       <MapContainer
-        center={[user?.location?.latitude, user?.location?.longitude]}
+        center={showDateId ? [currentDate?.latitude, currentDate?.longitude] : [user?.location?.latitude, user?.location?.longitude]}
         zoom={12}
         className="map-div"
       >
@@ -216,6 +320,47 @@ const PopulatedMap = ({ setShowMap, showMap, dateBool }) => {
             <Popup>
               <h3>{match.first_name}</h3>
               <p>{match.biography}</p>
+            </Popup>
+          </Marker>
+        ))}
+
+        {allDates.map((date) => (
+          <Marker key={date.id}
+            ref={(ref) => {
+              if (ref) markerRefs.current[date.id] = ref;
+            }}
+            position={[date.latitude, date.longitude]}
+            icon={new L.Icon.Default()}
+            style={{ cursor: 'pointer'}}>
+            <Popup>
+              <h3>{date.address}</h3>
+              <p>{new Date(date.scheduled_date).toLocaleString('en-GB', { 
+                day: '2-digit', 
+                month: 'short', 
+                year: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit' 
+              })}</p>
+              <p style={{ color: date.accepted ? "green" : refuse ? "red" : "blue"}}>{date.accepted ? "Accepted" : refuse ? "Refused" : "Pending"}</p>
+              {showDateId &&
+              <div style={{display: 'flex', gap: "1rem"}}>
+                <Button 
+                  label="Accept" 
+                  icon="pi pi-check" 
+                  className="p-button-success"
+                  onClick={() => {handleAcceptDate(showDateId)}} 
+                  size="small"
+                />
+                <Button 
+                  label="Refuse" 
+                  icon="pi pi-times" 
+                  className="p-button-failure"
+                  severity='danger'
+                  onClick={() => {handleRefuseDate(showDateId)}} 
+                  size="small"
+                />
+              </div>
+              }
             </Popup>
           </Marker>
         ))}
@@ -246,7 +391,7 @@ const PopulatedMap = ({ setShowMap, showMap, dateBool }) => {
           hourFormat='24'
           showTime
           />
-          <Button label="Schedule date" disabled={!date.dateData} className='map-date-button' text onClick={handleDate}/>
+          <Button label="Schedule date" disabled={!date.dateData} className='map-date-button' text onClick={handleSendDate}/>
       </div>}
     </div>
   );

@@ -16,7 +16,6 @@ const ConversationHeader = ({ selectedUser, setSelectedUser, setUsers }) => {
 	const [isInvited, setIsInvited] = useState(false);
 	const profilePicture = selectedUser?.pictures.find(picture => picture.is_profile)?.url || '';
 	const [searchParams] = useSearchParams();
-	const calendarRef = useRef(null);
 	const navigate = useNavigate();
 	const [date, setDate] = useState(null);
 	const [showMap, setShowMap] = useState(false);
@@ -101,7 +100,7 @@ const ConversationHeader = ({ selectedUser, setSelectedUser, setUsers }) => {
 					tooltip={`Block ${selectedUser.first_name}`} tooltipOptions={{ position: 'left' }} 
 					onClick={confirmBlockUser} />
 			</div>
-			{showMap && <PopulatedMap showMap={showMap} setShowMap={setShowMap} dateBool={true}/>}
+			{showMap && <PopulatedMap showMap={showMap} setShowMap={setShowMap} dateBool={true} matchId={selectedUser.id}/>}
 		</div>
 	);
 };

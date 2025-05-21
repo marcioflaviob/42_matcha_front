@@ -8,8 +8,9 @@ import { clearNotifications, displayAlert, displayCall, displayNotification } fr
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
 import axios from 'axios';
+import { Button } from 'primereact/button';
 
-const NotificationButton = () => {
+const NotificationButton = ({setShowMap, setShowDateId, setDateBool, updatedNotifications, setUpdatedNotifications, allUnansweredDates, setAllUnansweredDates}) => {
     const { channel, connected } = useContext(SocketContext);
     const { user, potentialMatches, setPotentialMatches } = useContext(UserContext);
     const [notifications, setNotifications] = useState(null);
@@ -78,6 +79,33 @@ const NotificationButton = () => {
 		}
 	};
 
+	const fetchUnansweredDates = async () => {
+		try {
+			const response = await axios.get(`${import.meta.env.VITE_API_URL}/dates/unanswered`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+			const allUnanswered = response.data;
+			setAllUnansweredDates(allUnanswered);
+			if (notifications && Array.isArray(notifications)) {
+				let dateIndex = 0;
+				const newNotifs = notifications.map((notif) => {
+					if (notif.type === "new-date" && dateIndex < allUnanswered.length) {
+						const updatedNotif = { ...notif, dateId: allUnanswered[dateIndex].id };
+						dateIndex++;
+						return updatedNotif;
+					}
+					return notif;
+				});
+				setUpdatedNotifications(newNotifs);
+			}
+		} catch (error) {
+			console.error('Error fetching unanswered dates');
+			displayAlert('error', 'Error fetching unanswered dates');
+		}
+	};
+
 	useEffect(() => {
 		const fetchNotifications = async () => {
 			try {
@@ -86,13 +114,13 @@ const NotificationButton = () => {
 						Authorization: `Bearer ${token}`,
 					},
 				});
+				console.log(response.data);
 				setNotifications(response.data);
 			} catch (error) {
 				console.error('Error fetching notifications:', error);
 				displayAlert('error', 'Error fetching notifications');
 			}
 		};
-
 		if (user) {
 			fetchNotifications();
 		}
@@ -121,6 +149,61 @@ const NotificationButton = () => {
 		}
 	}, [connected, channel]);
 
+	useEffect(() => {
+		fetchUnansweredDates();
+	}, [notifications]);
+
+	useEffect(() => {
+		const refreshUnansweredDates = async (dateId) => {
+			try {
+				const response = await axios.post(`${import.meta.env.VITE_API_URL}/notifications/dates/unanswered/${dateId}`, {}, {
+					headers: {
+						Authorization: `Bearer ${token}`,
+					},
+				});
+				if (!response.data.notification)
+				{
+					await fetchUnansweredDates();
+				}
+				else
+				{
+					setUpdatedNotifications((prevNotifications) => {
+						const index = prevNotifications.findIndex(n => n.dateId == response.data.notification.id);
+						
+						const updatedNotification = {
+							...response.data.notification,
+							dateId: response.data.date.id,
+						};
+	
+						if (index !== -1) {
+							const updated = [...prevNotifications];
+							updated[index] = updatedNotification;
+							return updated;
+						} else {
+							return [...prevNotifications, updatedNotification];
+						}
+					});
+				}
+			} catch (error) {
+				console.error('Error fetching unanswered dates');
+				displayAlert('error', 'Error fetching unanswered dates');
+			}
+		}
+		const fetchAll = async () => {
+			allUnansweredDates.forEach(date => refreshUnansweredDates(date.id));
+		};
+		console.log("all ", allUnansweredDates);
+		if (!(updatedNotifications?.length > 0))
+			fetchAll();
+	}, [updatedNotifications]);
+
+	const handleShowDate = async (dateId) => {
+		setShowDateId(dateId);
+		setShowMap(true);
+		setDateBool(true);
+		overlayPanelRef.current.hide();
+	}
+
     return (
         <div className="notification-container">
             <i className="pi pi-bell p-overlay-badge nav-button notification-button" onClick={toggleNotifications}>
@@ -131,15 +214,26 @@ const NotificationButton = () => {
             
             <OverlayPanel className='notification-dropdown' ref={overlayPanelRef}>
                     <h3>Notifications</h3>
-                    {notifications?.length > 0 ? (
+                    {updatedNotifications?.length > 0 ? (
                         <ul>
-                            {notifications.map(notification => (
+                            {updatedNotifications.map(notification => (
                                 <li 
                                     key={notification.id} 
                                     className={'read'}
                                     onClick={() => redirectUser(notification)}>
                                     <div className="notification-title">{notification.title}</div>
                                     <div className="notification-message">{notification.message}</div>
+									{notification?.type == "new-date" && (
+										<div style={{ display: 'flex', marginTop: '1rem' }}>
+											<Button 
+												label="Show date" 
+												icon="pi pi-check" 
+												className="p-button-success"
+												onClick={() => {handleShowDate(notification.dateId)}} 
+												size="small"
+											/>
+										</div>
+									)}
                                 </li>
                             ))}
                         </ul>

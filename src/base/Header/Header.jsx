@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { use, useContext, useState } from 'react';
 import './Header.css';
 import { UserContext } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
@@ -14,6 +14,10 @@ const Header = () => {
 	const profilePicture = user?.pictures?.find(picture => picture.is_profile);
 	const navigate = useNavigate();
 	const [showMap, setShowMap] = useState(false);
+	const [showDateId, setShowDateId] = useState(null);
+	const [dateBool, setDateBool] = useState(false);
+	const [updatedNotifications, setUpdatedNotifications] = useState([]);
+	const [allUnansweredDates, setAllUnansweredDates] = useState([]);
 	
 	const handleLogout = async () => {
 		logout();
@@ -36,11 +40,11 @@ const Header = () => {
 						<span className='material-symbols-outlined header-map-button' onClick={() => setShowMap(true)} >
 							public
 						</span>
-						{showMap && <PopulatedMap setShowMap={setShowMap} showMap={showMap} dateBool={false}></PopulatedMap>}
+						{showMap && <PopulatedMap setShowMap={setShowMap} showMap={showMap} showDateId={showDateId} setShowDateId={setShowDateId} dateBool={dateBool} setDateBool={setDateBool} setUpdatedNotifications={setUpdatedNotifications} setAllUnansweredDates={setAllUnansweredDates}></PopulatedMap>}
 
 						<Button className='nav-button chat-button' label='Chat' onClick={() => navigate('/chat')} />
 						
-						<NotificationButton />
+						<NotificationButton setShowMap={setShowMap} setShowDateId={setShowDateId} setDateBool={setDateBool} updatedNotifications={updatedNotifications} setUpdatedNotifications={setUpdatedNotifications} allUnansweredDates={allUnansweredDates} setAllUnansweredDates={setAllUnansweredDates}/>
 						
 						<div className="user-profile">
 							<div 

@@ -150,18 +150,19 @@
   background-color: #2a815b;
   padding: 4rem;
   text-align: center;
-  color: white;
 }
 
 .guest-home-cta h2 {
   font-size: 2.5rem;
   margin-bottom: 1rem;
+  color: white;
 }
 
 .guest-home-cta p {
   font-size: 1.2rem;
   margin-bottom: 2rem;
   opacity: 0.9;
+  color: white;
 }
 
 .guest-home-cta .primary-button {

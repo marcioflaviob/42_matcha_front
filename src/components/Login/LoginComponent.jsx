@@ -42,6 +42,12 @@ const LoginComponent = ({ setIsPasswordForgotten }) => {
 		}));
     };
 
+	const handleEnterKey = (e) => {
+        if (e.key === 'Enter' && validFields.email && validFields.password && !loading) {
+            handleLogin();
+        }
+    };
+
     const handleLogin = async () => {
         try {
             setLoading(true);
@@ -74,6 +80,7 @@ const LoginComponent = ({ setIsPasswordForgotten }) => {
 						value={formData.email}
 						onChange={handleInputChange}
 						invalid={touchedFields.email && !validFields.email}
+						onKeyDown={handleEnterKey}
 						keyfilter={/^[a-zA-Z0-9._%+-@]+$/} />
 					<label htmlFor="email">Email</label>
 				</FloatLabel>
@@ -84,6 +91,7 @@ const LoginComponent = ({ setIsPasswordForgotten }) => {
 						value={formData.password}
 						invalid={touchedFields.password && !validFields.password}
 						onChange={handleInputChange}
+						onKeyDown={handleEnterKey}
 						feedback={false} />
 					<label htmlFor="password">Password</label>
 				</FloatLabel>

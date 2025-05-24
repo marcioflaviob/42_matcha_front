@@ -8,17 +8,20 @@ import { UserProvider } from './context/UserContext';
 import { SocketProvider } from './context/SocketContext.jsx';
 import { AuthProvider } from './context/AuthContext.jsx';
 import { MapProvider } from './context/MapContext.jsx';
+import { PrimeReactProvider } from 'primereact/api';
 
 createRoot(document.getElementById('root')).render(
-  <AuthProvider>
-    <UserProvider>
-      <SocketProvider>
-        <MapProvider>
-          <Router>
-            <App />
-          </Router>
-        </MapProvider>
-      </SocketProvider>
-    </UserProvider>
-  </AuthProvider>
+  <PrimeReactProvider>
+    <AuthProvider>
+      <UserProvider>
+        <SocketProvider>
+          <MapProvider>
+            <Router>
+              <App />
+            </Router>
+          </MapProvider>
+        </SocketProvider>
+      </UserProvider>
+    </AuthProvider>
+  </PrimeReactProvider>
 );

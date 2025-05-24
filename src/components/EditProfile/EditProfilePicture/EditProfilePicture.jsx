@@ -4,7 +4,7 @@ import { UserContext } from '../../../context/UserContext';
 import ProfileCard from '../../HomePage/ProfileCard';
 import 'primeicons/primeicons.css';
         
-const EditProfilePicture = ({ userId, shadowUser, setShadowUser }) => {
+const EditProfilePicture = ({ shadowUser, setShadowUser }) => {
 
   const { user } = useContext(UserContext);
 

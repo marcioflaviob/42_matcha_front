@@ -1,16 +1,16 @@
-.profile-container
-{
+.profile-container {
     width: 100vw;
     height: calc(100vh - var(--footer-height) - var(--header-height));
     display: flex;
     overflow: hidden;
+    background: linear-gradient(135deg, #f8faf9 0%, #e9f5f0 50%, #f8faf9 100%);
 }
 
-@media (max-width: 768px)
-{
-    .profile-container
-    {
-        height: 210vh;
+@media (max-width: 768px) {
+    .profile-container {
+        height: auto;
+        min-height: calc(100vh - var(--footer-height) - var(--header-height));
         flex-direction: column;
+        overflow-y: auto;
     }
 }

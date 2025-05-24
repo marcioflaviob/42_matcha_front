@@ -15,7 +15,7 @@ import PictureSelector from '../../PictureSelector/PictureSelector';
 import AskLocation from '../../Location/AskLocation/AskLocation';
 
 
-const EditProfileInfo = ({ userId, setShadowUser }) => {
+const EditProfileInfo = ({ setShadowUser }) => {
     const navigate = useNavigate();
     const { token } = useContext(AuthContext);
     const { user, setUser } = useContext(UserContext);
@@ -148,7 +148,7 @@ const EditProfileInfo = ({ userId, setShadowUser }) => {
             }
         };
         fetchData();
-    }, [userId, user, disableUpload]);
+    }, [user, disableUpload]);
 
     useEffect(() =>
     {

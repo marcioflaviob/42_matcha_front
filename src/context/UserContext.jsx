@@ -59,7 +59,10 @@ export const UserProvider = ({ children }) => {
                     }
                     setLoading(false);
                 })
-                .catch(() => setUser(null));
+                .catch(() => {
+                    setUser(null);
+                    localStorage.removeItem('token');
+                });
         } else {
             setUser(null);
             setLoading(false);

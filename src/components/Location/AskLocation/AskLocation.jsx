@@ -40,8 +40,7 @@ export const getAddress = async (latitude, longitude, token) => {
     })
     const data = await response.data;
     if (data.results) {
-        const components = data.results[0].components;
-        // Compose a full address string from available components
+        const components = data?.results[0]?.components;
         const addressParts = [
           components.road,
           components.house_number,
@@ -117,7 +116,6 @@ export const AskLocation = () => {
           displayAlert('success', 'Location updated successfully');
           setLoading(false);
         } catch (error) {
-          // console.error('Error getting location:', error);
           getLocationFromIP();
         }
     } else {

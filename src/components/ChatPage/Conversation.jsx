@@ -8,10 +8,14 @@ import { AuthContext } from '../../context/AuthContext';
 import { displayAlert } from '../Notification/Notification';
 import ConversationHeader from './ConversationHeader';
 import { SocketContext } from '../../context/SocketContext';
+import { UserContext } from '../../context/UserContext';
+import { MapContext } from '../../context/MapContext';
 
 const Conversation = ({ selectedUser, setSelectedUser, setUsers }) => {
     const { token } = useContext(AuthContext);
     const [input, setInput] = useState('');
+    const { setMapStatus, setFocusedDate, setFocusedUser, focusedDate } = useContext(MapContext);
+    const { dates, user } = useContext(UserContext);
     const { connected, channel } = useContext(SocketContext);
 
     const saveMessage = async (message, isSent) => {
@@ -61,6 +65,8 @@ const Conversation = ({ selectedUser, setSelectedUser, setUsers }) => {
     };
 
     useEffect(() => {
+        if (!user)
+            return;
         const readMessages = async () => {
             if (selectedUser) {
                 await axios.patch(import.meta.env.VITE_API_URL + '/messages/read/' + selectedUser.id, {}, {
@@ -98,6 +104,12 @@ const Conversation = ({ selectedUser, setSelectedUser, setUsers }) => {
         }
     }, [connected, channel, selectedUser]);
 
+    const openMap = (date) => {
+        setMapStatus("checking_date");
+        setFocusedDate(date);
+        setFocusedUser(selectedUser);
+    }
+
     return (
         <div className="conversation">
             {selectedUser ? (
@@ -106,13 +118,25 @@ const Conversation = ({ selectedUser, setSelectedUser, setUsers }) => {
 
                     <ScrollPanel className="message-list">
                         {selectedUser?.messages && selectedUser.messages.length > 0 ?
-                            (selectedUser.messages.map((msg) => (
-                                <div key={msg.id} className={`message ${msg.sender_id === selectedUser.id ? 'received' : 'sent'}`}>
-                                    <span>{msg.content}</span>
-                                    <span className="message-time">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                    </span>
-                                </div>
-                            )))
+                            (selectedUser.messages.map((msg) => {
+                                if (msg.date_id) {
+                                    const date = dates.find(date => date.id === msg.date_id);
+                                    return (
+                                        <div key={msg.id} className={`message-date ${msg.sender_id === selectedUser.id ? 'received' : 'sent'}`}>
+                                            <span className='message-date-title'>Let's go on a date!</span>
+                                            <Button text className="message-date-button" label="See details" onClick={() => openMap(date)}></Button>
+                                        </div>
+                                    )
+                                }
+                                return (
+                                    <div key={msg.id} className={`message ${msg.sender_id === selectedUser.id ? 'received' : 'sent'}`}>
+                                        <span>{msg.content}</span>
+                                        <span className="message-time">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
+                                        </span>
+                                    </div> 
+                                )
+                            }
+                            ))
                             :
                             <div className="no-conversation">
                                 <p>No messages yet. Say hello!</p>

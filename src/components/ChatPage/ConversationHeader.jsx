@@ -8,17 +8,16 @@ import { displayAlert } from '../Notification/Notification';
 import { AuthContext } from '../../context/AuthContext';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import CallDialog from './Call/CallDialog';
-import PopulatedMap from '../Location/PopulatedMap/PopulatedMap';
+import { MapContext } from '../../context/MapContext';
 
 const ConversationHeader = ({ selectedUser, setSelectedUser, setUsers }) => {
 	const { token } = useContext(AuthContext);
+	const { setMapStatus, setFocusedUser, focusedUser } = useContext(MapContext)
 	const [isCalling, setIsCalling] = useState(false);
 	const [isInvited, setIsInvited] = useState(false);
 	const profilePicture = selectedUser?.pictures.find(picture => picture.is_profile)?.url || '';
 	const [searchParams] = useSearchParams();
 	const navigate = useNavigate();
-	const [date, setDate] = useState(null);
-	const [showMap, setShowMap] = useState(false);
 
 	const handleCall = () => {
 		setIsCalling(true);
@@ -70,11 +69,8 @@ const ConversationHeader = ({ selectedUser, setSelectedUser, setUsers }) => {
 		} else if (calling && selectedUser.id != userId) {
 			displayAlert('warn', 'User not found');
 		}
+		setFocusedUser(selectedUser);
 	}, [searchParams, selectedUser]);
-
-	useEffect(() => {
-		console.log('Selected date:', date);
-	}, [date]);
 
 	return (
 		<div className="conversation-header">
@@ -90,7 +86,7 @@ const ConversationHeader = ({ selectedUser, setSelectedUser, setUsers }) => {
 				<Button icon="pi pi-calendar"
 					className="header-action-button header-action-call" rounded
 					tooltip={`Schedule a Date`} tooltipOptions={{ position: 'bottom' }} 
-					onClick={() => {setShowMap(!showMap)}}/>
+					onClick={() => {setMapStatus("setting_date")}}/>
 				<Button icon="pi pi-video"
 					className="header-action-button header-action-call" rounded
 					tooltip={`Call ${selectedUser.first_name}`} tooltipOptions={{ position: 'bottom' }} 
@@ -100,7 +96,6 @@ const ConversationHeader = ({ selectedUser, setSelectedUser, setUsers }) => {
 					tooltip={`Block ${selectedUser.first_name}`} tooltipOptions={{ position: 'left' }} 
 					onClick={confirmBlockUser} />
 			</div>
-			{showMap && <PopulatedMap showMap={showMap} setShowMap={setShowMap} dateBool={true} matchId={selectedUser.id}/>}
 		</div>
 	);
 };

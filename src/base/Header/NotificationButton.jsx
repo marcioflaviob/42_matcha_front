@@ -8,7 +8,6 @@ import { clearNotifications, displayAlert, displayCall, displayNotification } fr
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
 import axios from 'axios';
-import { Button } from 'primereact/button';
 
 const NotificationButton = () => {
     const { channel, connected } = useContext(SocketContext);
@@ -121,13 +120,6 @@ const NotificationButton = () => {
 			}
 		}
 	}, [connected, channel]);
-
-	// const handleShowDate = async (dateId) => {
-	// 	setShowDateId(dateId);
-	// 	setShowMap(true);
-	// 	setDateBool(true);
-	// 	overlayPanelRef.current.hide();
-	// }
 
     return (
         <div className="notification-container">

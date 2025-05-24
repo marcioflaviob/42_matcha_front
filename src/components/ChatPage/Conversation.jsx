@@ -14,7 +14,7 @@ import { MapContext } from '../../context/MapContext';
 const Conversation = ({ selectedUser, setSelectedUser, setUsers }) => {
     const { token } = useContext(AuthContext);
     const [input, setInput] = useState('');
-    const { setMapStatus, setFocusedDate, setFocusedUser, focusedDate } = useContext(MapContext);
+    const { setMapStatus, setFocusedDate, setFocusedUser } = useContext(MapContext);
     const { dates, user } = useContext(UserContext);
     const { connected, channel } = useContext(SocketContext);
 

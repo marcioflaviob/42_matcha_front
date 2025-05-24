@@ -1,4 +1,4 @@
-import { useContext, useEffect, useState, useRef, use } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import './ConversationHeader.css';
 import { Avatar } from 'primereact/avatar';
 import { Button } from 'primereact/button';
@@ -12,7 +12,7 @@ import { MapContext } from '../../context/MapContext';
 
 const ConversationHeader = ({ selectedUser, setSelectedUser, setUsers }) => {
 	const { token } = useContext(AuthContext);
-	const { setMapStatus, setFocusedUser, focusedUser } = useContext(MapContext)
+	const { setMapStatus, setFocusedUser } = useContext(MapContext)
 	const [isCalling, setIsCalling] = useState(false);
 	const [isInvited, setIsInvited] = useState(false);
 	const profilePicture = selectedUser?.pictures.find(picture => picture.is_profile)?.url || '';

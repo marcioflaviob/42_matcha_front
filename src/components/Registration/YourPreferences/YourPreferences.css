@@ -12,8 +12,10 @@
 	gap: 25px;
 }
 
-p{
+p {
 	margin-top: 0px;
+	color: #2a815b;
+	font-weight: 500;
 }
 
 .slider-container {
@@ -25,4 +27,80 @@ p{
     justify-content: space-between;
     margin-top: 10px;
     font-size: 0.9rem;
+    color: #5e9c7f;
+}
+
+.p-selectbutton .p-button.p-highlight {
+    background-color: #2a815b !important;
+    border-color: #2a815b !important;
+}
+
+.p-selectbutton .p-button:not(.p-highlight):hover {
+    background-color: #e9f5f0 !important;
+    color: #2a815b !important;
+}
+
+.p-button:focus {
+    box-shadow: none !important;
+}
+
+.p-multiselect:focus-within {
+    border-color: #2a815b !important;
+    box-shadow: 0 0 0 1px rgba(42, 129, 91, 0.2) !important;
+}
+
+.p-slider .p-slider-range {
+    background-color: #2a815b !important;
+}
+
+.p-slider .p-slider-handle {
+    border-color: #2a815b !important;
+}
+
+.p-slider:not(.p-disabled) .p-slider-handle:hover {
+    background-color: #2a815b !important;
+    border-color: #2a815b !important;
+}
+
+.p-rating .p-rating-item.p-rating-item-active .p-rating-icon {
+    color: #2a815b !important;
+}
+
+@media (max-width: 768px) {
+    .your-preferences-panel {
+        gap: 20px;
+    }
+    
+    .aligned-div {
+        flex-direction: column;
+        gap: 20px;
+        align-items: center;
+    }
+    
+    .aligned-div > span {
+        width: 100%;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .p-selectbutton {
+        width: 100%;
+        max-width: 300px;
+        justify-content: center;
+    }
+    
+    .slider-container {
+        width: 100%;
+        max-width: 300px;
+    }
+    
+    .hobby-selection {
+        width: 100%;
+    }
+    
+    .p-multiselect {
+        width: 100% !important;
+        max-width: 300px;
+    }
 }

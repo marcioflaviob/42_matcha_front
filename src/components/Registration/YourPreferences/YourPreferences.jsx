@@ -20,7 +20,7 @@ const YourPreferences = ({ setActiveStep }) => {
 	const [ageRange, setAgeRange] = useState([18, 99]);
 	const [allInterests, setAllInterests] = useState(null);
 	const {location, getLocation, addressRef} = AskLocation();
-	const [locationData, setLocationData] = useState([]); // State to store address
+	const [locationData, setLocationData] = useState([]);
 	const [formData, setFormData] = useState({
 		gender: '',
 		sexual_interest: '',
@@ -121,7 +121,7 @@ const YourPreferences = ({ setActiveStep }) => {
 				const response = await axios.get(`${import.meta.env.VITE_API_URL}/interests`);
 				setAllInterests(response.data);
 			} catch (err) {
-				displayAlert('error', 'Error fetching information'); // Handle errors
+				displayAlert('error', 'Error fetching information');
 				console.error('Error fetching information:', err);
 			}
 		}

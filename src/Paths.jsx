@@ -13,7 +13,7 @@ export const Paths = [
 	{path: '/login', component: <Login />},
 	{path: '/profile/:userId', component: <Profile />},
 	{path: '/chat', component: <ChatPage />},
-	{path: '/edit-profile/:userId', component: <EditProfile />},
+	{path: '/edit-profile/', component: <EditProfile />},
 	{path: '/reset-password', component: <ResetPassword />},
 	{path: "/auth/google/callback", component: <GoogleCallback /> },
 ];

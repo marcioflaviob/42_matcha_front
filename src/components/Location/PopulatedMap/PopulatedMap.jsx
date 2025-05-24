@@ -89,7 +89,7 @@ const PopulatedMap = () => {
   const animateToTop = () => {
     setPosition((prev) => {
       if (prev.y > 0) {
-        const newY = Math.max(prev.y - 10, 0);
+        const newY = Math.max(prev.y - 20, 0);
         positionRef.current = newY;
         return { y: newY };
       }
@@ -106,7 +106,7 @@ const PopulatedMap = () => {
     if (!isAnimating.current) return;
 
     setPosition((prev) => {
-      const newY = Math.min(prev.y + 10, window.innerHeight);
+      const newY = Math.min(prev.y + 20, window.innerHeight);
       positionRef.current = newY;
       return { y: newY };
     });

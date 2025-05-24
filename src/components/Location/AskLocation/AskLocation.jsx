@@ -53,7 +53,6 @@ export const AskLocation = () => {
         },
         withCredentials: true,
       })
-    console.log(response.data);
   } catch (err) {
     console.error('Error fetching city and country:', err);
     return { city: 'Unknown', country: 'Unknown' };

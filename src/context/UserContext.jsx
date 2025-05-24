@@ -7,6 +7,7 @@ export const UserContext = createContext();
 export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [potentialMatches, setPotentialMatches] = useState(null);
+    const [loading, setLoading] = useState(true);
     const { token, isAuthenticated, isLoading } = useContext(AuthContext);
     const [dates, setDates] = useState([]);
 
@@ -19,12 +20,13 @@ export const UserProvider = ({ children }) => {
     
     const props = useMemo(() => ({
         user, 
-        setUser: updateUser, 
+        setUser: updateUser,
+        loading,
         potentialMatches, 
         setPotentialMatches,
         dates,
         setDates,
-    }), [user, potentialMatches, dates]);
+    }), [user, potentialMatches, dates, loading]);
 
     const fetchDates = async () => {
         try {
@@ -42,7 +44,7 @@ export const UserProvider = ({ children }) => {
 
     useEffect(() => {
         if (isLoading) return;
-
+        
         if (isAuthenticated && token) {
             axios
                 .get(`${import.meta.env.VITE_API_URL}/auth/me`, {
@@ -55,11 +57,12 @@ export const UserProvider = ({ children }) => {
                     } else {
                         setUser(null);
                     }
+                    setLoading(false);
                 })
                 .catch(() => setUser(null));
-            
         } else {
             setUser(null);
+            setLoading(false);
         }
     }, [isAuthenticated, token, isLoading]);
 

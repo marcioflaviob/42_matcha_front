@@ -5,10 +5,13 @@ import ForgotPassword from '../../components/Login/ForgotPassword';
 import { UserContext } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
 import loginBackground from '/login_background.png';
+import { Button } from 'primereact/button';
+import { displayAlert } from '../../components/Notification/Notification';
 
 const Login = () => {
 	const { user } = useContext(UserContext);
 	const [isPasswordForgotten, setIsPasswordForgotten] = useState(false);
+	const params = new URLSearchParams(window.location.search);
 	const navigate = useNavigate();
 
 	useEffect(() => {
@@ -16,6 +19,16 @@ const Login = () => {
 			navigate('/');
 		}
 	}, [user]);
+
+	useEffect(() => {
+		if (params?.get('error')) {
+			displayAlert('error', 'Google authentication failed. Please try again.');
+		}
+	}, [params]);
+
+	const handleGoogleSignUp = async () => {
+		window.location.href = `${import.meta.env.VITE_API_URL}/auth/google`;
+	}
 
 	return (
 		<div className='login-container'>
@@ -30,10 +43,10 @@ const Login = () => {
 							<LoginComponent setIsPasswordForgotten={setIsPasswordForgotten} />
 						</div>
 						<div className='login-border'>
-							<div className='google-signup'>
-								<i className='pi pi-google'></i>
-								<span>Sign in with Google</span>
-							</div>
+							<Button className='google-signup'
+								icon='pi pi-google google-signup-icon'
+								label='Sign in with Google'
+								onClick={handleGoogleSignUp} />
 						</div>
 					</>
 					:

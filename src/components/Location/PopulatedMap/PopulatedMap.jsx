@@ -1,5 +1,5 @@
-import React, { useEffect, useRef, useState, useContext } from 'react';
-import { MapContainer, TileLayer, Marker, Popup } from 'react-leaflet';
+import { useEffect, useRef, useState, useContext} from 'react';
+import { MapContainer, TileLayer, Marker, Popup, useMapEvent } from 'react-leaflet';
 import L from 'leaflet';
 import 'leaflet/dist/leaflet.css';
 import './PopulatedMap.css';
@@ -10,6 +10,11 @@ import markerIcon from 'leaflet/dist/images/marker-icon.png';
 import markerShadow from 'leaflet/dist/images/marker-shadow.png';
 import { AuthContext } from '../../../context/AuthContext';
 import { UserContext } from '../../../context/UserContext';
+import { getAddress } from '../AskLocation/AskLocation';
+import { Calendar } from 'primereact/calendar';
+import { Button } from 'primereact/button';
+import { MapContext } from '../../../context/MapContext';
+import 'primeicons/primeicons.css';
 
 delete L.Icon.Default.prototype._getIconUrl;
 L.Icon.Default.mergeOptions({
@@ -18,28 +23,46 @@ L.Icon.Default.mergeOptions({
   shadowUrl: markerShadow,
 });
 
-const PopulatedMap = ({ setShowMap, showMap }) => {
-  const { user } = useContext(UserContext);
+const PopulatedMap = () => {
+  const { user, dates, setDates} = useContext(UserContext);
+  const { mapStatus, setMapStatus, focusedDate, setFocusedDate, focusedUser} = useContext(MapContext);
+  const isMapOpen = mapStatus != 'closed';
+  const isSettingDate = mapStatus == 'setting_date';
   const mapContainerRef = useRef(null);
   const [isDragging, setIsDragging] = useState(false);
   const [dragStart, setDragStart] = useState({ y: 0 });
   const [position, setPosition] = useState({ y: window.innerHeight });
   const positionRef = useRef(position.y);
-  const isAnimating = useRef(false);
+  const isAnimating = useRef(true);
   const [matches, setMatches] = useState([]);
   const { token } = useContext(AuthContext);
+  const [clickedPosition, setClickedPosition] = useState(null);
+  const calendarRef = useRef(null);
+  const [slideOut, setSlideOut] = useState(false);
+  const markerRefs = useRef({});
+  const [minDate, setMinDate] = useState(new Date());
+  const [dateForm, setDateForm] = useState({
+    senderId: '',
+    receiverId: '',
+    scheduledDate: '',
+    address: '',
+    latitude: 0,
+    longitude: 0
+  });
 
   useEffect(() => {
     positionRef.current = position.y;
   }, [position]);
 
   const handleMouseDown = (e) => {
+    if (isAnimating.current) return;
     setIsDragging(true);
     setDragStart({ y: e.clientY });
     isAnimating.current = false;
   };
 
   const handleMouseMove = (e) => {
+    if (isAnimating.current) return;
     if (!isDragging) return;
     const dy = e.clientY - dragStart.y;
 
@@ -52,6 +75,7 @@ const PopulatedMap = ({ setShowMap, showMap }) => {
   };
 
   const handleMouseUp = () => {
+    if (isAnimating.current) return;
     setIsDragging(false);
 
     const screenHeight = window.innerHeight;
@@ -63,8 +87,6 @@ const PopulatedMap = ({ setShowMap, showMap }) => {
   };
 
   const animateToTop = () => {
-    if (!isAnimating.current) return;
-
     setPosition((prev) => {
       if (prev.y > 0) {
         const newY = Math.max(prev.y - 10, 0);
@@ -93,12 +115,37 @@ const PopulatedMap = ({ setShowMap, showMap }) => {
       requestAnimationFrame(animateToBottom);
     } else {
       isAnimating.current = false;
-      setShowMap(false);
+      setMapStatus("closed");
     }
   };
 
+  const handleSendDate = async () => {
+    try {
+      const response = await axios.post(import.meta.env.VITE_API_URL + '/dates', dateForm, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      });
+      displayAlert('success', 'Date planned!');
+      setClickedPosition('');
+      setDates((prev) => [...prev, response.data]);
+    } catch (err) {
+      console.error('Error sending date:', err);
+      displayAlert('error', 'Error sending date');
+    }
+  }
+
+  function MapClickHandler({setClickedPosition, isDragging}) {
+    useMapEvent('click', (event) => {
+      if (!isDragging) {
+        setClickedPosition([event.latlng.lat, event.latlng.lng ]);
+      }
+    });
+    return null;
+  }
+
   useEffect(() => {
-    if (showMap) {
+    if (isMapOpen) {
       const fetchUsers = async () => {
         try {
           const response = await axios.get(import.meta.env.VITE_API_URL + '/matches', {
@@ -126,11 +173,108 @@ const PopulatedMap = ({ setShowMap, showMap }) => {
         }
       };
 
+      if (focusedUser) {
+        setDateForm((prev => ({
+          ...prev,
+          receiverId: focusedUser.id,
+          senderId: user.id
+        })));
+      }
       fetchUsers();
       isAnimating.current = true;
       animateToTop();
     }
-  }, [showMap]);
+  }, [isMapOpen]);
+
+  useEffect(() => {
+    const setAddress = async () => {
+      const address = await getAddress(clickedPosition[0], clickedPosition[1], token);
+      setDateForm(prev => ({
+        ...prev,
+        address: address,
+        latitude: clickedPosition[0],
+        longitude: clickedPosition[1]
+      }));
+    }
+    if (clickedPosition) {
+      setAddress();
+    }
+  }, [clickedPosition]);
+
+  useEffect(() => {
+    if (!focusedDate) return;
+
+    let attempts = 0;
+    const maxAttempts = 20;
+    const interval = setInterval(() => {
+      const marker = markerRefs.current[focusedDate.id];
+      if (marker) {
+        marker.openPopup();
+        clearInterval(interval);
+      } else if (attempts >= maxAttempts) {
+        console.warn(`Failed to find marker with id=${focusedDate.id}`);
+        clearInterval(interval);
+      } else {
+        attempts++;
+      }
+    }, 200);
+
+    return () => clearInterval(interval);
+  }, [focusedDate, dates]);
+
+  useEffect(() => {
+    if (mapStatus == "headerClosed")
+    {
+      isAnimating.current = true;
+      animateToBottom();
+    }
+  }, [mapStatus]);
+
+  const handleUpdateDate = async (dateId, status) => {
+		try {
+			await axios.patch(`${import.meta.env.VITE_API_URL}/dates`, {
+        id: dateId,
+        status
+      }, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+      });
+      setDates(dates.map((date) => {
+        if (date.id === dateId) {
+          return { ...date, status }; // return a new object with updated status
+        }
+        return date; // unchanged
+      }));
+      setFocusedDate(null);
+		} catch (error) {
+			console.error("error accepting date:", error);
+			displayAlert("error", "error accepting date");
+		}
+	}
+
+  useEffect(() => {
+    if (slideOut) {
+      const timeout = setTimeout(() => {
+        setClickedPosition(null);
+        setSlideOut(false);
+      }, 800);
+      return () => clearTimeout(timeout);
+    }
+  }, [slideOut]);
+  
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setMinDate(new Date());
+    }, 60000);
+
+    return () => clearInterval(interval);
+  }, []); 
+
+  if (!isMapOpen || !user) {
+    return null;
+  }
+
 
   return (
     <div
@@ -149,10 +293,12 @@ const PopulatedMap = ({ setShowMap, showMap }) => {
         onMouseLeave={handleMouseUp}
       ></div>
       <MapContainer
-        center={[user?.location?.latitude, user?.location?.longitude]}
+        center={focusedDate ? [focusedDate?.latitude, focusedDate?.longitude] : [user?.location?.latitude, user?.location?.longitude]}
         zoom={12}
         className="map-div"
       >
+        {isSettingDate && <MapClickHandler setClickedPosition={setClickedPosition} isDragging={isDragging} />}
+
         <TileLayer
           url="https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png"
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
@@ -166,7 +312,77 @@ const PopulatedMap = ({ setShowMap, showMap }) => {
             </Popup>
           </Marker>
         ))}
+
+        {dates.map((date) => (
+          <Marker key={date.id}
+            ref={(ref) => {
+              if (ref) markerRefs.current[date.id] = ref;
+            }}
+            position={[date?.latitude, date?.longitude]}
+            icon={new L.Icon.Default()}
+            style={{ cursor: 'pointer'}}>
+            <Popup>
+              <h3>{date?.address}</h3>
+              <p>{new Date(date?.scheduled_date).toLocaleString('en-GB', { 
+                day: '2-digit', 
+                month: 'short', 
+                year: 'numeric', 
+                hour: '2-digit', 
+                minute: '2-digit' 
+              })}</p>
+              <p style={{ color: date?.status == "accepted" ? "green" : date?.status == "refused" ? "red" : "blue"}}>{date?.status}</p>
+              { date?.receiver_id == user.id && date?.status == "pending" &&
+                <div style={{display: 'flex', gap: "1rem"}}>
+                  <Button 
+                    label="Accept" 
+                    icon="pi pi-check" 
+                    className="p-button-success"
+                    onClick={() => {handleUpdateDate(date?.id, "accepted")}} 
+                    size="small"
+                  />
+                  <Button 
+                    label="Refuse" 
+                    icon="pi pi-times" 
+                    className="p-button-failure"
+                    severity='danger'
+                    onClick={() => {handleUpdateDate(date?.id, "refused")}} 
+                    size="small"
+                  />
+                </div>
+              }
+            </Popup>
+          </Marker>
+        ))}
+
+        {isSettingDate && clickedPosition && (
+          <Marker position={clickedPosition} icon={new L.Icon.Default()}>
+            <Popup>
+              <span>Selected Location</span>
+            </Popup>
+          </Marker>
+        )}
       </MapContainer>
+      {isSettingDate && <div className="map-date-location-title">Choose a Location</div>}
+      {isSettingDate && clickedPosition && 
+        <div ref={calendarRef} className={`map-date-calendar-container ${slideOut ? 'slide-out-animation' : ''}`}>
+          <i className="pi pi-angle-left map-calendar-close-button" onClick={() => {setSlideOut(true)}}/>
+          <div className='map-address-title'>{dateForm.address}</div>
+          <Calendar
+            value={dateForm.scheduledDate}
+            onChange={(e) => {
+              setDateForm((prev) => ({
+                ...prev,
+                scheduledDate: e.value,  
+              }));
+            }}
+            inline
+            className="map-calendar"
+            hourFormat='24'
+            showTime
+            minDate={minDate}
+            />
+            <Button label="Schedule date" disabled={!dateForm.scheduledDate} className='map-date-button' text onClick={handleSendDate}/>
+        </div>}
     </div>
   );
 };

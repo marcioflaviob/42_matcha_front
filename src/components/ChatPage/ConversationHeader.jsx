@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import { useContext, useEffect, useState } from 'react';
 import './ConversationHeader.css';
 import { Avatar } from 'primereact/avatar';
 import { Button } from 'primereact/button';
@@ -8,9 +8,11 @@ import { displayAlert } from '../Notification/Notification';
 import { AuthContext } from '../../context/AuthContext';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import CallDialog from './Call/CallDialog';
+import { MapContext } from '../../context/MapContext';
 
 const ConversationHeader = ({ selectedUser, setSelectedUser, setUsers }) => {
 	const { token } = useContext(AuthContext);
+	const { setMapStatus, setFocusedUser } = useContext(MapContext)
 	const [isCalling, setIsCalling] = useState(false);
 	const [isInvited, setIsInvited] = useState(false);
 	const profilePicture = selectedUser?.pictures.find(picture => picture.is_profile)?.url || '';
@@ -67,6 +69,7 @@ const ConversationHeader = ({ selectedUser, setSelectedUser, setUsers }) => {
 		} else if (calling && selectedUser.id != userId) {
 			displayAlert('warn', 'User not found');
 		}
+		setFocusedUser(selectedUser);
 	}, [searchParams, selectedUser]);
 
 	return (
@@ -80,6 +83,10 @@ const ConversationHeader = ({ selectedUser, setSelectedUser, setUsers }) => {
 				</div>
 			</div>
 			<div className="header-actions">
+				<Button icon="pi pi-calendar"
+					className="header-action-button header-action-call" rounded
+					tooltip={`Schedule a Date`} tooltipOptions={{ position: 'bottom' }} 
+					onClick={() => {setMapStatus("setting_date")}}/>
 				<Button icon="pi pi-video"
 					className="header-action-button header-action-call" rounded
 					tooltip={`Call ${selectedUser.first_name}`} tooltipOptions={{ position: 'bottom' }} 

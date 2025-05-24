@@ -13,19 +13,51 @@ export const getCityAndCountry = async (latitude, longitude, token) => {
       },
       withCredentials: true,
     })
-    const data = await response.json();
+    const data = await response.data;
     if (data.results) {
-      const components = data.results[0].components;
-      return {
-        city: components.city || components.town || components.village || 'Unknown',
-        country: components.country || 'Unknown',
-      };
+        const components = data.results[0].components;
+        return {
+            city: components.city || components.town || components.village || 'Unknown',
+            country: components.country || 'Unknown',
+        };
     } else {
-      throw new Error('Unable to fetch city and country.');
+        throw new Error('Unable to fetch city and country.');
     }
   } catch (err) {
     console.error('Error fetching city and country:', err);
     return { city: 'Unknown', country: 'Unknown' };
+  }
+};
+
+export const getAddress = async (latitude, longitude, token) => {
+  try {
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/location/city?latitude=${latitude}&longitude=${longitude}`,
+    {
+      headers: {
+          Authorization: `Bearer ${token}`,
+      },
+      withCredentials: true,
+    })
+    const data = await response.data;
+    if (data.results) {
+        const components = data?.results[0]?.components;
+        const addressParts = [
+          components.road,
+          components.house_number,
+          components.neighbourhood,
+          components.suburb,
+          components.city || components.town || components.village,
+          components.state,
+          components.postcode,
+          components.country
+        ].filter(Boolean);
+        return addressParts.length > 0 ? addressParts.join(', ') : 'Unknown';
+    } else {
+        throw new Error('Unable to fetch address.');
+    }
+  } catch (err) {
+    console.error('Error fetching address:', err);
+    return 'Unknown';
   }
 };
 
@@ -84,7 +116,6 @@ export const AskLocation = () => {
           displayAlert('success', 'Location updated successfully');
           setLoading(false);
         } catch (error) {
-          console.error('Error getting location:', error);
           getLocationFromIP();
         }
     } else {

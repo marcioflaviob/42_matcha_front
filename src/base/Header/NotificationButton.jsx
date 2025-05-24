@@ -22,6 +22,7 @@ const NotificationButton = () => {
 	const redirectUser = async (notification) => {
 		if (notification.type == 'new-message') navigate('/chat?id=' + notification.concerned_user_id);
 		if (notification.type == 'new-match') navigate('/chat?id=' + notification.concerned_user_id);
+		if (notification.type == 'new-date') navigate('/chat?id=' + notification.concerned_user_id);
 		if (notification.type == 'new-like')
 		{
 			const updatePotentialMatches = async () => {
@@ -59,7 +60,6 @@ const NotificationButton = () => {
 		if (notification.type == 'new-profile-view') navigate('/profile/' + notification.user_id);
 	}
 
-
 	const toggleNotifications = async (e) => {
 		overlayPanelRef.current.toggle(e);
 
@@ -93,7 +93,6 @@ const NotificationButton = () => {
 				displayAlert('error', 'Error fetching notifications');
 			}
 		};
-
 		if (user) {
 			fetchNotifications();
 		}

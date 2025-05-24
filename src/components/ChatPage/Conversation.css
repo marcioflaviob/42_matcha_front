@@ -29,13 +29,13 @@
 	word-wrap: break-word;
 }
 
-.message.sent {
+.sent {
     background-color: #d1e7dd;
     align-self: flex-end;
 	margin-left: auto;
 }
 
-.message.received {
+.received {
     background-color: #f8d7da;
     align-self: flex-start;
 }
@@ -66,4 +66,24 @@
 	height: 100%;
 	font-size: 1.2em;
 	color: #999;
+}
+
+.message-date {
+	width: 13vw;
+	height: 13vh;
+	background-color: #c8ddd2ab;
+	margin-top: 2vh;
+	display: flex;
+	flex-direction: column;
+	border-radius: 8px;
+	align-items: center;
+	justify-content: center;
+}
+
+.message-date-title {
+	margin-bottom: 1vh;
+}
+
+.message-date-button.p-button-text {
+	color: #258145db;
 }

@@ -9,6 +9,7 @@ export const UserProvider = ({ children }) => {
     const [potentialMatches, setPotentialMatches] = useState(null);
     const [loading, setLoading] = useState(true);
     const { token, isAuthenticated, isLoading } = useContext(AuthContext);
+    const [dates, setDates] = useState([]);
 
     const updateUser = (newUserData) => {
         setUser(prevUser => ({
@@ -22,26 +23,43 @@ export const UserProvider = ({ children }) => {
         setUser: updateUser,
         loading,
         potentialMatches, 
-        setPotentialMatches
-    }), [user, potentialMatches, loading]);
+        setPotentialMatches,
+        dates,
+        setDates,
+    }), [user, potentialMatches, dates, loading]);
+
+    const fetchDates = async () => {
+        try {
+            const response = await axios.get(import.meta.env.VITE_API_URL + '/dates', {
+                headers: {
+                Authorization: `Bearer ${token}`,
+                },
+            });
+            setDates(response.data);
+        } catch (err) {
+            console.error('Error fetching dates:', err);
+            displayAlert('error', 'Error fetching matches');
+        }
+    }
 
     useEffect(() => {
         if (isLoading) return;
         
         if (isAuthenticated && token) {
             axios
-            .get(`${import.meta.env.VITE_API_URL}/auth/me`, {
-                headers: { Authorization: `Bearer ${token}` },
-            })
-            .then((response) => {
-                if (response.data.user.id) {
-                    setUser(response.data.user);
-                } else {
-                    setUser(null);
-                }
-                setLoading(false);
-            })
-            .catch(() => setUser(null));
+                .get(`${import.meta.env.VITE_API_URL}/auth/me`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                })
+                .then((response) => {
+                    if (response.data.user.id) {
+                        setUser(response.data.user);
+                        fetchDates();
+                    } else {
+                        setUser(null);
+                    }
+                    setLoading(false);
+                })
+                .catch(() => setUser(null));
         } else {
             setUser(null);
             setLoading(false);

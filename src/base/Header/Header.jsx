@@ -1,4 +1,4 @@
-import React, { useContext, useState } from 'react';
+import React, { useContext, useRef} from 'react';
 import './Header.css';
 import { UserContext } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
@@ -6,22 +6,33 @@ import { AuthContext } from '../../context/AuthContext';
 import logoMatcha from '/logo_matcha.png';
 import { Button } from 'primereact/button';
 import NotificationButton from './NotificationButton';
-import PopulatedMap from '../../components/Location/PopulatedMap/PopulatedMap';
+import { MapContext } from '../../context/MapContext';
 
 const Header = () => {
 	const { user } = useContext(UserContext);
 	const { logout } = useContext(AuthContext);
+	const { setMapStatus, setFocusedDate, mapStatus } = useContext(MapContext);
 	const profilePicture = user?.pictures?.find(picture => picture.is_profile);
 	const navigate = useNavigate();
-	const [showMap, setShowMap] = useState(false);
-	
+	const headerRef = useRef(null);
 	const handleLogout = async () => {
 		logout();
 		navigate('/');
 	};
 
+	const openMap = () => {
+		setMapStatus("open");
+		setFocusedDate(null);
+	}
+
+	const handleClick = () => {
+		if (mapStatus != "closed" && mapStatus != "headerClosed") {
+			setMapStatus("headerClosed");
+		}
+	}
+
 	return (
-		<div className="header">
+		<div ref={headerRef} className="header" onClick={handleClick}>
 			<div className="header-left">
 				<img 
 					src={logoMatcha} 
@@ -33,10 +44,9 @@ const Header = () => {
 				{user ? (
 					<div className="user-nav">
 
-						<span className='material-symbols-outlined header-map-button' onClick={() => setShowMap(true)} >
+						<span className='material-symbols-outlined header-map-button' onClick={openMap} >
 							public
 						</span>
-						{showMap && <PopulatedMap setShowMap={setShowMap} showMap={showMap}></PopulatedMap>}
 
 						<Button className='nav-button chat-button' label='Chat' onClick={() => navigate('/chat')} />
 						

@@ -31,7 +31,7 @@ const AwaitingCall = ({ isInvited, selectedUser, stream, setCallStarted, channel
         <div className="call-dialog">
             <h2>Call {selectedUser.first_name}?</h2>
 
-            <WebcamVideo stream={stream} name={"You"} />
+            <WebcamVideo stream={stream} name={"You"} mute={true} />
 
             <div className="call-buttons">
                 <button className="call-button" onClick={handleCallClick}>

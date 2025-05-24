@@ -13,8 +13,8 @@ const ConnectedCall = ({ selectedUser, remoteStream, localStream, handleHangUp, 
         <div className="call-dialog">
             <h2>Video Call with {selectedUser.first_name}</h2>
             <div className="video-container">
-                <WebcamVideo stream={remoteStream} name={selectedUser.first_name} />
-                <WebcamVideo stream={localStream} name={"You"} />
+                <WebcamVideo stream={remoteStream} name={selectedUser.first_name} mute={false} />
+                <WebcamVideo stream={localStream} name={"You"} mute={true} />
             </div>
             <div className="call-buttons">
                 <button className="hangup-button" onClick={handleHangUp}>

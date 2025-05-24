@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import './CallDialog.css';
 import { displayAlert } from '../../Notification/Notification';
 
-const WebcamVideo = ({ stream, name }) => {
+const WebcamVideo = ({ stream, name, mute }) => {
     const localVideoRef = useRef(null);
 
     useEffect(() => {
@@ -42,7 +42,8 @@ const WebcamVideo = ({ stream, name }) => {
             <div className="video-wrapper local">
                 <video 
                     ref={localVideoRef} 
-                    autoPlay 
+                    autoPlay
+                    muted={mute}
                     playsInline
                     className="local-video"
                 />

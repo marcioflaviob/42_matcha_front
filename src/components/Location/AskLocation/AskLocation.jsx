@@ -6,7 +6,7 @@ import axios from 'axios';
 
 export const getAddress = async (latitude, longitude, token) => {
   try {
-    const response = await axios.get(`${import.meta.env.VITE_API_URL}/location/city?latitude=${latitude}&longitude=${longitude}`,
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/location/adress?latitude=${latitude}&longitude=${longitude}`,
     {
       headers: {
           Authorization: `Bearer ${token}`,
@@ -41,7 +41,7 @@ export const AskLocation = () => {
 
   const setCityAndCountry = async (latitude, longitude, token, userId) => {
   try {
-    const response = await axios.post(`${import.meta.env.VITE_API_URL}/location/city`,
+    await axios.post(`${import.meta.env.VITE_API_URL}/location/city`,
       {
         userId: userId,
         latitude: latitude,
@@ -61,7 +61,7 @@ export const AskLocation = () => {
 
   const setLocationFromIP = async (userId) => {
     try {
-      const response = await axios.post(`${import.meta.env.VITE_API_URL}/location/ip/${userId}`, {}, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/location/ip/${userId}`, {}, {
           headers: {
               Authorization: `Bearer ${token}`,
           },

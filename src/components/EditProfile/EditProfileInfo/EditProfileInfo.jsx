@@ -21,7 +21,8 @@ const EditProfileInfo = ({ userId, setShadowUser }) => {
     const { user, setUser } = useContext(UserContext);
     const [allInterests, setAllInterests] = useState(null);
     const [disableUpload, setDisableUpload] = useState(true);
-    const {location, getLocation, addressRef} = AskLocation();
+    const { setLocation } = AskLocation();
+    const [loadingButton, setLoadingButton] = useState(false);
     const [formData, setFormData] = useState({
         first_name: '',
         last_name: '',
@@ -71,7 +72,9 @@ const EditProfileInfo = ({ userId, setShadowUser }) => {
 
     const handleRequestLocation = async (e) => {
         e.preventDefault();
-        await getLocation();
+        setLoadingButton(true);
+        await setLocation(user.id);
+        setLoadingButton(false);
     };
     
     const handleSelectChange = (e, field) => {
@@ -156,28 +159,18 @@ const EditProfileInfo = ({ userId, setShadowUser }) => {
     }, [formData?.interests, formData?.location?.city]);
 
     useEffect(() => {
-        if (addressRef.current.city && addressRef.current.country && location?.longitude) {
-            setFormData((prevData) => ({
-                ...prevData,
-                location: { 
-                    latitude: location.latitude, 
-                    longitude: location.longitude,
-                    city: addressRef.current.city,
-                    country: addressRef.current.country 
-                },
-            }));
+        if (user?.location) {
             setShadowUser((prevData) => ({
                 ...prevData,
                 location: { 
-                    latitude: location.latitude, 
-                    longitude: location.longitude,
-                    city: addressRef.current.city,
-                    country: addressRef.current.country 
+                    latitude: user?.location?.latitude, 
+                    longitude: user?.location?.longitude,
+                    city: user?.location?.city,
+                    country: user?.location?.country 
                 },
             }));
-            displayAlert('success', 'Location updated successfully');
         }
-    }, [location, addressRef.current])
+    }, [user?.location])
 
     if (!user || !allInterests) return (
         <div className='edit-profile-info-container'>
@@ -231,7 +224,7 @@ const EditProfileInfo = ({ userId, setShadowUser }) => {
                             }))}}/>
                         </div>
                         <div className='edit-bio'>
-                            <Button label="Change location" type="button" onClick={handleRequestLocation}/>
+                            <Button label="Change location" loading={loadingButton} type="button" onClick={handleRequestLocation}/>
                         </div>
                     </div>
                 </div>

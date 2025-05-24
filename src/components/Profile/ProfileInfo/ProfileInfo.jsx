@@ -21,7 +21,6 @@ const ProfileInfo = ({ userInfo }) => {
     }
 
     const calculateAge = (birthdate) => {
-        if (!birthdate) return 'Unknown';
         const today = new Date();
         const birth = new Date(birthdate);
         let age = today.getFullYear() - birth.getFullYear();
@@ -114,7 +113,7 @@ const ProfileInfo = ({ userInfo }) => {
                             <div className="fame-stars">
                                 {[...Array(5)].map((_, i) => (
                                     <i 
-                                        key={i} 
+                                        key={i}
                                         className={`pi pi-star${i < Math.floor((userInfo.fame_rating || 69) / 20) ? '-fill' : ''}`}
                                     ></i>
                                 ))}
@@ -140,7 +139,7 @@ const ProfileInfo = ({ userInfo }) => {
             {userInfo.interests && userInfo.interests.length > 0 && (
                 <div className="profile-interests-card">
                     <h3 className="section-title">
-                        <i className="pi pi-tags"></i>
+                        <i className="pi pi-tags" />
                         Interests
                     </h3>
                     <div className="interests-grid">

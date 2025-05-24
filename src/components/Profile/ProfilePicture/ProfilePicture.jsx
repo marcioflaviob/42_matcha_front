@@ -1,10 +1,9 @@
-import { useContext, useState } from 'react';
+import { useContext, useState, useRef } from 'react';
 import './ProfilePicture.css';
 import { AuthContext } from '../../../context/AuthContext';
 import { useNavigate } from 'react-router-dom';
 import { Button } from 'primereact/button';
 import { Menu } from 'primereact/menu';
-import { useRef } from 'react';
 import axios from 'axios';
 import { UserContext } from '../../../context/UserContext';
 import { displayAlert } from '../../Notification/Notification';
@@ -121,7 +120,7 @@ const ProfilePicture = ({ userInfo }) => {
             <>
               <img 
                 src={`${import.meta.env.VITE_BLOB_URL}/${userInfo.pictures[currentImageIndex].url}`}
-                alt={`${userInfo.first_name}'s photo`}
+                alt={`${userInfo.first_name} ${currentImageIndex + 1}`}
                 className="profile-main-image"
                 onError={(e) => {
                   e.target.src = '/placeholder-image.jpg';
@@ -160,7 +159,7 @@ const ProfilePicture = ({ userInfo }) => {
               >
                 <img 
                   src={`${import.meta.env.VITE_BLOB_URL}/${picture.url}`}
-                  alt={`${userInfo.first_name}'s photo ${index + 1}`}
+                  alt={`${userInfo.first_name} ${index + 1}`}
                   onError={(e) => {
                     e.target.src = '/placeholder-image.jpg';
                   }}

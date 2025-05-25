@@ -31,10 +31,10 @@
 .grabbable-div::before {
     content: '';
     display: block;
-    width: 10vw; /* Adjust width of the bar */
-    height: 4px; /* Adjust height of the bar */
-    background-color: #ffffff; /* Bar color */
-    border-radius: 10px; /* Rounded edges */
+    width: 10vw;
+    height: 4px;
+    background-color: #ffffff;
+    border-radius: 10px;
     z-index: 21;
 }
 
@@ -52,8 +52,8 @@
     height: 32px;
     background-size: cover;
     background-position: center;
-    border-radius: 50%; /* Makes the image circular */
-    border: 2px solid black; /* Optional: Add a border */
+    border-radius: 50%;
+    border: 2px solid black;
 }
 
 .map-date-location-title

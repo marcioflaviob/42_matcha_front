@@ -37,8 +37,7 @@ export const getAddress = async (latitude, longitude, token) => {
 };
 
 export const AskLocation = () => {
-  const { token } = useContext(AuthContext);
-
+  
   const setCityAndCountry = async (latitude, longitude, token, userId) => {
   try {
     await axios.post(`${import.meta.env.VITE_API_URL}/location/city`,

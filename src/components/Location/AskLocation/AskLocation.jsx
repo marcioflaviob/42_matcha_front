@@ -6,7 +6,7 @@ import axios from 'axios';
 
 export const getAddress = async (latitude, longitude, token) => {
   try {
-    const response = await axios.get(`${import.meta.env.VITE_API_URL}/location/adress?latitude=${latitude}&longitude=${longitude}`,
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/location/address?latitude=${latitude}&longitude=${longitude}`,
     {
       headers: {
           Authorization: `Bearer ${token}`,

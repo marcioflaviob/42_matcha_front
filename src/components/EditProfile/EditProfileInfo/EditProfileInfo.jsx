@@ -73,7 +73,7 @@ const EditProfileInfo = ({ setShadowUser }) => {
     const handleRequestLocation = async (e) => {
         e.preventDefault();
         setLoadingButton(true);
-        await setLocation(user.id);
+        await setLocation(user.id, token);
         setLoadingButton(false);
     };
     

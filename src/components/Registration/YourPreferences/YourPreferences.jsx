@@ -125,7 +125,7 @@ const YourPreferences = ({ setActiveStep }) => {
 			}
 		}
 		fetchData();
-		setLocation(user?.id);
+		setLocation(user?.id, token);
 	}, []);
 
 	return (

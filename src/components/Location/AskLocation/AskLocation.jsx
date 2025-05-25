@@ -1,6 +1,4 @@
-import React, { useContext } from 'react';
 import { displayAlert }  from "../../Notification/Notification";
-import { AuthContext } from '../../../context/AuthContext';
 
 import axios from 'axios';
 
@@ -37,7 +35,6 @@ export const getAddress = async (latitude, longitude, token) => {
 };
 
 export const AskLocation = () => {
-  const { token } = useContext(AuthContext);
 
   const setCityAndCountry = async (latitude, longitude, token, userId) => {
   try {
@@ -59,7 +56,7 @@ export const AskLocation = () => {
   }
 };
 
-  const setLocationFromIP = async (userId) => {
+  const setLocationFromIP = async (userId, token) => {
     try {
       await axios.post(`${import.meta.env.VITE_API_URL}/location/ip/${userId}`, {}, {
           headers: {
@@ -73,7 +70,7 @@ export const AskLocation = () => {
     }
   };
 
-  const setLocation = async (userId) => {
+  const setLocation = async (userId, token) => {
     if (navigator.geolocation) {
         try {
           const position = await new Promise((resolve, reject) => {
@@ -99,13 +96,13 @@ export const AskLocation = () => {
           });
 
           const { latitude, longitude } = position.coords;
-          await setCityAndCountry(latitude, longitude, userId);
+          await setCityAndCountry(latitude, longitude, token, userId);
           displayAlert('success', 'Location updated successfully');
         } catch (error) {
           await setLocationFromIP(userId);
         }
     } else {
-      await setLocationFromIP(userId);
+      await setLocationFromIP(userId, token);
     }
   };
 

@@ -19,8 +19,7 @@ const YourPreferences = ({ setActiveStep }) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [ageRange, setAgeRange] = useState([18, 99]);
 	const [allInterests, setAllInterests] = useState(null);
-	const {location, getLocation, addressRef} = AskLocation();
-	const [locationData, setLocationData] = useState([]);
+	const { setLocation } = AskLocation();
 	const [formData, setFormData] = useState({
 		gender: '',
 		sexual_interest: '',
@@ -126,44 +125,8 @@ const YourPreferences = ({ setActiveStep }) => {
 			}
 		}
 		fetchData();
-		getLocation();
+		setLocation(user?.id);
 	}, []);
-
-	useEffect(() => {
-		const checkAddressRef = setInterval(() => {
-		  if (addressRef.current.city && addressRef.current.country && location?.longitude) {
-			setLocationData({
-				userId : user.id,
-				city : addressRef.current.city,
-				country : addressRef.current.country,
-				longitude : location.longitude,
-				latitude : location.latitude
-			});
-			clearInterval(checkAddressRef);
-		  }
-		}, 100);
-	  
-		return () => clearInterval(checkAddressRef);
-	}, [location?.longitude, addressRef.current.city, addressRef.current.country]);
-
-	useEffect(() => {
-		const sendLocation = async () => {
-			if (locationData.length === 0) return; // Check if location is available
-			try { 
-				await axios.post(`${import.meta.env.VITE_API_URL}/location/${user.id}`, locationData, {
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-					withCredentials: true,
-				});
-			} catch (err) {
-				displayAlert('error', 'Error fetching information'); // Handle errors
-				console.error('Error fetching information:', err);
-			}
-		}
-		if (!user?.location)
-			sendLocation();
-	}, [locationData?.latitude, locationData?.city]);
 
 	return (
 		<div className='your-preferences-panel'>

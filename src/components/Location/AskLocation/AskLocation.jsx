@@ -1,12 +1,12 @@
-import React, { useState, useContext, useRef } from 'react';
+import React, { useContext } from 'react';
 import { displayAlert }  from "../../Notification/Notification";
 import { AuthContext } from '../../../context/AuthContext';
 
 import axios from 'axios';
 
-export const getCityAndCountry = async (latitude, longitude, token) => {
+export const getAddress = async (latitude, longitude, token) => {
   try {
-    const response = axios.get(`${import.meta.env.VITE_API_URL}/location/city?latitude=${latitude}&longitude=${longitude}`,
+    const response = await axios.get(`${import.meta.env.VITE_API_URL}/location/address?latitude=${latitude}&longitude=${longitude}`,
     {
       headers: {
           Authorization: `Bearer ${token}`,
@@ -16,31 +16,6 @@ export const getCityAndCountry = async (latitude, longitude, token) => {
     const data = await response.data;
     if (data.results) {
         const components = data.results[0].components;
-        return {
-            city: components.city || components.town || components.village || 'Unknown',
-            country: components.country || 'Unknown',
-        };
-    } else {
-        throw new Error('Unable to fetch city and country.');
-    }
-  } catch (err) {
-    console.error('Error fetching city and country:', err);
-    return { city: 'Unknown', country: 'Unknown' };
-  }
-};
-
-export const getAddress = async (latitude, longitude, token) => {
-  try {
-    const response = await axios.get(`${import.meta.env.VITE_API_URL}/location/city?latitude=${latitude}&longitude=${longitude}`,
-    {
-      headers: {
-          Authorization: `Bearer ${token}`,
-      },
-      withCredentials: true,
-    })
-    const data = await response.data;
-    if (data.results) {
-        const components = data?.results[0]?.components;
         const addressParts = [
           components.road,
           components.house_number,
@@ -63,29 +38,42 @@ export const getAddress = async (latitude, longitude, token) => {
 
 export const AskLocation = () => {
   const { token } = useContext(AuthContext);
-  const [location, setLocation] = useState(null);
-  const [loading, setLoading] = useState(false);
-  const addressRef = useRef({ city: '', country: '' });
 
-  const getLocationFromIP = async () => {
+  const setCityAndCountry = async (latitude, longitude, token, userId) => {
+  try {
+    await axios.post(`${import.meta.env.VITE_API_URL}/location/city`,
+      {
+        userId: userId,
+        latitude: latitude,
+        longitude: longitude,
+      },
+      {
+        headers: {
+            Authorization: `Bearer ${token}`,
+        },
+        withCredentials: true,
+      })
+  } catch (err) {
+    console.error('Error fetching city and country:', err);
+    return { city: 'Unknown', country: 'Unknown' };
+  }
+};
+
+  const setLocationFromIP = async (userId) => {
     try {
-      const response = await axios.get(`${import.meta.env.VITE_API_URL}/location/ip`, {
+      await axios.post(`${import.meta.env.VITE_API_URL}/location/ip/${userId}`, {}, {
           headers: {
               Authorization: `Bearer ${token}`,
           },
       });
-      setLocation({ latitude: response.data.latitude, longitude: response.data.longitude });
-      const newAddress = { city: response.data.city, country: response.data.country };
-      addressRef.current = newAddress;
-      setLoading(false);
+      displayAlert('success', 'Location updated successfully');
     } catch (err) {
       console.error('Error getting location from IP:', err);
       displayAlert('error', 'Unable to get your location. Please try again later or check your network connection.');
     }
   };
 
-  const getLocation = async () => {
-    setLoading(true);
+  const setLocation = async (userId) => {
     if (navigator.geolocation) {
         try {
           const position = await new Promise((resolve, reject) => {
@@ -111,19 +99,17 @@ export const AskLocation = () => {
           });
 
           const { latitude, longitude } = position.coords;
-          const newAddress = await getCityAndCountry(latitude, longitude);
-          addressRef.current = newAddress;
+          await setCityAndCountry(latitude, longitude, userId);
           displayAlert('success', 'Location updated successfully');
-          setLoading(false);
         } catch (error) {
-          getLocationFromIP();
+          await setLocationFromIP(userId);
         }
     } else {
-      getLocationFromIP();
+      await setLocationFromIP(userId);
     }
   };
 
-  return { location, loading, getLocation, getLocationFromIP, addressRef };
+  return { setLocation };
 };
 
 export default AskLocation;

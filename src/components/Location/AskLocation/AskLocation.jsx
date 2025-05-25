@@ -1,6 +1,4 @@
-import React, { useContext } from 'react';
 import { displayAlert }  from "../../Notification/Notification";
-import { AuthContext } from '../../../context/AuthContext';
 
 import axios from 'axios';
 
@@ -37,7 +35,7 @@ export const getAddress = async (latitude, longitude, token) => {
 };
 
 export const AskLocation = () => {
-  
+
   const setCityAndCountry = async (latitude, longitude, token, userId) => {
   try {
     await axios.post(`${import.meta.env.VITE_API_URL}/location/city`,

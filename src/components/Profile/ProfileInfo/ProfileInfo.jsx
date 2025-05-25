@@ -4,7 +4,6 @@ import { Chip } from 'primereact/chip';
 import { UserContext } from '../../../context/UserContext';
 import { Button } from 'primereact/button';
 import { useNavigate } from 'react-router-dom';
-import 'primeicons/primeicons.css';
         
 const ProfileInfo = ({ userInfo }) => {
     const navigate = useNavigate();
@@ -19,17 +18,6 @@ const ProfileInfo = ({ userInfo }) => {
     const handleEditButton = () => {
         navigate(`/edit-profile/`);
     }
-
-    const calculateAge = (birthdate) => {
-        const today = new Date();
-        const birth = new Date(birthdate);
-        let age = today.getFullYear() - birth.getFullYear();
-        const monthDiff = today.getMonth() - birth.getMonth();
-        if (monthDiff < 0 || (monthDiff === 0 && today.getDate() < birth.getDate())) {
-            age--;
-        }
-        return age;
-    };
 
     if (!userInfo || !user) return (
         <div className='profile-info-loading'>
@@ -46,7 +34,7 @@ const ProfileInfo = ({ userInfo }) => {
                         {userInfo.first_name} {userInfo.last_name}
                     </h1>
                     <div className="profile-age-location">
-                        <span className="profile-page-age">{calculateAge(userInfo.birthdate)} years old</span>
+                        <span className="profile-page-age">{userInfo.age} years old</span>
                         {userInfo.location && (
                             <div className="profile-location">
                                 <i className="pi pi-map-marker"></i>

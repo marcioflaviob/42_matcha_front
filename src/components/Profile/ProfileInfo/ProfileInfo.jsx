@@ -1,9 +1,9 @@
 import React, { useEffect, useContext, useState } from 'react';
 import './ProfileInfo.css';
-import { Chip } from 'primereact/chip';
 import { UserContext } from '../../../context/UserContext';
 import { Button } from 'primereact/button';
 import { useNavigate } from 'react-router-dom';
+import InterestChip from '../../InterestChip/InterestChip';
         
 const ProfileInfo = ({ userInfo }) => {
     const navigate = useNavigate();
@@ -70,7 +70,7 @@ const ProfileInfo = ({ userInfo }) => {
                     </div>
                     <div className="info-content">
                         <span className="info-label">Gender</span>
-                        <Chip 
+                        <InterestChip 
                             label={userInfo.gender} 
                             className="info-chip gender-chip"
                         />
@@ -83,7 +83,7 @@ const ProfileInfo = ({ userInfo }) => {
                     </div>
                     <div className="info-content">
                         <span className="info-label">Looking for</span>
-                        <Chip 
+                        <InterestChip 
                             label={userInfo.sexual_interest} 
                             className="info-chip interest-chip"
                         />
@@ -132,10 +132,10 @@ const ProfileInfo = ({ userInfo }) => {
                     </h3>
                     <div className="interests-grid">
                         {userInfo.interests.map((interest) => (
-                            <Chip 
+                            <InterestChip 
                                 key={interest.id}
                                 label={interest.name} 
-                                className="interest-tag"
+                                className="info-chip interest-chip"
                             />
                         ))}
                     </div>

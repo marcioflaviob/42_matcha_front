@@ -38,17 +38,15 @@ const WebcamVideo = ({ stream, name, mute }) => {
     }, [stream]);
 
     return (
-        <div className="video-container preview">
-            <div className="video-wrapper local">
-                <video 
-                    ref={localVideoRef} 
-                    autoPlay
-                    muted={mute}
-                    playsInline
-                    className="local-video"
-                />
-                <div className="video-label">{name}</div>
-            </div>
+        <div className="video-wrapper">
+            <video 
+                ref={localVideoRef} 
+                autoPlay
+                muted={mute}
+                playsInline
+                className={mute ? "local-video" : "remote-video"}
+            />
+            <div className="video-label">{name}</div>
         </div>
     );
 };

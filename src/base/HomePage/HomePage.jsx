@@ -67,20 +67,106 @@ const HomePage = () => {
 	}
 	
 	if (!potentialMatches) {
-		return <div className='home-page-container'>Loading...</div>;
+		return (
+			<div className='home-page-container'>
+				<div className="home-loading">
+					<div className="loading-spinner">
+						<div className="spinner"></div>
+					</div>
+					<p>Finding your perfect matches...</p>
+				</div>
+			</div>
+		);
 	}
+
+	const remainingMatches = potentialMatches.length - matchIndex;
 
 	return (
 		<div className='home-page-container'>
-			{potentialMatches.length > matchIndex ?
-				<ProfileCard profile={potentialMatches[matchIndex]} handleLike={handleLike} handleBlock={handleBlock} showButtons={true} /> :
-				<div className='no-matches'>
-					<img src={import.meta.env.VITE_BLOB_URL + '/' + 'sad_cat-wXhqHEgDRcBPGjsOb5copxfaDG1wrr.jpg'}
-						alt="Sad Cat" style={{width:'300px'}} />
-					<h2>No potential matches</h2>
-					<p>Try modifying your profile to reach more people</p>
-				</div>
-			}
+			{/* Page Header */}
+			<div className="home-header">
+				<h1 className="home-title">Discover</h1>
+				{potentialMatches.length > matchIndex && (
+					<div className="match-counter">
+						{remainingMatches} potential {remainingMatches === 1 ? 'match' : 'matches'}
+					</div>
+				)}
+			</div>
+
+			{/* Main Content Area */}
+			<div className="home-main-content">
+				{potentialMatches.length > matchIndex ? (
+					<>
+						{/* Profile Card Container */}
+						<div className="profile-card-container">
+							<ProfileCard 
+								profile={potentialMatches[matchIndex]} 
+								handleLike={handleLike} 
+								handleBlock={handleBlock} 
+								showButtons={true} 
+							/>
+						</div>
+
+						{/* Tips Sidebar */}
+						<div className='home-sidebar-modern'>
+							<div className='quick-stats'>
+								<div className='stat-item'>
+									<span className='stat-number'>{remainingMatches}</span>
+									<span className='stat-label'>Potential Matches</span>
+								</div>
+							</div>
+							
+							<div className='quick-tips'>
+								<h4>
+									<i className="pi pi-lightbulb"></i>
+									Tips for Better Matches
+								</h4>
+								<div className='tip-item'>
+									<i className="pi pi-camera"></i>
+									<span>Upload high-quality photos</span>
+								</div>
+								<div className='tip-item'>
+									<i className="pi pi-pencil"></i>
+									<span>Write an engaging biography</span>
+								</div>
+								<div className='tip-item'>
+									<i className="pi pi-heart"></i>
+									<span>Add your interests and hobbies</span>
+								</div>
+								<div className='tip-item'>
+									<i className="pi pi-map-marker"></i>
+									<span>Keep your location updated</span>
+								</div>
+								<div className='tip-item'>
+									<i className="pi pi-user"></i>
+									<span>Be authentic and genuine</span>
+								</div>
+							</div>
+						</div>
+					</>
+				) : (
+					<div className='no-matches-modern'>
+						<div className='no-matches-content'>
+							<h2>No More Matches</h2>
+							<div className="no-matches-icon">
+								<img src={import.meta.env.VITE_BLOB_URL + '/' + 'sad_cat-wXhqHEgDRcBPGjsOb5copxfaDG1wrr.jpg'}
+				alt="Sad Cat" style={{width:'300px'}} />
+							</div>
+							<p>You've seen all potential matches in your area. Check back later for new profiles!</p>
+							
+							<div className="no-matches-suggestions">
+								<h3>Get More Matches</h3>
+								<ul>
+									<li>Update your profile photos</li>
+									<li>Expand your distance preferences</li>
+									<li>Add more interests to your profile</li>
+									<li>Write a more detailed biography</li>
+								</ul>
+							</div>
+						</div>
+					</div>
+				)}
+			</div>
 		</div>
 	);
 };

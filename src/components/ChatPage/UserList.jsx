@@ -23,25 +23,36 @@ const UserList = ({ users, selectedUser, setSelectedUser, setUsers }) => {
 
     return (
         <div className="user-list">
-            {users.map(user => {
-                const profilePicture = user.pictures.find(picture => picture.is_profile)?.url || '';
-                const unreadMessagesCount = user.messages?.filter(msg => !msg.is_read && msg.sender_id == user.id).length || null;
-                
-                return (
-                    <div
-                        key={user.id}
-                        className={`user-item ${selectedUser?.id === user.id ? 'selected' : ''}`}
-                        onClick={() => setSelectedUser(user)}
-                    >
-                        <Avatar image={import.meta.env.VITE_BLOB_URL + '/' + profilePicture} shape="circle" size='large' />
-                        <div className="user-list-info">
-                            <span className="user-name">{user.first_name}</span>
-                            <span className={`user-status ${user.online ? 'online' : 'offline'}`}>{user.online ? 'Online' : 'Offline'}</span>
+            <div className="user-list-header">
+                Conversations
+            </div>
+            <div className="user-list-content">
+                {users.map(user => {
+                    const profilePicture = user.pictures.find(picture => picture.is_profile)?.url || '';
+                    const unreadMessagesCount = user.messages?.filter(msg => !msg.is_read && msg.sender_id == user.id).length || null;
+                    
+                    return (
+                        <div
+                            key={user.id}
+                            className={`user-item ${selectedUser?.id === user.id ? 'selected' : ''}`}
+                            onClick={() => setSelectedUser(user)}
+                        >
+                            <Avatar image={import.meta.env.VITE_BLOB_URL + '/' + profilePicture} shape="circle" size='large' />
+                            <div className="user-list-info">
+                                <span className="user-name">{user.first_name}</span>
+                                <span className={`user-status ${user.online ? 'online' : 'offline'}`}>
+                                    {user.online ? 'Online' : 'Offline'}
+                                </span>
+                            </div>
+                            {unreadMessagesCount && (
+                                <div className="user-notification-badge">
+                                    <Badge severity='danger' value={unreadMessagesCount} />
+                                </div>
+                            )}
                         </div>
-                        {unreadMessagesCount && <Badge severity='danger' value={unreadMessagesCount} style={{marginLeft: 'auto'}} />}
-                    </div>
-                );
-            })}
+                    );
+                })}
+            </div>
         </div>
     );
 };

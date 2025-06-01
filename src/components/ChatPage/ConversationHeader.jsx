@@ -20,6 +20,9 @@ const ConversationHeader = ({ selectedUser, setSelectedUser, setUsers }) => {
 	const navigate = useNavigate();
 
 	const handleCall = () => {
+		console.log('Initiating new call - resetting states');
+		// Reset states for a fresh call
+		setIsInvited(false);
 		setIsCalling(true);
 	}
 	
@@ -72,14 +75,29 @@ const ConversationHeader = ({ selectedUser, setSelectedUser, setUsers }) => {
 		setFocusedUser(selectedUser);
 	}, [searchParams, selectedUser]);
 
+	// Reset call states when selectedUser changes
+	useEffect(() => {
+		console.log('Selected user changed, resetting call states');
+		setIsCalling(false);
+		setIsInvited(false);
+	}, [selectedUser.id]);
+
 	return (
 		<div className="conversation-header">
 			<ConfirmDialog />
 			{isCalling && <CallDialog selectedUser={selectedUser} setIsCalling={setIsCalling} isInvited={isInvited} />}
 			<div className='user-info-header' onClick={handleProfileClick}>
-				<Avatar image={import.meta.env.VITE_BLOB_URL + '/' + profilePicture} shape="circle" size='xlarge' />
+				<Avatar 
+					image={import.meta.env.VITE_BLOB_URL + '/' + profilePicture} 
+					shape="circle" 
+					size='xlarge'
+					className={selectedUser?.online ? 'online' : 'offline'}
+				/>
 				<div className="header-info">
 					<span className="header-name">{selectedUser.first_name} {selectedUser.last_name}</span>
+					<span className={`header-status ${selectedUser?.online ? 'online' : 'offline'}`}>
+						{selectedUser?.online ? 'Online' : 'Offline'}
+					</span>
 				</div>
 			</div>
 			<div className="header-actions">

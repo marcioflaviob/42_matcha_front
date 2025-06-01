@@ -1,9 +1,11 @@
 import React, { useContext } from 'react';
 import './CallDialog.css';
+import './AwaitingCall.css';
 import { displayAlert } from '../../Notification/Notification';
 import axios from 'axios';
 import { AuthContext } from '../../../context/AuthContext';
 import WebcamVideo from './WebcamVideo';
+import CallControls from './CallControls';
 
 const AwaitingCall = ({ isInvited, selectedUser, stream, setCallStarted, channel, handleHangUp }) => {
     const { token } = useContext(AuthContext);
@@ -16,8 +18,6 @@ const AwaitingCall = ({ isInvited, selectedUser, stream, setCallStarted, channel
                         Authorization: `Bearer ${token}`,
                     },
                     withCredentials: true,
-                }).then(() => {
-                    displayAlert('info', `Calling ${selectedUser.first_name}...`);
                 }).catch((error) => {
                     console.error('Error making call:', error);
                     displayAlert('error', 'Error making call');
@@ -28,19 +28,18 @@ const AwaitingCall = ({ isInvited, selectedUser, stream, setCallStarted, channel
     };
 
     return (
-        <div className="call-dialog">
+        <div className="call-dialog-awaiting">
             <h2>Call {selectedUser.first_name}?</h2>
 
             <WebcamVideo stream={stream} name={"You"} mute={true} />
 
-            <div className="call-buttons">
-                <button className="call-button" onClick={handleCallClick}>
-                    {isInvited ? 'Join' : 'Call'}
-                </button>
-                <button className="hangup-button" onClick={handleHangUp}>
-                    Cancel
-                </button>
-            </div>
+            <CallControls
+                showCallButton={true}
+                callButtonText={isInvited ? 'Join' : 'Call'}
+                onCall={handleCallClick}
+                onHangUp={handleHangUp}
+                stream={stream}
+            />
         </div>
     );
 };

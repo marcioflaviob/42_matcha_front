@@ -230,7 +230,6 @@
     font-size: 1rem;
 }
 
-/* Interests Card */
 .profile-info-section .profile-interests-card {
     background: white;
     border-radius: 16px;
@@ -251,24 +250,6 @@
     gap: 0.75rem;
 }
 
-.profile-info-section .interest-tag {
-    background: linear-gradient(135deg, #e9f5f0, #d1e6dc) !important;
-    color: #2a815b !important;
-    border: 1px solid rgba(42, 129, 91, 0.2);
-    border-radius: 20px !important;
-    padding: 0.5rem 1rem !important;
-    font-weight: 500;
-    transition: all 0.3s ease;
-}
-
-.profile-info-section .interest-tag:hover {
-    transform: translateY(-2px);
-    box-shadow: 0 4px 12px rgba(42, 129, 91, 0.15);
-    background: #2a815b !important;
-    color: white !important;
-}
-
-/* Responsive Design */
 @media (max-width: 768px) {
     .profile-info-section {
         width: 100%;

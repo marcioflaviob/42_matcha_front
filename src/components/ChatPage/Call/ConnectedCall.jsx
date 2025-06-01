@@ -1,5 +1,6 @@
 import React from 'react';
 import WebcamVideo from './WebcamVideo';
+import CallControls from './CallControls';
 
 const ConnectedCall = ({ selectedUser, remoteStream, localStream, handleHangUp, connectionEstablished }) => {
 
@@ -16,11 +17,11 @@ const ConnectedCall = ({ selectedUser, remoteStream, localStream, handleHangUp, 
                 <WebcamVideo stream={remoteStream} name={selectedUser.first_name} mute={false} />
                 <WebcamVideo stream={localStream} name={"You"} mute={true} />
             </div>
-            <div className="call-buttons">
-                <button className="hangup-button" onClick={handleHangUp}>
-                    Hang Up
-                </button>
-            </div>
+            <CallControls
+                showCallButton={false}
+                onHangUp={handleHangUp}
+                stream={localStream}
+            />
         </div>
     );
 };

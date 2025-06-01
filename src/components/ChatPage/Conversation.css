@@ -2,88 +2,367 @@
     flex: 1;
     display: flex;
     flex-direction: column;
+    background: white;
+    border-radius: 0 0 20px 0;
+    overflow: hidden;
 }
 
 .message-list {
     flex: 1;
-    padding: 10px;
+    padding: 20px 25px;
     overflow-y: auto;
-	background-image: 
-		linear-gradient(to bottom, 
-			#f5f5f0 0%, 
-			rgba(245, 245, 240, 0.8) 10%, 
-			rgba(245, 245, 240, 0.4) 30%, 
-			rgba(245, 245, 240, 0) 60%),
-		url('/background_pattern.jpg');
-	background-size: cover;
-	background-position: center;
-	background-repeat: no-repeat;
+    background: linear-gradient(135deg, #f8faf9 0%, #ffffff 100%);
+    position: relative;
+}
+
+.message-list::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-image: 
+        radial-gradient(circle at 20% 50%, rgba(42, 129, 91, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 20%, rgba(42, 129, 91, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 40% 80%, rgba(42, 129, 91, 0.02) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 0;
+}
+
+.message-list-content {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
 }
 
 .message {
-    margin-bottom: 10px;
-    padding: 10px;
-    border-radius: 5px;
-    max-width: 70%;
-	width: fit-content;
-	word-wrap: break-word;
+    max-width: 75%;
+    padding: 12px 16px;
+    border-radius: 18px;
+    word-wrap: break-word;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    animation: messageSlideIn 0.3s ease-out;
+}
+
+@keyframes messageSlideIn {
+    from {
+        opacity: 0;
+        transform: translateY(10px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.message-content {
+    font-size: 0.95rem;
+    line-height: 1.4;
+    margin: 0;
+    word-break: break-word;
 }
 
 .sent {
-    background-color: #d1e7dd;
+    background: linear-gradient(135deg, #2a815b 0%, #3a9970 100%);
+    color: white;
     align-self: flex-end;
-	margin-left: auto;
+    margin-left: auto;
+    border-bottom-right-radius: 6px;
+    position: relative;
+}
+
+.sent::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    right: -8px;
+    width: 0;
+    height: 0;
+    border: 8px solid transparent;
+    border-left-color: #3a9970;
+    border-bottom: none;
 }
 
 .received {
-    background-color: #f8d7da;
+    background: white;
+    color: #374151;
     align-self: flex-start;
+    border: 1px solid #e5e7eb;
+    border-bottom-left-radius: 6px;
+    position: relative;
+}
+
+.received::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: -9px;
+    width: 0;
+    height: 0;
+    border: 8px solid transparent;
+    border-right-color: white;
+    border-bottom: none;
+}
+
+.received::before {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: -10px;
+    width: 0;
+    height: 0;
+    border: 8px solid transparent;
+    border-right-color: #e5e7eb;
+    border-bottom: none;
 }
 
 .message-time {
-	font-size: 0.7em;
-	color: #999;
-	margin-top: 5px;
-	margin-left: 15px;
+    font-size: 0.75rem;
+    font-weight: 500;
+    margin-top: 2px;
+    opacity: 0.8;
+    align-self: flex-end;
+}
+
+.sent .message-time {
+    color: rgba(255, 255, 255, 0.9);
+}
+
+.received .message-time {
+    color: #6b7280;
 }
 
 .message-input {
     display: flex;
-    padding: 10px;
-    border-top: 1px solid #ddd;
-    background-color: #f9f9f9;
+    align-items: flex-end;
+    padding: 20px 25px;
+    gap: 12px;
+    background: white;
+    border-top: 1px solid #e5e7eb;
+    position: relative;
+}
+
+.message-input::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent 0%, #e5e7eb 20%, #e5e7eb 80%, transparent 100%);
 }
 
 .message-input .p-inputtext {
     flex: 1;
-    margin-right: 10px;
+    border-radius: 20px !important;
+    border: 2px solid #e5e7eb !important;
+    padding: 12px 18px !important;
+    font-size: 0.95rem !important;
+    resize: none;
+    min-height: 24px;
+    max-height: 120px;
+    transition: all 0.3s ease !important;
+    background: #f9fafb !important;
+}
+
+.message-input .p-inputtext:focus {
+    border-color: #2a815b !important;
+    box-shadow: 0 0 0 3px rgba(42, 129, 91, 0.1) !important;
+    background: white !important;
+}
+
+.message-input .p-inputtext::placeholder {
+    color: #9ca3af;
+    font-style: italic;
+}
+
+.message-input .p-button {
+    background: linear-gradient(135deg, #2a815b 0%, #3a9970 100%) !important;
+    border: none !important;
+    border-radius: 20px !important;
+    padding: 12px 20px !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    box-shadow: 0 2px 8px rgba(42, 129, 91, 0.3) !important;
+    position: relative;
+    overflow: hidden;
+}
+
+.message-input .p-button::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.2), transparent);
+    transition: left 0.6s ease;
+}
+
+.message-input .p-button:hover::before {
+    left: 100%;
+}
+
+.message-input .p-button:hover {
+    transform: translateY(-2px) !important;
+    box-shadow: 0 4px 12px rgba(42, 129, 91, 0.4) !important;
+}
+
+.message-input .p-button:active {
+    transform: translateY(0) !important;
 }
 
 .no-conversation {
-	display: flex;
-	align-items: center;
-	justify-content: center;
-	height: 100%;
-	font-size: 1.2em;
-	color: #999;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    text-align: center;
+    padding: 40px;
+	position: absolute;
+	top: 30vh;
+	left: 50%;
+	transform: translate(-50%, -50%);
+}
+
+.no-conversation-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #e9f5f0 0%, #d1e6dc 100%);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 10px;
+}
+
+.no-conversation-icon i {
+    font-size: 2rem;
+    color: #2a815b;
+}
+
+.no-conversation-title {
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: #2a815b;
+    margin: 0;
+}
+
+.no-conversation-subtitle {
+    font-size: 1rem;
+    color: #6b7280;
+    margin: 0;
+    max-width: 300px;
+    line-height: 1.5;
 }
 
 .message-date {
-	width: 13vw;
-	height: 13vh;
-	background-color: #c8ddd2ab;
-	margin-top: 2vh;
-	display: flex;
-	flex-direction: column;
-	border-radius: 8px;
-	align-items: center;
-	justify-content: center;
+    width: 280px;
+    min-height: 140px;
+    background: linear-gradient(135deg, #e9f5f0 0%, #d1e6dc 100%);
+    margin: 16px 0;
+    display: flex;
+    flex-direction: column;
+    border-radius: 16px;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+    box-shadow: 0 4px 15px rgba(42, 129, 91, 0.15);
+    border: 2px solid rgba(42, 129, 91, 0.1);
+    transition: all 0.3s ease;
+    animation: messageSlideIn 0.3s ease-out;
+    gap: 12px;
+}
+
+.message-date:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(42, 129, 91, 0.2);
+    border-color: rgba(42, 129, 91, 0.2);
+}
+
+.message-date.sent {
+    align-self: flex-end;
+    margin-left: auto;
+}
+
+.message-date.received {
+    align-self: flex-start;
 }
 
 .message-date-title {
-	margin-bottom: 1vh;
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: #2a815b;
+    margin: 0;
+    text-align: center;
+}
+
+.message-date-info {
+    font-size: 0.9rem;
+    color: #5e9c7f;
+    text-align: center;
+    line-height: 1.4;
 }
 
 .message-date-button.p-button-text {
-	color: #258145db;
+    color: #2a815b !important;
+    font-weight: 600 !important;
+    padding: 8px 16px !important;
+    border-radius: 20px !important;
+    transition: all 0.3s ease !important;
+    background: rgba(42, 129, 91, 0.1) !important;
+}
+
+.message-date-button.p-button-text:hover {
+    background: rgba(42, 129, 91, 0.15) !important;
+    transform: translateY(-1px) !important;
+}
+
+/* Scrollbar styling */
+.message-list::-webkit-scrollbar {
+    width: 6px;
+}
+
+.message-list::-webkit-scrollbar-track {
+    background: #f1f5f9;
+}
+
+.message-list::-webkit-scrollbar-thumb {
+    background: #2a815b;
+    border-radius: 3px;
+}
+
+.message-list::-webkit-scrollbar-thumb:hover {
+    background: #3a9970;
+}
+
+/* Message grouping for consecutive messages */
+.message + .message.sent {
+    margin-top: -6px;
+}
+
+.message + .message.received {
+    margin-top: -6px;
+}
+
+.message:last-child {
+    margin-bottom: 8px;
+}
+
+.welcome-conversation {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	gap: 20px;
+	text-align: center;
+	height: 100%;
 }

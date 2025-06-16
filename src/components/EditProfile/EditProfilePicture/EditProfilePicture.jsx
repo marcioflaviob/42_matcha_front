@@ -9,9 +9,10 @@ const EditProfilePicture = ({ shadowUser, setShadowUser }) => {
   const { user } = useContext(UserContext);
 
   useEffect(() => {
-    if (user)
+    // Only set shadowUser if it's not already set (initial load)
+    if (user && !shadowUser)
       setShadowUser(user);
-  }, [user]);
+  }, [user, shadowUser, setShadowUser]);
 
   if (!user)
   {

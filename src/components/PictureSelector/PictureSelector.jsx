@@ -8,14 +8,14 @@ import { AuthContext } from '../../context/AuthContext';
 import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import PreviewItem from './PreviewItem';
-import GooglePhotosImport from './GooglePhotosImport';
 
-const PictureSelector = ({ showDialog, setShowDialog }) => {
+const PictureSelector = ({ showDialog, setShowDialog, setShadowUser }) => {
     const { token } = useContext(AuthContext);
     const { user, setUser } = useContext(UserContext);
     const [previews, setPreviews] = useState([]);
-    const [deletedPictures, setDeletedPictures] = useState([]);
     const [profilePicture, setProfilePicture] = useState(null);
+    const [urlInput, setUrlInput] = useState('');
+    const [isUrlLoading, setIsUrlLoading] = useState(false);
     const fileInputRef = useRef(null);
     const uploadUrl = import.meta.env.VITE_API_URL + "/upload/single/";
 
@@ -70,26 +70,8 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
         }
     };
 
-    const handleDelete = async () => {
-        try {
-            for (const file of deletedPictures) {
-                await axios.delete(`${import.meta.env.VITE_API_URL}/pictures/${file.user_id}/${file.id}`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                    withCredentials: true,
-                });
-                setUser(prev => ({
-                    ...prev,
-                    pictures: prev.pictures.filter(p => p.id !== file.id),
-                }));
-            }
-        } catch (error) {
-            console.error('Error deleting file:', error);
-            displayAlert('error', 'Error deleting file');
-        }
-    };
-
     const handleUpload = async () => {
-        if (previews.every(preview => !preview.file) && deletedPictures.length === 0) return;
+        if (previews.every(preview => !preview.file)) return;
 
         try {
             await uploadFiles();
@@ -126,7 +108,6 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
     };
 
     const resetState = () => {
-        setDeletedPictures([]);
         setPreviews([]);
         setProfilePicture(null);
         setShowDialog(false);
@@ -138,19 +119,31 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
         e.target.value = null;
     };
 
-    const handleXButton = (preview) => {
+    const handleXButton = async (preview) => {
         if (previews.length === 1) {
             displayAlert('error', 'You need to have at least 1 picture');
             return;
         }
-        
+
         if (!preview.file) {
-            setDeletedPictures(prev => [...prev, preview]);
+            try {
+                await axios.delete(`${import.meta.env.VITE_API_URL}/pictures/${preview.user_id}/${preview.id}`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                    withCredentials: true,
+                });
+                setUser(prev => ({
+                    ...prev,
+                    pictures: prev.pictures.filter(pic => pic.id !== preview.id),
+                }));
+            } catch (error) {
+                displayAlert('error', 'Error deleting file');
+                return;
+            }
         }
-        
+
         const updatedPreviews = previews.filter(p => p.id !== preview.id);
         setPreviews(updatedPreviews);
-        
+
         // If deleted picture was profile picture, set first remaining as profile
         if (profilePicture === preview && updatedPreviews.length > 0) {
             setProfilePicture(updatedPreviews[0]);
@@ -163,6 +156,43 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
         setProfilePicture(preview);
     };
 
+    const handleImportFromUrl = async () => {
+        if (!urlInput.trim()) {
+            displayAlert('error', 'Please enter a valid image URL');
+            return;
+        }
+        setIsUrlLoading(true);
+        try {
+            const response = await axios.post(
+                `${import.meta.env.VITE_API_URL}/pictures/upload-from-url`,
+                { url: urlInput.trim() },
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                    withCredentials: true,
+                }
+            );
+            if (response.data) {
+                const newPic = response.data;
+                const updatedPreviews = [...previews, newPic];
+                setPreviews(updatedPreviews);
+                setUser(prev => ({
+                    ...prev,
+                    pictures: [...prev.pictures, newPic],
+                }));
+                if (!profilePicture && updatedPreviews.length > 0) {
+                    setProfilePicture(updatedPreviews[0]);
+                }
+                setUrlInput('');
+                displayAlert('success', 'Photo imported successfully!');
+            }
+        } catch (error) {
+            console.error('Error importing photo from URL:', error);
+            displayAlert('error', error.response?.data?.message || 'Failed to import photo from URL');
+        } finally {
+            setIsUrlLoading(false);
+        }
+    };
+
     useEffect(() => {
         if (showDialog && user?.pictures) {
             setPreviews(user.pictures);
@@ -170,27 +200,11 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
             const currentProfile = user.pictures.find(pic => pic.is_profile);
             setProfilePicture(currentProfile || user.pictures[0] || null);
         }
-    }, [showDialog, user]);
+    }, [showDialog]);
 
     if (!showDialog || !user) {
         return null;
     }
-
-    const handleGooglePhotosImport = (selectedPhotos) => {
-        if (previews.length + selectedPhotos.length > 5) {
-            displayAlert('error', `Cannot import ${selectedPhotos.length} photos. Maximum 5 photos allowed.`);
-            return;
-        }
-    
-        // Add Google Photos to previews (they're already File objects)
-        const updatedPreviews = [...previews, ...selectedPhotos];
-        setPreviews(updatedPreviews);
-        
-        // Auto-set first uploaded image as profile picture if none is set
-        if (!profilePicture && updatedPreviews.length > 0) {
-            setProfilePicture(updatedPreviews[0]);
-        }
-    };
 
     return (
         <Dialog 
@@ -235,6 +249,34 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
                         <small className="upload-limit">Maximum 5 photos ({previews.length}/5)</small>
                     </div>
                 </div>
+
+                {/* Import from URL Card */}
+                <div className="upload-card" style={{ opacity: previews.length >= 5 ? 0.5 : 1 }}>
+                    <h3>
+                        <i className="pi pi-link"></i>
+                        Import from social media
+                    </h3>
+                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                        <input
+                            type="text"
+                            className="p-inputtext"
+                            placeholder="Paste image URL here..."
+                            value={urlInput}
+                            onChange={e => setUrlInput(e.target.value)}
+                            disabled={previews.length >= 5 || isUrlLoading}
+                            style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid #e9f5f0', fontSize: '1rem' }}
+                        />
+                        <Button
+                            label={isUrlLoading ? 'Importing...' : 'Import Photo'}
+                            icon="pi pi-arrow-down"
+                            className="action-button save-button"
+                            onClick={handleImportFromUrl}
+                            disabled={previews.length >= 5 || isUrlLoading}
+                        />
+                        <small className="upload-limit">Maximum 5 photos ({previews.length}/5)</small>
+                    </div>
+                </div>
+
                 {/* Photos Grid Card */}
                 <div className="photos-card">
                     <h3>
@@ -271,8 +313,6 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
                     )}
                 </div>
 
-                <GooglePhotosImport onImport={handleGooglePhotosImport} maxPhotos={5 - previews.length} disabled={previews.length >= 5} />
-
                 {/* Action Buttons */}
                 <div className="dialog-actions">
                     <Button 
@@ -287,7 +327,7 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
                         icon="pi pi-check"
                         className="action-button save-button"
                         onClick={handleUpload}
-                        disabled={previews.length === 0 || (previews.every(preview => !preview.file) && deletedPictures.length === 0)}
+                        disabled={previews.length === 0 || previews.every(preview => !preview.file)}
                     />
                 </div>
             </div>

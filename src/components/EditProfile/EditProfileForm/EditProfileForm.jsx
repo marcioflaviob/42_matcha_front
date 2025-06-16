@@ -131,62 +131,42 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
         navigate(`/profile/${user.id}`);
     };
 
+    // Initialize form data and shadow user when user changes or component mounts
     useEffect(() => {
         if (!user) return;
+        
         const fetchData = async () => {
-            setFormData(prevData => ({
-                ...prevData,
-                interests: user.interests,
-                gender: user.gender,
-                sexual_interest: user.sexual_interest,
-                first_name: user.first_name,
-                last_name: user.last_name,
-                email: user.email,
-                biography: user.biography,
-                location: user.location,
-            }));
+            const newFormData = {
+                interests: user.interests || [],
+                gender: user.gender || '',
+                sexual_interest: user.sexual_interest || '',
+                first_name: user.first_name || '',
+                last_name: user.last_name || '',
+                email: user.email || '',
+                biography: user.biography || '',
+                location: user.location || [],
+            };
             
-            // TODO: Why is it necessary to fetch interests?
-            try {
-                const response = await axios.get(`${import.meta.env.VITE_API_URL}/interests`);
-                setAllInterests(response.data);
-            } catch (err) {
-                displayAlert('error', 'Error fetching information');
-                console.error('Error fetching information:', err);
+            setFormData(newFormData);
+            
+            // Always update shadowUser with latest user data
+            setShadowUser(user);
+            
+            // Fetch interests only once
+            if (!allInterests) {
+                try {
+                    const response = await axios.get(`${import.meta.env.VITE_API_URL}/interests`);
+                    setAllInterests(response.data);
+                } catch (err) {
+                    displayAlert('error', 'Error fetching information');
+                    console.error('Error fetching information:', err);
+                }
             }
         };
-        // TODO: Why is it necessary to refetch data?
+        
         fetchData();
-    }, [user, showUploadDialog]);
-
-    useEffect(() => {
-        if (user) {
-            setShadowUser(prev => ({ 
-                ...user, 
-                interests: formData.interests, 
-                location: formData.location,
-                first_name: formData.first_name,
-                last_name: formData.last_name,
-                biography: formData.biography,
-                gender: formData.gender,
-                sexual_interest: formData.sexual_interest
-            }));
-        }
-    }, [user, formData, setShadowUser]);
-
-    useEffect(() => {
-        if (user?.location) {
-            setShadowUser(prevData => ({
-                ...prevData,
-                location: { 
-                    latitude: user?.location?.latitude, 
-                    longitude: user?.location?.longitude,
-                    city: user?.location?.city,
-                    country: user?.location?.country 
-                },
-            }));
-        }
-    }, [user?.location, setShadowUser]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [user]); // Only depend on user
 
     if (!user || !allInterests) return (
         <div className="edit-form-loading">

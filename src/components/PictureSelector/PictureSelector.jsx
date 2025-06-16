@@ -9,7 +9,7 @@ import { Dialog } from 'primereact/dialog';
 import { Button } from 'primereact/button';
 import PreviewItem from './PreviewItem';
 
-const PictureSelector = ({ showDialog, setShowDialog, setShadowUser }) => {
+const PictureSelector = ({ showDialog, setShowDialog }) => {
     const { token } = useContext(AuthContext);
     const { user, setUser } = useContext(UserContext);
     const [previews, setPreviews] = useState([]);
@@ -69,6 +69,10 @@ const PictureSelector = ({ showDialog, setShowDialog, setShadowUser }) => {
             setProfilePicture(updatedPreviews[0]);
         }
     };
+
+    useEffect(() => {
+        console.log('User context updated:', user);
+    }, [user]);
 
     const handleUpload = async () => {
         if (previews.every(preview => !preview.file)) return;
@@ -135,14 +139,12 @@ const PictureSelector = ({ showDialog, setShowDialog, setShadowUser }) => {
                     ...prev,
                     pictures: prev.pictures.filter(pic => pic.id !== preview.id),
                 }));
+                setPreviews(prev => prev.filter(p => p.id !== preview.id));
             } catch (error) {
                 displayAlert('error', 'Error deleting file');
                 return;
             }
         }
-
-        const updatedPreviews = previews.filter(p => p.id !== preview.id);
-        setPreviews(updatedPreviews);
 
         // If deleted picture was profile picture, set first remaining as profile
         if (profilePicture === preview && updatedPreviews.length > 0) {
@@ -173,8 +175,7 @@ const PictureSelector = ({ showDialog, setShowDialog, setShadowUser }) => {
             );
             if (response.data) {
                 const newPic = response.data;
-                const updatedPreviews = [...previews, newPic];
-                setPreviews(updatedPreviews);
+                setPreviews(prev => [...prev, newPic]);
                 setUser(prev => ({
                     ...prev,
                     pictures: [...prev.pictures, newPic],

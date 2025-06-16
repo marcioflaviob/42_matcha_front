@@ -10,17 +10,10 @@ export const UserProvider = ({ children }) => {
     const [loading, setLoading] = useState(true);
     const { token, isAuthenticated, isLoading } = useContext(AuthContext);
     const [dates, setDates] = useState([]);
-
-    const updateUser = (newUserData) => {
-        setUser(prevUser => ({
-            ...prevUser,
-            ...newUserData
-        }));
-    };
     
     const props = useMemo(() => ({
         user, 
-        setUser: updateUser,
+        setUser,
         loading,
         potentialMatches, 
         setPotentialMatches,

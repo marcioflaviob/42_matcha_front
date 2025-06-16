@@ -1,10 +1,19 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import './EditProfile.css';
 import EditProfileForm from '../../components/EditProfile/EditProfileForm/EditProfileForm';
 import ProfileCard from '../../components/HomePage/ProfileCard';
+import { UserContext } from '../../context/UserContext';
         
 const EditProfile = () => {
-  const [shadowUser, setShadowUser] = useState(null);
+	const { user } = useContext(UserContext);
+	const [shadowUser, setShadowUser] = useState(user);
+
+	useEffect(() => {
+		if (user) {
+			console.log('Setting shadowUser:', user);
+			setShadowUser(user);
+		}
+	}, [user]);
 
 	return (
 		<div className='edit-profile-container'>

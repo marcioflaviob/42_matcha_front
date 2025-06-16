@@ -18,57 +18,41 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
     const { token } = useContext(AuthContext);
     const { user, setUser } = useContext(UserContext);
     const [allInterests, setAllInterests] = useState(null);
-    const [showUploadDialog, setShowUploadDialog] = useState(false);
+    const [openPictureSelector, setOpenPictureSelector] = useState(false);
     const { setLocation } = AskLocation();
     const [loadingButton, setLoadingButton] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [formData, setFormData] = useState({
-        first_name: '',
-        last_name: '',
-        email: '',
-        interests: [],
-        gender: '',
-        sexual_interest: '',
-        biography: '',
-        location: [],
-    });
 
     const handleFirstNameChange = useCallback((e) => {
         const value = e.target.value;
-        setFormData(prev => ({ ...prev, first_name: value }));
         setShadowUser(prev => ({ ...prev, first_name: value }));
     }, [setShadowUser]);
 
     const handleLastNameChange = useCallback((e) => {
         const value = e.target.value;
-        setFormData(prev => ({ ...prev, last_name: value }));
         setShadowUser(prev => ({ ...prev, last_name: value }));
     }, [setShadowUser]);
 
     const handleBioChange = useCallback((e) => {
         const value = e.target.value;
-        setFormData(prev => ({ ...prev, biography: value }));
         setShadowUser(prev => ({ ...prev, biography: value }));
     }, [setShadowUser]);
 
     const handleEmailChange = useCallback((e) => {
         const value = e.target.value;
-        setFormData(prev => ({ ...prev, email: value }));
+        setShadowUser(prev => ({ ...prev, email: value }));
     }, []);
 
     const handleGenderSelect = (gender) => {
-        setFormData(prev => ({ ...prev, gender }));
         setShadowUser(prev => ({ ...prev, gender }));
     };
 
     const handleSexualInterestSelect = (sexual_interest) => {
-        setFormData(prev => ({ ...prev, sexual_interest }));
         setShadowUser(prev => ({ ...prev, sexual_interest }));
     };
 
     const handleRemoveInterest = (interestId) => {
-        const array = formData.interests.filter(item => item.id !== interestId);
-        setFormData(prevData => ({ ...prevData, interests: array }));
+        const array = shadowUser.interests.filter(item => item.id !== interestId);
         setShadowUser(prev => ({ ...prev, interests: array }));
     };
 
@@ -76,7 +60,6 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
         const value = e.target.value;
         const valueSet = new Set(value);
         const changes = allInterests.filter(interest => valueSet.has(interest.name));
-        setFormData(prevData => ({ ...prevData, [field]: changes }));
         setShadowUser(prev => ({ ...prev, interests: changes }));
     };
 
@@ -89,20 +72,20 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
 
     const updateUser = async () => {
         try {
-            await axios.put(`${import.meta.env.VITE_API_URL}/update-user`, formData, {
+            const response = await axios.put(`${import.meta.env.VITE_API_URL}/update-user`, shadowUser, {
                 headers: { Authorization: `Bearer ${token}` },
                 withCredentials: true,
             });
             
-            const userResponse = await axios.get(`${import.meta.env.VITE_API_URL}/auth/me`, {
-                headers: { Authorization: `Bearer ${token}` },
-            });
+            // const userResponse = await axios.get(`${import.meta.env.VITE_API_URL}/auth/me`, {
+            //     headers: { Authorization: `Bearer ${token}` },
+            // });
             
-            if (userResponse.data.user) {
-                setUser(userResponse.data.user);
+            if (response.data) {
+                setUser(response.data);
                 displayAlert('success', 'Profile updated successfully');
                 setTimeout(() => {
-                    navigate(`/profile/${userResponse.data.user.id}`);
+                    navigate(`/profile/${response.data.id}`);
                 }, 100);
             }
         } catch (error) {
@@ -115,8 +98,8 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
     const handleSave = async () => {
         try {
             setIsLoading(true);
-            if (formData.email !== user.email) {
-                formData.status = 'validation';
+            if (shadowUser.email !== user.email) {
+                shadowUser.status = 'validation';
             }
             await updateUser();
         } catch (error) {
@@ -131,42 +114,19 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
         navigate(`/profile/${user.id}`);
     };
 
-    // Initialize form data and shadow user when user changes or component mounts
     useEffect(() => {
-        if (!user) return;
-        
         const fetchData = async () => {
-            const newFormData = {
-                interests: user.interests || [],
-                gender: user.gender || '',
-                sexual_interest: user.sexual_interest || '',
-                first_name: user.first_name || '',
-                last_name: user.last_name || '',
-                email: user.email || '',
-                biography: user.biography || '',
-                location: user.location || [],
-            };
-            
-            setFormData(newFormData);
-            
-            // Always update shadowUser with latest user data
-            setShadowUser(user);
-            
-            // Fetch interests only once
-            if (!allInterests) {
-                try {
-                    const response = await axios.get(`${import.meta.env.VITE_API_URL}/interests`);
-                    setAllInterests(response.data);
-                } catch (err) {
-                    displayAlert('error', 'Error fetching information');
-                    console.error('Error fetching information:', err);
-                }
+            try {
+                const response = await axios.get(`${import.meta.env.VITE_API_URL}/interests`);
+                setAllInterests(response.data);
+            } catch (err) {
+                displayAlert('error', 'Error fetching information');
+                console.error('Error fetching information:', err);
             }
         };
-        
+
         fetchData();
-        // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [user]); // Only depend on user
+    }, []);
 
     if (!user || !allInterests) return (
         <div className="edit-form-loading">
@@ -196,7 +156,7 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
                         <div className="form-field">
                             <label>First Name</label>
                             <InputText 
-                                value={formData.first_name || ''} 
+                                value={shadowUser.first_name || ''} 
                                 onChange={handleFirstNameChange}
                                 placeholder="Enter your first name"
                             />
@@ -204,7 +164,7 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
                         <div className="form-field">
                             <label>Last Name</label>
                             <InputText 
-                                value={formData.last_name || ''} 
+                                value={shadowUser.last_name || ''} 
                                 onChange={handleLastNameChange}
                                 placeholder="Enter your last name"
                             />
@@ -214,7 +174,7 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
                         <label>Email</label>
                         <InputText 
                             type="email"
-                            value={formData.email || ''} 
+                            value={shadowUser.email || ''} 
                             onChange={handleEmailChange}
                             placeholder="Enter your email"
                         />
@@ -222,7 +182,7 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
                     <div className="form-field">
                         <label>Biography</label>
                         <InputTextarea 
-                            value={formData.biography || ''} 
+                            value={shadowUser.biography || ''} 
                             onChange={handleBioChange}
                             placeholder="Tell others about yourself..."
                             rows={4}
@@ -246,7 +206,7 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
                                 <Chip
                                     key={gender}
                                     label={gender}
-                                    className={`selection-chip ${formData.gender === gender ? 'selected' : ''}`}
+                                    className={`selection-chip ${shadowUser.gender === gender ? 'selected' : ''}`}
                                     onClick={() => handleGenderSelect(gender)}
                                 />
                             ))}
@@ -259,7 +219,7 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
                                 <Chip
                                     key={interest}
                                     label={interest}
-                                    className={`selection-chip ${formData.sexual_interest === interest ? 'selected' : ''}`}
+                                    className={`selection-chip ${shadowUser.sexual_interest === interest ? 'selected' : ''}`}
                                     onClick={() => handleSexualInterestSelect(interest)}
                                 />
                             ))}
@@ -278,7 +238,7 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
                     <div className="form-field">
                         <label>Select your interests</label>
                         <MultiSelect 
-                            value={formData.interests.map(interest => interest.name) || []} 
+                            value={shadowUser.interests.map(interest => interest.name) || []} 
                             options={allInterests} 
                             onChange={(e) => handleSelectChange(e, 'interests')}
                             optionLabel="name" 
@@ -289,9 +249,9 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
                             maxSelectedLabels={3}
                         />
                     </div>
-                    {formData.interests.length > 0 && (
+                    {shadowUser.interests.length > 0 && (
                         <div className="interests-display">
-                            {formData.interests.map((interest) => (
+                            {shadowUser.interests.map((interest) => (
                                 <Chip
                                     key={interest.id}
                                     label={interest.name}
@@ -325,7 +285,7 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
                     </div>
                     <div className="form-field">
                         <label>Profile Photos</label>
-                        <div className="upload-section" onClick={() => setShowUploadDialog(true)}>
+                        <div className="upload-section" onClick={() => setOpenPictureSelector(true)}>
                             <i className="pi pi-camera"></i>
                             <p>Click to update your photos</p>
                         </div>
@@ -352,8 +312,8 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
             </div>
 
             <PictureSelector 
-                showDialog={showUploadDialog} 
-                setShowDialog={setShowUploadDialog}
+                showDialog={openPictureSelector} 
+                setShowDialog={setOpenPictureSelector}
             />
         </div>
     );

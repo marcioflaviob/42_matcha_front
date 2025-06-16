@@ -97,12 +97,12 @@ const ProfileInfo = ({ userInfo }) => {
                     <div className="info-content">
                         <span className="info-label">Fame Rating</span>
                         <div className="fame-rating">
-                            <span className="fame-score">{userInfo.fame_rating || 69}</span>
+                            <span className="fame-score">{userInfo.rating || 0}</span>
                             <div className="fame-stars">
                                 {[...Array(5)].map((_, i) => (
                                     <i 
                                         key={i}
-                                        className={`pi pi-star${i < Math.floor((userInfo.fame_rating || 69) / 20) ? '-fill' : ''}`}
+                                        className={`pi pi-star${i < Math.floor((userInfo.rating || 0) / 20) ? '-fill' : ''}`}
                                     ></i>
                                 ))}
                             </div>

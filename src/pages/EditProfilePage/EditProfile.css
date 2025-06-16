@@ -1,12 +1,17 @@
 .edit-profile-container
 {
-    display: flex;
+    width: 100vw;
     height: calc(100vh - var(--footer-height) - var(--header-height));
+    display: flex;
+    overflow: hidden;
+    background: linear-gradient(135deg, #f8faf9 0%, #e9f5f0 50%, #f8faf9 100%);
 }
 
 @media (max-width: 768px) {
     .edit-profile-container {
-        flex-direction: column-reverse; /* Reverse order for mobile */
-        height: calc(200vh - var(--footer-height) - var(--header-height)); /* Adjust height for mobile */
+        height: auto;
+        min-height: calc(100vh - var(--footer-height) - var(--header-height));
+        flex-direction: column-reverse;
+        overflow-y: auto;
     }
 }

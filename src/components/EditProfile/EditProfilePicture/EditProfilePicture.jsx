@@ -23,7 +23,7 @@ const EditProfilePicture = ({ shadowUser, setShadowUser }) => {
   }
 
   return (
-    <div className="edit-profile-card">
+    <div className="edit-profile-picture-container">
       <ProfileCard profile={shadowUser} showButtons={false} />
     </div>
   );

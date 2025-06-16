@@ -7,6 +7,7 @@ import { displayAlert }  from "../../Notification/Notification"
 import { MultiSelect } from 'primereact/multiselect';
 import { InputText } from 'primereact/inputtext';
 import { InputTextarea } from 'primereact/inputtextarea';
+import { Rating } from 'primereact/rating';
 import { useNavigate} from 'react-router-dom';
 import { AuthContext } from '../../../context/AuthContext';
 import { Button } from 'primereact/button';
@@ -32,6 +33,7 @@ const EditProfileInfo = ({ setShadowUser }) => {
         sexual_interest: '',
         biography: '',
         location: [],
+        min_desired_rating: 0,
     });
 
     const handleChipClick = (value) => {
@@ -66,6 +68,13 @@ const EditProfileInfo = ({ setShadowUser }) => {
         }))
     };
 
+    const handleFameRatingChange = (e) => {
+        setFormData(prev => ({
+            ...prev,
+            min_desired_rating: e.value * 20 || 0
+        }));
+    };
+
     const handleDisableChange = (newValue) => {
         setDisableUpload(newValue);
     };
@@ -88,7 +97,7 @@ const EditProfileInfo = ({ setShadowUser }) => {
     };
 
     const updateUser = async () => {
-        try {
+        try {          
             await axios.put(`${import.meta.env.VITE_API_URL}/update-user`, formData,
                 {
                     headers: {
@@ -118,7 +127,7 @@ const EditProfileInfo = ({ setShadowUser }) => {
 
     const handleSave = async () => {
         try {
-            if (formData.email !== '') {
+            if (formData.email !== user.email) {
                 formData.status = 'validation';
             }
             await updateUser();
@@ -141,6 +150,7 @@ const EditProfileInfo = ({ setShadowUser }) => {
                 ['email']: user.email,
                 ['biography']: user.biography,
                 ['location']: user.location,
+                ['min_desired_rating']: user.min_desired_rating,
             }))
             try {
                 const response = await axios.get(`${import.meta.env.VITE_API_URL}/interests`);
@@ -178,77 +188,235 @@ const EditProfileInfo = ({ setShadowUser }) => {
     );
 
     return (
-    <div className='edit-profile-info-container'>
-        <div className="fixed-div"></div>
-        <div className="scrollable-div">
-            <form>
-                <div className='dual-bio'>
-                    <div className='bio-first-part'>
-                        <div className='edit-bio'>
-                            <div className='edit-bio-title'>First name</div>
-                            <InputText type="text" name='first_name' autoComplete="given-name" className="p-inputtext-sm input-name" value={formData.first_name || ''} placeholder={`${formData.first_name}`} onChange={handleFirstNameChange}></InputText>
-                        </div>
-                        <div className='edit-bio'>
-                            <div className='edit-bio-title'>Last name</div>
-                            <InputText type="text" name='last_name' autoComplete="family-name" className="p-inputtext-sm input-name" value={formData.last_name || ''} placeholder={`${formData.last_name}`} onChange={handleLastNameChange}></InputText>
-                        </div>
-                        <div className='edit-bio'>
-                            <div className='edit-bio-title'>Gender</div>
-                            <Chip className={`bio-small-chip ${formData.gender === 'Male' ? 'highlighted' : 'hoverable'}`} label={"Male"} key={72} onClick={() => handleChipClick("Male")}/>
-                            <Chip className={`bio-small-chip ${formData.gender === 'Female' ? 'highlighted' : 'hoverable'}`} label={"Female"} key={73} onClick={() => handleChipClick("Female")} />
-                            <Chip className={`bio-small-chip ${formData.gender === 'Other' ? 'highlighted' : 'hoverable'}`} label={"Other"} key={74} onClick={() => handleChipClick("Other")}/>
-                        </div>
-                        <div className='edit-bio'>
-                            <div className='edit-bio-title'>Email</div>
-                            <InputText type="email" name='email' autoComplete="email" className="p-inputtext-sm input-name" value={formData.email || ''} placeholder={`${formData.email}`} onChange={(e) => setFormData({...formData, email: e.target.value})}></InputText>
-                        </div>
+        <div className='edit-profile-info-section'>
+            {/* Header Card */}
+            <div className="edit-profile-header-card">
+                <div className="edit-profile-name-section">
+            <h1 className="edit-profile-display-name">Edit Profile</h1>
+                    <p className="edit-profile-subtitle">Update your profile information</p>
+                </div>
+                <Button 
+                    label="Save Changes" 
+                    icon="pi pi-check"
+                    className="save-profile-btn"
+                    onClick={handleSave}
+                />
+            </div>
+
+            {/* Personal Info Card */}
+            <div className="edit-profile-card">
+                <h3 className="section-title">
+                    <i className="pi pi-user"></i>
+                    Personal Information
+                </h3>
+                <div className="edit-info-grid">
+                    <div className="edit-field">
+                        <label className="field-label">First Name</label>
+                        <InputText 
+                            type="text" 
+                            name='first_name' 
+                            autoComplete="given-name" 
+                            className="field-input" 
+                            value={formData.first_name || ''} 
+                            onChange={handleFirstNameChange}
+                        />
                     </div>
-                    <div className='bio-second-part'>
-                        <div className='edit-bio-container'>
-                            <div className='edit-bio-title'>Bio</div>
-                            <InputTextarea type="text" className="input-bio" value={formData.biography || ''} placeholder={`${formData.biography}`} onChange={handleBioChange}></InputTextarea>
-                        </div>
-                        <div className='edit-bio'>
-                            <div className='edit-bio-title'>Looking for</div>
-                            <Chip className={`bio-small-chip ${formData.sexual_interest === 'Male' ? 'highlighted' : 'hoverable'}`} label={"Male"} key={69} onClick={() => {setFormData(prev => ({
-                                ...prev,
-                                sexual_interest: 'Male'
-                            }))}}/>
-                            <Chip className={`bio-small-chip ${formData.sexual_interest === 'Female' ? 'highlighted' : 'hoverable'}`} label={"Female"} key={70} onClick={() => {setFormData(prev => ({
-                                ...prev,
-                                sexual_interest: 'Female'
-                            }))}}/>
-                            <Chip className={`bio-small-chip ${formData.sexual_interest === 'Any' ? 'highlighted' : 'hoverable'}`} label={"Any"} key={71} onClick={() => {setFormData(prev => ({
-                                ...prev,
-                                sexual_interest: 'Any'
-                            }))}}/>
-                        </div>
-                        <div className='edit-bio'>
-                            <Button label="Change location" loading={loadingButton} type="button" onClick={handleRequestLocation}/>
+                    <div className="edit-field">
+                        <label className="field-label">Last Name</label>
+                        <InputText 
+                            type="text" 
+                            name='last_name' 
+                            autoComplete="family-name" 
+                            className="field-input" 
+                            value={formData.last_name || ''} 
+                            onChange={handleLastNameChange}
+                        />
+                    </div>
+                    <div className="edit-field">
+                        <label className="field-label">Email</label>
+                        <InputText 
+                            type="email" 
+                            name='email' 
+                            autoComplete="email" 
+                            className="field-input" 
+                            value={formData.email || ''} 
+                            onChange={(e) => setFormData({...formData, email: e.target.value})}
+                        />
+                    </div>
+                </div>
+            </div>
+
+            {/* Bio Card */}
+            <div className="edit-profile-card">
+                <h3 className="section-title">
+                    <i className="pi pi-file-edit"></i>
+                    About Me
+                </h3>
+                <div className="edit-field">
+                    <label className="field-label">Biography</label>
+                    <InputTextarea 
+                        className="field-textarea" 
+                        value={formData.biography || ''} 
+                        placeholder="Tell us about yourself..."
+                        onChange={handleBioChange}
+                        rows={4}
+                    />
+                </div>
+            </div>
+
+            {/* Preferences Grid */}
+            <div className="edit-preferences-grid">
+                <div className="edit-profile-card">
+                    <div className="preference-icon">
+                        <i className="pi pi-user"></i>
+                    </div>
+                    <div className="preference-content">
+                        <span className="preference-label">Gender</span>
+                        <div className="chip-selection">
+                            <Chip 
+                                className={`selection-chip ${formData.gender === 'Male' ? 'selected' : ''}`} 
+                                label="Male" 
+                                onClick={() => handleChipClick("Male")}
+                            />
+                            <Chip 
+                                className={`selection-chip ${formData.gender === 'Female' ? 'selected' : ''}`} 
+                                label="Female" 
+                                onClick={() => handleChipClick("Female")} 
+                            />
+                            <Chip 
+                                className={`selection-chip ${formData.gender === 'Other' ? 'selected' : ''}`} 
+                                label="Other" 
+                                onClick={() => handleChipClick("Other")}
+                            />
                         </div>
                     </div>
                 </div>
-                <div className='edit-bio-interests'>
-                    <div className='edit-bio-title'>Interests</div>
-                    <span className='hobby-selection'>
-                        <MultiSelect id='interests' className='hobby-selection-input' value={formData.interests.map(interest => interest.name) || []} options={allInterests} onChange={(e) => handleSelectChange(e, 'interests')}
-                            optionLabel="name" optionValue="name" placeholder='Select your interests' showSelectAll={false} showClear={true}/>
-                    </span>
-                    <div className='bio-container-interest'>
-                            {formData.interests?.map((interest) => (
-                                <Chip className='bio-interest' label={interest.name} key={interest.id} removable onRemove={() => handleRemoveInterest(interest.id)}/>
-                            ))}
+
+                <div className="edit-profile-card">
+                    <div className="preference-icon">
+                        <i className="pi pi-heart"></i>
+                    </div>
+                    <div className="preference-content">
+                        <span className="preference-label">Looking for</span>
+                        <div className="chip-selection">
+                            <Chip 
+                                className={`selection-chip ${formData.sexual_interest === 'Male' ? 'selected' : ''}`} 
+                                label="Male" 
+                                onClick={() => setFormData(prev => ({...prev, sexual_interest: 'Male'}))}
+                            />
+                            <Chip 
+                                className={`selection-chip ${formData.sexual_interest === 'Female' ? 'selected' : ''}`} 
+                                label="Female" 
+                                onClick={() => setFormData(prev => ({...prev, sexual_interest: 'Female'}))}
+                            />
+                            <Chip 
+                                className={`selection-chip ${formData.sexual_interest === 'Any' ? 'selected' : ''}`} 
+                                label="Any" 
+                                onClick={() => setFormData(prev => ({...prev, sexual_interest: 'Any'}))}
+                            />
+                        </div>
                     </div>
                 </div>
-                <div className='edit-bio-upload'>
-                    <div className='edit-bio-title'>Change Pictures</div>
-                    <i className="pi pi-upload upload-button" onClick={() => setDisableUpload(false)}></i>
+
+                <div className="edit-profile-card">
+                    <div className="preference-icon">
+                        <i className="pi pi-map-marker"></i>
+                    </div>
+                    <div className="preference-content">
+                        <span className="preference-label">Location</span>
+                        <Button 
+                            label="Update Location" 
+                            loading={loadingButton} 
+                            className="location-btn"
+                            onClick={handleRequestLocation}
+                            outlined
+                        />
+                    </div>
                 </div>
-            </form> 
+
+                <div className="edit-profile-card">
+                    <div className="preference-icon">
+                        <i className="pi pi-star"></i>
+                    </div>
+                    <div className="preference-content">
+                        <span className="preference-label">Minimum Fame Rating</span>
+                        <div className="fame-rating-container">
+                            <p className="fame-rating-description">
+                                Only show users with this rating or higher
+                            </p>
+                            <div className="fame-rating-selector">
+                                <Rating 
+                                    value={Math.floor(formData.min_desired_rating / 20)}
+                                    onChange={handleFameRatingChange}
+                                    cancel={true}
+                                    className="custom-rating"
+                                    stars={5}
+                                />
+                                <span className="fame-rating-value">
+                                    {formData.min_desired_rating === 0 ? 'Any rating' : `${formData.min_desired_rating / 20}+ star${formData.min_desired_rating / 20 > 1 ? 's' : ''}`}
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            {/* Interests Card */}
+            <div className="edit-profile-card">
+                <h3 className="section-title">
+                    <i className="pi pi-tags"></i>
+                    Interests
+                </h3>
+                <div className="edit-field">
+                    <label className="field-label">Select your interests</label>
+                    <MultiSelect 
+                        id='interests' 
+                        className='interests-selector' 
+                        value={formData.interests.map(interest => interest.name) || []} 
+                        options={allInterests} 
+                        onChange={(e) => handleSelectChange(e, 'interests')}
+                        optionLabel="name" 
+                        optionValue="name" 
+                        placeholder='Choose your interests...' 
+                        showSelectAll={false} 
+                        showClear={true}
+                    />
+                </div>
+                {formData.interests && formData.interests.length > 0 && (
+                    <div className="selected-interests">
+                        {formData.interests.map((interest) => (
+                            <Chip 
+                                key={interest.id}
+                                className='interest-tag' 
+                                label={interest.name} 
+                                removable 
+                                onRemove={() => handleRemoveInterest(interest.id)}
+                            />
+                        ))}
+                    </div>
+                )}
+            </div>
+
+            {/* Pictures Card */}
+            <div className="edit-profile-card">
+                <h3 className="section-title">
+                    <i className="pi pi-image"></i>
+                    Profile Pictures
+                </h3>
+                <div className="upload-section">
+                    <p className="upload-description">Upload and manage your profile photos</p>
+                    <Button 
+                        icon="pi pi-upload" 
+                        label="Change Pictures"
+                        className="upload-btn"
+                        onClick={() => setDisableUpload(false)}
+                        outlined
+                    />
+                </div>
+            </div>
+
+            <PictureSelector disabled={disableUpload} onDisabledChange={handleDisableChange} />
         </div>
-        <div className='save-button' role='button' onClick={() => handleSave()}>Save</div>
-        <PictureSelector disabled={disableUpload} onDisabledChange={handleDisableChange}></PictureSelector>
-    </div>
     );
 };
 

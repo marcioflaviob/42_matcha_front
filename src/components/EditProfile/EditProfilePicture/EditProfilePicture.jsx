@@ -5,23 +5,9 @@ import ProfileCard from '../../HomePage/ProfileCard';
 import 'primeicons/primeicons.css';
         
 const EditProfilePicture = ({ shadowUser, setShadowUser }) => {
-
   const { user } = useContext(UserContext);
 
-  // useEffect(() => {
-  //   // Only set shadowUser if it's not already set (initial load)
-  //   if (user && !shadowUser)
-  //     setShadowUser(user);
-  // }, [user, shadowUser, setShadowUser]);
-
-  if (!user)
-  {
-    return (
-      <div className="ProfilePicture-div">
-
-      </div>
-    )
-  }
+  if (!user) return <></>;
 
   return (
     <div className="edit-profile-card">

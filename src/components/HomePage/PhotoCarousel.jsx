@@ -22,7 +22,7 @@ const PhotoCarousel = ({ userInfo, currentImageIndex, setCurrentImageIndex }) =>
       {userInfo.pictures.length > 0 && (
         <>
           <img 
-            src={`${import.meta.env.VITE_BLOB_URL}/${userInfo.pictures[currentImageIndex].url}`}
+            src={`${import.meta.env.VITE_BLOB_URL}/${userInfo?.pictures[currentImageIndex]?.url}`}
             alt={`${userInfo.first_name} ${currentImageIndex + 1}`}
             className="profile-main-image"
             onError={(e) => {

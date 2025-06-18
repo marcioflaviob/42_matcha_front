@@ -16,6 +16,7 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
     const [profilePicture, setProfilePicture] = useState(null);
     const [urlInput, setUrlInput] = useState('');
     const [isUrlLoading, setIsUrlLoading] = useState(false);
+    const [hasToSave, setHasToSave] = useState(false);
     const fileInputRef = useRef(null);
     const uploadUrl = import.meta.env.VITE_API_URL + "/upload/single/";
 
@@ -70,16 +71,11 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
         }
     };
 
-    useEffect(() => {
-        console.log('User context updated:', user);
-    }, [user]);
-
     const handleUpload = async () => {
         if (previews.every(preview => !preview.file)) return;
 
         try {
             await uploadFiles();
-            await handleDelete();
             resetState();
         } catch (error) {
             console.error('Error:', error);
@@ -92,7 +88,7 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
             if (!file.file) continue;
 
             const payload = new FormData();
-            payload.append('isProfilePicture', file === profilePicture);
+            payload.append('isProfilePicture', file.id === profilePicture.id);
             payload.append('picture', file.file);
 
             const result = await axios.post(uploadUrl, payload, {
@@ -115,17 +111,26 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
         setPreviews([]);
         setProfilePicture(null);
         setShowDialog(false);
+        setHasToSave(false);
+        setUrlInput('');
+        fileInputRef.current.value = null;
     };
 
     const handleUploadClick = (e) => {
         const files = Array.from(e.target.files);
         if (files.length > 0) addPreviews(files);
+        setHasToSave(true);
         e.target.value = null;
     };
 
     const handleXButton = async (preview) => {
         if (previews.length === 1) {
             displayAlert('error', 'You need to have at least 1 picture');
+            return;
+        }
+
+        if (preview.id === profilePicture?.id) {
+            displayAlert('warn', 'You cannot delete your profile picture.');
             return;
         }
 
@@ -144,6 +149,8 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
                 displayAlert('error', 'Error deleting file');
                 return;
             }
+        } else { // If it's a local file, just remove it from previews
+            setPreviews(prev => prev.filter(p => p.id !== preview.id));
         }
 
         // If deleted picture was profile picture, set first remaining as profile
@@ -154,7 +161,36 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
         }
     };
 
-    const handleSetProfilePicture = (preview) => {
+    const handleSetProfilePicture = async (preview) => {
+        if (preview.file) { // If it's a new file, just set it locally
+            setProfilePicture(preview);
+            setPreviews(prev =>
+                prev.map(pic => ({
+                    ...pic,
+                    is_profile: pic.id === preview.id,
+                }))
+            );
+            setHasToSave(true);
+            return;
+        }
+
+        const response = await axios.put(
+            `${import.meta.env.VITE_API_URL}/pictures/${preview.user_id}/${preview.id}/profile`, 
+            {},
+            {
+                headers: { Authorization: `Bearer ${token}` },
+                withCredentials: true,
+            }
+        );
+        if (response.data) {
+            setUser(prev => {
+                const reorderedPictures = prev.pictures
+                    .map(pic => ({ ...pic, is_profile: pic.id === preview.id }))
+                    .sort((a, b) => b.is_profile - a.is_profile);
+                
+                return { ...prev, pictures: reorderedPictures };
+            });
+        }
         setProfilePicture(preview);
     };
 
@@ -203,136 +239,141 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
         }
     }, [showDialog]);
 
-    if (!showDialog || !user) {
+    if (!user) {
         return null;
     }
 
     return (
-        <Dialog 
-            visible={showDialog} 
-            onHide={() => setShowDialog(false)} 
-            className="picture-selector-dialog"
-            header={
-                <div className="dialog-header">
-                    <i className="pi pi-images"></i>
-                    Manage Your Photos
-                </div>
-            }
-            style={{ width: '90vw', maxWidth: '900px' }}
-            modal
-        >
-            <div className="picture-selector-content">
-
-                {/* Upload Section Card */}
-                <div className="upload-card">
-                    <h3>
-                        <i className="pi pi-cloud-upload"></i>
-                        Upload New Photos
-                    </h3>
-                    <div 
-                        className="upload-drop-zone"
-                        onDragEnter={handleDragEnter}
-                        onDragLeave={handleDragLeave}
-                        onDragOver={handleDragOver}
-                        onDrop={handleDrop}
-                        onClick={triggerFileInput}
-                    >
-                        <input
-                            ref={fileInputRef}
-                            type="file"
-                            onChange={handleUploadClick}
-                            multiple
-                            accept="image/*"
-                            style={{ display: 'none' }}
-                        />
-                        <i className="pi pi-upload upload-icon"></i>
-                        <p className="upload-text">Click or drag and drop images here</p>
-                        <small className="upload-limit">Maximum 5 photos ({previews.length}/5)</small>
+        <>
+            <div className="upload-section" onClick={() => setShowDialog(true)}>
+                <i className="pi pi-camera"></i>
+                <p>Click to update your photos</p>
+            </div>
+            <Dialog 
+                visible={showDialog} 
+                onHide={() => setShowDialog(false)} 
+                className="picture-selector-dialog"
+                header={
+                    <div className="dialog-header">
+                        <i className="pi pi-images"></i>
+                        Manage Your Photos
                     </div>
-                </div>
+                }
+                style={{ width: '90vw', maxWidth: '900px' }}
+                modal
+                >
+                <div className="picture-selector-content">
 
-                {/* Import from URL Card */}
-                <div className="upload-card" style={{ opacity: previews.length >= 5 ? 0.5 : 1 }}>
-                    <h3>
-                        <i className="pi pi-link"></i>
-                        Import from social media
-                    </h3>
-                    <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
-                        <input
-                            type="text"
-                            className="p-inputtext"
-                            placeholder="Paste image URL here..."
-                            value={urlInput}
-                            onChange={e => setUrlInput(e.target.value)}
-                            disabled={previews.length >= 5 || isUrlLoading}
-                            style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid #e9f5f0', fontSize: '1rem' }}
-                        />
-                        <Button
-                            label={isUrlLoading ? 'Importing...' : 'Import Photo'}
-                            icon="pi pi-arrow-down"
-                            className="action-button save-button"
-                            onClick={handleImportFromUrl}
-                            disabled={previews.length >= 5 || isUrlLoading}
-                        />
-                        <small className="upload-limit">Maximum 5 photos ({previews.length}/5)</small>
+                    {/* Upload Section Card */}
+                    <div className="upload-card">
+                        <h3>
+                            <i className="pi pi-cloud-upload"></i>
+                            Upload New Photos
+                        </h3>
+                        <div 
+                            className="upload-drop-zone"
+                            onDragEnter={handleDragEnter}
+                            onDragLeave={handleDragLeave}
+                            onDragOver={handleDragOver}
+                            onDrop={handleDrop}
+                            onClick={triggerFileInput}
+                            >
+                            <input
+                                ref={fileInputRef}
+                                type="file"
+                                onChange={handleUploadClick}
+                                multiple
+                                accept="image/*"
+                                style={{ display: 'none' }}
+                                />
+                            <i className="pi pi-upload upload-icon"></i>
+                            <p className="upload-text">Click or drag and drop images here</p>
+                            <small className="upload-limit">Maximum 5 photos ({previews.length}/5)</small>
+                        </div>
                     </div>
-                </div>
 
-                {/* Photos Grid Card */}
-                <div className="photos-card">
-                    <h3>
-                        <span>
-                            <i className="pi pi-images" style={{marginRight: '0.5rem'}} ></i>
-                            Your Photos
-                        </span>
-                        {profilePicture && (
-                            <span className="profile-indicator">
-                                <i className="pi pi-star-fill"></i>
-                                Profile picture selected
+                    {/* Import from URL Card */}
+                    <div className="upload-card" style={{ opacity: previews.length >= 5 ? 0.5 : 1 }}>
+                        <h3>
+                            <i className="pi pi-link"></i>
+                            Import from social media
+                        </h3>
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
+                            <input
+                                type="text"
+                                className="p-inputtext"
+                                placeholder="Paste image URL here..."
+                                value={urlInput}
+                                onChange={e => setUrlInput(e.target.value)}
+                                disabled={previews.length >= 5 || isUrlLoading}
+                                style={{ padding: '0.75rem', borderRadius: '8px', border: '1px solid #e9f5f0', fontSize: '1rem' }}
+                                />
+                            <Button
+                                label={isUrlLoading ? 'Importing...' : 'Import Photo'}
+                                icon="pi pi-arrow-down"
+                                className="action-button save-button"
+                                onClick={handleImportFromUrl}
+                                disabled={previews.length >= 5 || isUrlLoading}
+                                />
+                            <small className="upload-limit">Maximum 5 photos ({previews.length}/5)</small>
+                        </div>
+                    </div>
+
+                    {/* Photos Grid Card */}
+                    <div className="photos-card">
+                        <h3>
+                            <span>
+                                <i className="pi pi-images" style={{marginRight: '0.5rem'}} ></i>
+                                Your Photos
                             </span>
-                        )}
-                    </h3>
-                    
-                    {previews.length > 0 ? (
-                        <div className="photos-grid">
-                            {previews.map(preview => (
-                                <PreviewItem
+                            {profilePicture && (
+                                <span className="profile-indicator">
+                                    <i className="pi pi-star-fill"></i>
+                                    Profile picture selected
+                                </span>
+                            )}
+                        </h3>
+                        
+                        {previews.length > 0 ? (
+                            <div className="photos-grid">
+                                {previews.map(preview => (
+                                    <PreviewItem
                                     key={preview.id}
                                     preview={preview}
-                                    isProfilePicture={profilePicture === preview}
+                                    isProfilePicture={profilePicture.id === preview.id}
                                     onRemove={handleXButton}
                                     onSetProfile={handleSetProfilePicture}
-                                />
-                            ))}
-                        </div>
-                    ) : (
-                        <div className="no-photos">
-                            <i className="pi pi-image"></i>
-                            <p>No photos uploaded yet</p>
-                            <small>Upload at least one photo to continue</small>
-                        </div>
-                    )}
-                </div>
+                                    />
+                                ))}
+                            </div>
+                        ) : (
+                            <div className="no-photos">
+                                <i className="pi pi-image"></i>
+                                <p>No photos uploaded yet</p>
+                                <small>Upload at least one photo to continue</small>
+                            </div>
+                        )}
+                    </div>
 
-                {/* Action Buttons */}
-                <div className="dialog-actions">
-                    <Button 
-                        label="Cancel" 
-                        icon="pi pi-times"
-                        className="action-button cancel-button"
-                        onClick={() => setShowDialog(false)}
-                        outlined
-                    />
-                    <Button 
-                        label="Save Changes" 
-                        icon="pi pi-check"
-                        className="action-button save-button"
-                        onClick={handleUpload}
-                        disabled={previews.length === 0 || previews.every(preview => !preview.file)}
-                    />
+                    {/* Action Buttons */}
+                    <div className="dialog-actions">
+                        <Button                         label={hasToSave ? "Cancel" : "Close" }
+                            icon="pi pi-times"
+                            className="action-button cancel-button"
+                            onClick={() => setShowDialog(false)}
+                            outlined
+                            />
+                        <Button 
+                            label={hasToSave ? "Save Changes" : "Changes saved" } 
+                            icon="pi pi-check"
+                            className="action-button save-button"
+                            onClick={handleUpload}
+                            disabled={previews.length === 0 || previews.every(preview => !preview.file)}
+                            />
+                    </div>
                 </div>
-            </div>
-        </Dialog>
+            </Dialog>
+        </>
     );
 };
 

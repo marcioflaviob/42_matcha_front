@@ -10,8 +10,10 @@ const EditProfile = () => {
 
 	useEffect(() => {
 		if (user) {
-			console.log('Setting shadowUser:', user);
-			setShadowUser(user);
+			setShadowUser(prev => ({
+				...prev,
+				pictures: user.pictures || prev.pictures,
+        	}));
 		}
 	}, [user]);
 

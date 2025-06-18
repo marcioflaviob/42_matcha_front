@@ -23,33 +23,14 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
     const [loadingButton, setLoadingButton] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
-    const handleFirstNameChange = useCallback((e) => {
+    const handleFieldChange = useCallback((field) => (e) => {
         const value = e.target.value;
-        setShadowUser(prev => ({ ...prev, first_name: value }));
+        setShadowUser(prev => ({ ...prev, [field]: value }));
     }, [setShadowUser]);
 
-    const handleLastNameChange = useCallback((e) => {
-        const value = e.target.value;
-        setShadowUser(prev => ({ ...prev, last_name: value }));
+    const handleSelection = useCallback((field, value) => {
+        setShadowUser(prev => ({ ...prev, [field]: value }));
     }, [setShadowUser]);
-
-    const handleBioChange = useCallback((e) => {
-        const value = e.target.value;
-        setShadowUser(prev => ({ ...prev, biography: value }));
-    }, [setShadowUser]);
-
-    const handleEmailChange = useCallback((e) => {
-        const value = e.target.value;
-        setShadowUser(prev => ({ ...prev, email: value }));
-    }, []);
-
-    const handleGenderSelect = (gender) => {
-        setShadowUser(prev => ({ ...prev, gender }));
-    };
-
-    const handleSexualInterestSelect = (sexual_interest) => {
-        setShadowUser(prev => ({ ...prev, sexual_interest }));
-    };
 
     const handleRemoveInterest = (interestId) => {
         const array = shadowUser.interests.filter(item => item.id !== interestId);
@@ -72,14 +53,14 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
 
     const updateUser = async () => {
         try {
-            const response = await axios.put(`${import.meta.env.VITE_API_URL}/update-user`, shadowUser, {
+            let payload = { ...shadowUser };
+            if (shadowUser.email.trim() == user.email) delete payload.email;
+            delete payload.status;
+
+            const response = await axios.put(`${import.meta.env.VITE_API_URL}/update-user`, payload, {
                 headers: { Authorization: `Bearer ${token}` },
                 withCredentials: true,
             });
-            
-            // const userResponse = await axios.get(`${import.meta.env.VITE_API_URL}/auth/me`, {
-            //     headers: { Authorization: `Bearer ${token}` },
-            // });
             
             if (response.data) {
                 setUser(response.data);
@@ -157,7 +138,7 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
                             <label>First Name</label>
                             <InputText 
                                 value={shadowUser.first_name || ''} 
-                                onChange={handleFirstNameChange}
+                                onChange={handleFieldChange('first_name')}
                                 placeholder="Enter your first name"
                             />
                         </div>
@@ -165,7 +146,7 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
                             <label>Last Name</label>
                             <InputText 
                                 value={shadowUser.last_name || ''} 
-                                onChange={handleLastNameChange}
+                                onChange={handleFieldChange('last_name')}
                                 placeholder="Enter your last name"
                             />
                         </div>
@@ -175,7 +156,7 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
                         <InputText 
                             type="email"
                             value={shadowUser.email || ''} 
-                            onChange={handleEmailChange}
+                            onChange={handleFieldChange('email')}
                             placeholder="Enter your email"
                         />
                     </div>
@@ -183,7 +164,7 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
                         <label>Biography</label>
                         <InputTextarea 
                             value={shadowUser.biography || ''} 
-                            onChange={handleBioChange}
+                            onChange={handleFieldChange('biography')}
                             placeholder="Tell others about yourself..."
                             rows={4}
                             autoResize
@@ -207,7 +188,7 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
                                     key={gender}
                                     label={gender}
                                     className={`selection-chip ${shadowUser.gender === gender ? 'selected' : ''}`}
-                                    onClick={() => handleGenderSelect(gender)}
+                                    onClick={() => handleSelection('gender', gender)}
                                 />
                             ))}
                         </div>
@@ -220,7 +201,7 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
                                     key={interest}
                                     label={interest}
                                     className={`selection-chip ${shadowUser.sexual_interest === interest ? 'selected' : ''}`}
-                                    onClick={() => handleSexualInterestSelect(interest)}
+                                    onClick={() => handleSelection('sexual_interest', interest)}
                                 />
                             ))}
                         </div>
@@ -285,10 +266,10 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
                     </div>
                     <div className="form-field">
                         <label>Profile Photos</label>
-                        <div className="upload-section" onClick={() => setOpenPictureSelector(true)}>
-                            <i className="pi pi-camera"></i>
-                            <p>Click to update your photos</p>
-                        </div>
+                        <PictureSelector 
+                            showDialog={openPictureSelector} 
+                            setShowDialog={setOpenPictureSelector}
+                        />
                     </div>
                 </div>
             </div>
@@ -311,10 +292,6 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
                 />
             </div>
 
-            <PictureSelector 
-                showDialog={openPictureSelector} 
-                setShowDialog={setOpenPictureSelector}
-            />
         </div>
     );
 };

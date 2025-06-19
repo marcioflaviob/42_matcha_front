@@ -16,7 +16,7 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
     const [profilePicture, setProfilePicture] = useState(null);
     const [urlInput, setUrlInput] = useState('');
     const [isUrlLoading, setIsUrlLoading] = useState(false);
-    const [isLoading, setLoading] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [hasToSave, setHasToSave] = useState(false);
     const fileInputRef = useRef(null);
     const uploadUrl = import.meta.env.VITE_API_URL + "/upload/single/";
@@ -74,11 +74,11 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
 
     const handleUpload = async () => {
         if (previews.every(preview => !preview.file)) return;
-        setLoading(true);
+        setIsLoading(true);
         try {
             await uploadFiles();
             resetState();
-            setLoading(false);
+            setIsLoading(false);
         } catch (error) {
             console.error('Error:', error);
             displayAlert('error', 'An error occurred. Please try again later.');
@@ -256,7 +256,7 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
                 header={
                     <div className="dialog-header">
                         <i className="pi pi-images" />
-                        Manage Your Photos
+                        {' '}Manage Your Photos
                     </div>
                 }
                 style={{ width: '90vw', maxWidth: '900px' }}
@@ -323,8 +323,8 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
                     <div className="photos-card">
                         <h3>
                             <span>
-                                <i className="pi pi-images" style={{marginRight: '0.5rem'}} />
-                                Your Photos
+                                <i className="pi pi-images" style={{marginRight: '0.2rem'}} />
+                                {' '}Your Photos
                             </span>
                             {profilePicture && (
                                 <span className="profile-indicator">

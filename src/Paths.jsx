@@ -6,6 +6,7 @@ import HomePage from "./base/HomePage/HomePage";
 import EditProfile from "./pages/EditProfilePage/EditProfile";
 import ResetPassword from "./pages/ResetPassword/ResetPassword";
 import GoogleCallback from "./pages/GoogleAuthentication/GoogleCallback";
+import Error from "./pages/Error/Error";
 
 export const Paths = [
 	{path: '', component: <HomePage/>},
@@ -15,5 +16,6 @@ export const Paths = [
 	{path: '/chat', component: <ChatPage />},
 	{path: '/edit-profile/', component: <EditProfile />},
 	{path: '/reset-password', component: <ResetPassword />},
-	{path: "/auth/google/callback", component: <GoogleCallback /> },
+	{path: '/auth/google/callback', component: <GoogleCallback /> },
+	{path: '*', component: <Error /> }
 ];

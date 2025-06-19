@@ -27,7 +27,8 @@ export const displayCall = (data) => {
         detail: content, 
         life: 100000, 
         closable: false,
-        sticky: true 
+        sticky: true,
+        className: 'call-toast'
     });
 }
 

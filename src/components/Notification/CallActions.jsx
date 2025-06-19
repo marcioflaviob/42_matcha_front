@@ -27,13 +27,13 @@ export const CallActions = ({ userId }) => {
     <div className="call-actions">
       <Button 
         icon="pi pi-phone" 
-        className="accept-call-btn p-button-success" 
+        className="accept-call-btn" 
         onClick={handleAccept} 
         label="Accept" 
       />
       <Button 
         icon="pi pi-times" 
-        className="refuse-call-btn p-button-danger" 
+        className="refuse-call-btn" 
         onClick={handleRefuse} 
         label="Decline" 
       />
@@ -49,7 +49,7 @@ export const getContent = (data) => {
   return (
     <div className="call-notification">
       <div className="call-message">
-        <span className="caller-name">{callerName}</span> {message}
+        <span className="caller-name">{callerName}</span>{message}
       </div>
       <CallActions userId={userId} />
     </div>

@@ -236,61 +236,11 @@
 .p-toast .p-toast-message.call-toast {
 	border-left: 4px solid #2a815b !important;
 	border: 2px solid rgba(42, 129, 91, 0.3) !important;
-	border-left: 4px solid #2a815b !important;
 	background: linear-gradient(135deg, #ffffff 0%, #f8faf9 100%) !important;
 	min-width: 400px !important;
 	box-shadow: 0 0 0 1px rgba(42, 129, 91, 0.1), 0 6px 20px rgba(42, 129, 91, 0.15) !important;
-	animation: callPulse 1.5s infinite ease-in-out !important;
-	position: relative !important;
-	-webkit-animation: callPulse 1.5s infinite ease-in-out !important;
-	-moz-animation: callPulse 1.5s infinite ease-in-out !important;
-	-o-animation: callPulse 1.5s infinite ease-in-out !important;
-}
-
-.p-toast-top-right .p-toast-message.call-toast,
-.p-toast .p-toast-message.call-toast.p-toast-message-info {
-	animation: callPulse 1.5s infinite ease-in-out !important;
-	-webkit-animation: callPulse 1.5s infinite ease-in-out !important;
-	-moz-animation: callPulse 1.5s infinite ease-in-out !important;
-	-o-animation: callPulse 1.5s infinite ease-in-out !important;
-	animation-fill-mode: both !important;
-	transform-origin: center !important;
-	will-change: transform, box-shadow, border-color !important;
-}
-
-.p-toast .p-toast-message.call-toast {
 	z-index: 9999 !important;
 	position: relative !important;
-}
-
-@keyframes callPulse {
-	0% {
-		box-shadow: 0 6px 20px rgba(42, 129, 91, 0.15), 0 0 0 1px rgba(42, 129, 91, 0.1) !important;
-		border-left-color: #2a815b !important;
-		transform: scale(1) !important;
-	}
-	50% {
-		box-shadow: 0 10px 35px rgba(42, 129, 91, 0.4), 0 0 0 2px rgba(42, 129, 91, 0.2) !important;
-		border-left-color: #3a9970 !important;
-		transform: scale(1.03) !important;
-	}
-	100% {
-		box-shadow: 0 6px 20px rgba(42, 129, 91, 0.15), 0 0 0 1px rgba(42, 129, 91, 0.1) !important;
-		border-left-color: #2a815b !important;
-		transform: scale(1) !important;
-	}
-}
-
-@keyframes glowPulse {
-	0% {
-		opacity: 0.1;
-	}
-	50% {
-		opacity: 0.3;
-	}
-	100% {
-		opacity: 0.1;
-	}
 }
 
 .p-toast .p-toast-message.p-toast-message-success {

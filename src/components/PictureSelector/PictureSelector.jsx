@@ -16,6 +16,7 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
     const [profilePicture, setProfilePicture] = useState(null);
     const [urlInput, setUrlInput] = useState('');
     const [isUrlLoading, setIsUrlLoading] = useState(false);
+    const [isLoading, setLoading] = useState(false);
     const [hasToSave, setHasToSave] = useState(false);
     const fileInputRef = useRef(null);
     const uploadUrl = import.meta.env.VITE_API_URL + "/upload/single/";
@@ -73,10 +74,11 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
 
     const handleUpload = async () => {
         if (previews.every(preview => !preview.file)) return;
-
+        setLoading(true);
         try {
             await uploadFiles();
             resetState();
+            setLoading(false);
         } catch (error) {
             console.error('Error:', error);
             displayAlert('error', 'An error occurred. Please try again later.');
@@ -108,11 +110,7 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
     };
 
     const resetState = () => {
-        setPreviews([]);
-        setProfilePicture(null);
-        setShowDialog(false);
         setHasToSave(false);
-        setUrlInput('');
         fileInputRef.current.value = null;
     };
 
@@ -146,6 +144,7 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
                 }));
                 setPreviews(prev => prev.filter(p => p.id !== preview.id));
             } catch (error) {
+                console.error('Error deleting picture:', error);
                 displayAlert('error', 'Error deleting file');
                 return;
             }
@@ -170,6 +169,7 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
                     is_profile: pic.id === preview.id,
                 }))
             );
+            setUrlInput('');
             setHasToSave(true);
             return;
         }
@@ -255,7 +255,7 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
                 className="picture-selector-dialog"
                 header={
                     <div className="dialog-header">
-                        <i className="pi pi-images"></i>
+                        <i className="pi pi-images" />
                         Manage Your Photos
                     </div>
                 }
@@ -267,8 +267,8 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
                     {/* Upload Section Card */}
                     <div className="upload-card">
                         <h3>
-                            <i className="pi pi-cloud-upload"></i>
-                            Upload New Photos
+                            <i className="pi pi-cloud-upload" />
+                            {' '}Upload New Photos
                         </h3>
                         <div 
                             className="upload-drop-zone"
@@ -295,8 +295,8 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
                     {/* Import from URL Card */}
                     <div className="upload-card" style={{ opacity: previews.length >= 5 ? 0.5 : 1 }}>
                         <h3>
-                            <i className="pi pi-link"></i>
-                            Import from social media
+                            <i className="pi pi-link" />
+                            {' '}Import from social media
                         </h3>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             <input
@@ -323,13 +323,13 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
                     <div className="photos-card">
                         <h3>
                             <span>
-                                <i className="pi pi-images" style={{marginRight: '0.5rem'}} ></i>
+                                <i className="pi pi-images" style={{marginRight: '0.5rem'}} />
                                 Your Photos
                             </span>
                             {profilePicture && (
                                 <span className="profile-indicator">
-                                    <i className="pi pi-star-fill"></i>
-                                    Profile picture selected
+                                    <i className="pi pi-star-fill" />
+                                    {' '}Profile picture selected
                                 </span>
                             )}
                         </h3>
@@ -348,7 +348,7 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
                             </div>
                         ) : (
                             <div className="no-photos">
-                                <i className="pi pi-image"></i>
+                                <i className="pi pi-image" />
                                 <p>No photos uploaded yet</p>
                                 <small>Upload at least one photo to continue</small>
                             </div>
@@ -368,6 +368,7 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
                             icon="pi pi-check"
                             className="action-button save-button"
                             onClick={handleUpload}
+                            loading={isLoading}
                             disabled={previews.length === 0 || previews.every(preview => !preview.file)}
                             />
                     </div>

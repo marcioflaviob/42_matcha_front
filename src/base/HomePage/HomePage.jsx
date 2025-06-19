@@ -118,27 +118,27 @@ const HomePage = () => {
 							
 							<div className='quick-tips'>
 								<h4>
-									<i className="pi pi-lightbulb"></i>
-									Tips for Better Matches
+									<i className="pi pi-lightbulb" />
+									{' '}Tips for Better Matches
 								</h4>
 								<div className='tip-item'>
-									<i className="pi pi-camera"></i>
+									<i className="pi pi-camera" />
 									<span>Upload high-quality photos</span>
 								</div>
 								<div className='tip-item'>
-									<i className="pi pi-pencil"></i>
+									<i className="pi pi-pencil" />
 									<span>Write an engaging biography</span>
 								</div>
 								<div className='tip-item'>
-									<i className="pi pi-heart"></i>
+									<i className="pi pi-heart" />
 									<span>Add your interests and hobbies</span>
 								</div>
 								<div className='tip-item'>
-									<i className="pi pi-map-marker"></i>
+									<i className="pi pi-map-marker" />
 									<span>Keep your location updated</span>
 								</div>
 								<div className='tip-item'>
-									<i className="pi pi-user"></i>
+									<i className="pi pi-user" />
 									<span>Be authentic and genuine</span>
 								</div>
 							</div>

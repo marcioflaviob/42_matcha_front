@@ -32,8 +32,8 @@ const PreviewItem = ({ preview, isProfilePicture, onRemove, onSetProfile }) => {
                 </div>
                 {isProfilePicture && (
                     <div className="profile-badge">
-                        <i className="pi pi-star-fill"></i>
-                        Profile
+                        <i className="pi pi-star-fill" />
+                        {' '}Profile
                     </div>
                 )}
             </div>

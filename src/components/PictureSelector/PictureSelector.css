@@ -5,7 +5,6 @@
 .picture-selector-dialog .p-dialog-content {
     padding: 0;
     overflow-y: auto;
-    overflow: auto;
 }
 
 .picture-selector-dialog .p-dialog-header {

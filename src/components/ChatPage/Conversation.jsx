@@ -1,7 +1,6 @@
 import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
-import { ScrollPanel } from 'primereact/scrollpanel';
 import './Conversation.css';
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';

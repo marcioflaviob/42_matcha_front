@@ -129,8 +129,8 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
             {/* Personal Information */}
             <div className="edit-form-card">
                 <h3>
-                    <i className="pi pi-user"></i>
-                    Personal Information
+                    <i className="pi pi-user" />
+                    {' '}Personal Information
                 </h3>
                 <div className="form-field-group">
                     <div className="form-field-row">
@@ -176,8 +176,8 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
             {/* Preferences */}
             <div className="edit-form-card">
                 <h3>
-                    <i className="pi pi-heart"></i>
-                    Preferences
+                    <i className="pi pi-heart" />
+                    {' '}Preferences
                 </h3>
                 <div className="form-field-group">
                     <div className="form-field">
@@ -212,8 +212,8 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
             {/* Interests */}
             <div className="edit-form-card">
                 <h3>
-                    <i className="pi pi-tags"></i>
-                    Interests
+                    <i className="pi pi-tags" />
+                    {' '}Interests
                 </h3>
                 <div className="form-field-group">
                     <div className="form-field">
@@ -249,8 +249,8 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
             {/* Location & Photos */}
             <div className="edit-form-card">
                 <h3>
-                    <i className="pi pi-map-marker"></i>
-                    Location & Photos
+                    <i className="pi pi-map-marker" />
+                    {' '}Location & Photos
                 </h3>
                 <div className="form-field-group">
                     <div className="form-field">

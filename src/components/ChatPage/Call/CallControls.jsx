@@ -1,6 +1,5 @@
 import React, { useState } from 'react';
 import { Button } from 'primereact/button';
-import { Tooltip } from 'primereact/tooltip';
 import './CallDialog.css';
 
 const CallControls = ({ 
@@ -46,7 +45,7 @@ const CallControls = ({
             )}
             
             <Button
-                icon={isMuted ? "pi pi-microphone" : "pi pi-microphone"}
+                icon={"pi pi-microphone"}
                 className={`control-button ${isMuted ? 'control-muted' : ''}`}
                 onClick={handleMuteToggle}
                 tooltip={isMuted ? 'Unmute microphone' : 'Mute microphone'}
@@ -55,7 +54,7 @@ const CallControls = ({
             />
             
             <Button
-                icon={isCameraOff ? "pi pi-video" : "pi pi-video"}
+                icon={"pi pi-video"}
                 className={`control-button ${isCameraOff ? 'control-camera-off' : ''}`}
                 onClick={handleCameraToggle}
                 tooltip={isCameraOff ? 'Turn camera on' : 'Turn camera off'}

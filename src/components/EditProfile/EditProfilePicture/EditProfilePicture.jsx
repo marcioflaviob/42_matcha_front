@@ -1,4 +1,4 @@
-import React, { useEffect, useContext } from 'react';
+import React, { useContext } from 'react';
 import './EditProfilePicture.css';
 import { UserContext } from '../../../context/UserContext';
 import ProfileCard from '../../HomePage/ProfileCard';

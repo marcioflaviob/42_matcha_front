@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React from "react";
 import './PhotoCarousel.css';
 import { Button } from "primereact/button";
 

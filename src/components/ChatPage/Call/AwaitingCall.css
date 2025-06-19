@@ -1,0 +1,5 @@
+.call-dialog-awaiting {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}

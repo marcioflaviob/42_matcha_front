@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useCallback } from 'react';
+import React, { useContext, useState, useEffect, useCallback, useRef } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SimplePeer from 'simple-peer';
 import axios from 'axios';
@@ -17,6 +17,9 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
     const { connected, pusher } = useContext(SocketContext);
     const { user } = useContext(UserContext);
     const { token } = useContext(AuthContext);
+    
+    const isMountedRef = useRef(true);
+    
     const [peer, setPeer] = useState(null);
     const [channel, setChannel] = useState(null);
     const [stream, setStream] = useState(null);
@@ -27,26 +30,61 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
     const [callStarted, setCallStarted] = useState(false);
     const navigate = useNavigate();
 
-    const handleHangUp = () => {
-        if (peer) peer.destroy();
+    useEffect(() => {
+        console.log('CallDialog mounted/user changed. isInvited:', isInvited);
+        
+        setPeer(null);
+        setChannel(null);
+        setStream(null);
+        setRemoteStream(null);
+        setConnectionEstablished(false);
+        setPermissionGranted(false);
+        setWaitingForAcceptance(true);
+        setCallStarted(false);
+        isMountedRef.current = true;
+
+        return () => {
+            isMountedRef.current = false;
+        };
+    }, [selectedUser.id, isInvited]);
+
+    const handleHangUp = useCallback(async () => {
+        console.log('Hanging up call');
+        
+        if (peer) {
+            peer.destroy();
+            setPeer(null);
+        }
+        
         if (stream) {
             stream.getTracks().forEach((track) => track.stop());
+            setStream(null);
         }
-        if (channel && callStarted) {
-            channel.trigger('client-call-ended', {
+        
+        if (remoteStream) {
+            remoteStream.getTracks().forEach((track) => track.stop());
+            setRemoteStream(null);
+        }
+        
+        if (channel) {
+            await channel.trigger('client-call-ended', {
                 sender_id: user.id,
                 receiver_id: selectedUser.id,
             });
         }
+        
         axios.post(`${import.meta.env.VITE_API_URL}/stop-call/${selectedUser.id}`, {}, {
             headers: {
                 Authorization: `Bearer ${token}`,
             },
             withCredentials: true,
+        }).catch(error => {
+            console.error('Error stopping call:', error);
         });
+        
         setIsCalling(false);
         navigate('/chat');
-    };
+    }, [peer, stream, remoteStream, channel, callStarted, user.id, selectedUser.id, token, setIsCalling, navigate]);
 
     useEffect(() => {
         if (connected && pusher) {
@@ -115,7 +153,8 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
 
     const handleAcceptCall = useCallback(() => {
         if (waitingForAcceptance) {
-            setWaitingForAcceptance(false)
+            setWaitingForAcceptance(false);
+            console.log('Call accepted, setting up peer connection');
             channel.trigger('client-call-accepted', {
                 sender_id: user.id,
                 receiver_id: selectedUser.id,
@@ -135,6 +174,8 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
 
             const newChannel = pusher.subscribe(channelName);
             setChannel(newChannel);
+
+            console.log('Subscribed to channel:', channelName);
 
             return () => {
                 newChannel.unbind_all();
@@ -179,12 +220,16 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
         };
     }, [channel, handleHangUp, peer, selectedUser.first_name, selectedUser.id, user.id, setUpPeerConnection]);
 
-    // Accept call if invited
     useEffect(() => {
         if (channel && callStarted && isInvited) {
+            console.log('Call started, accepting call');
             handleAcceptCall();
         }
     }, [isInvited, channel, callStarted, handleAcceptCall]);
+
+    useEffect(() => {
+        console.log('Waiting for acceptance:', waitingForAcceptance);
+    }, [waitingForAcceptance])
 
     const renderDialog = () => {
         if (!permissionGranted) {
@@ -205,6 +250,12 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
             header="Video Call" 
             className="call-dialog-container"
             closable={true}
+            resizable={true}
+            style={{ 
+                width: connectionEstablished ? '80vw' : '800px', 
+                height: connectionEstablished ? '60vh' : '600px' 
+            }}
+            contentStyle={{ padding: '1rem', height: '100%' }}
         >
             { renderDialog() }
         </Dialog>

@@ -1,0 +1,83 @@
+.edit-profile-form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    height: 100%;
+}
+
+/* Loading State */
+.edit-form-loading {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    gap: 1rem;
+    color: #2a815b;
+}
+
+.edit-form-loading .loading-spinner {
+    width: 40px;
+    height: 40px;
+    border: 3px solid rgba(42, 129, 91, 0.2);
+    border-top: 3px solid #2a815b;
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.edit-form-loading p {
+    font-size: 1rem;
+    font-weight: 500;
+    color: #5e9c7f;
+    margin: 0;
+}
+
+/* Location Button Styling */
+.location-button {
+    background-color: transparent !important;
+    border: 2px solid #e9f5f0 !important;
+    color: #2a815b !important;
+    padding: 0.75rem 1rem !important;
+    border-radius: 12px !important;
+    font-weight: 500 !important;
+    transition: all 0.3s ease !important;
+}
+
+.location-button:hover {
+    border-color: #2a815b !important;
+    background-color: rgba(42, 129, 91, 0.05) !important;
+    transform: translateY(-1px);
+}
+
+.location-button:focus {
+    box-shadow: 0 0 0 3px rgba(42, 129, 91, 0.1) !important;
+}
+
+/* Responsive Form Layout */
+@media (max-width: 768px) {
+    .edit-profile-form {
+        gap: 1rem;
+    }
+    
+    .edit-form-card {
+        margin-bottom: 0.5rem;
+    }
+    
+    .form-field-row {
+        gap: 0.75rem;
+    }
+    
+    .chip-selection-group {
+        gap: 0.5rem;
+    }
+    
+    .selection-chip {
+        padding: 0.4rem 0.8rem !important;
+        font-size: 0.875rem !important;
+    }
+}

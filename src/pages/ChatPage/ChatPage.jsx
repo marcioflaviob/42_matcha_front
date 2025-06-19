@@ -4,13 +4,10 @@ import Conversation from '../../components/ChatPage/Conversation';
 import './ChatPage.css';
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
-import { useSearchParams } from 'react-router-dom';
-import { displayAlert } from '../../components/Notification/Notification';
 
 const ChatPage = () => {
 	const { token } = useContext(AuthContext);
     const [selectedUser, setSelectedUser] = useState(null);
-	const [searchParams] = useSearchParams();
 	const [users, setUsers] = useState(null);
 
 	const fetchUsers = async () => {
@@ -21,15 +18,6 @@ const ChatPage = () => {
 		});
 		fetchMessages(response.data);
 		setUsers(response.data);
-		const chatUserId = searchParams.get('id');
-		if (chatUserId) {
-			const user = response.data.find(user => user.id == chatUserId);
-			if (user) {
-				setSelectedUser(user);
-			} else {
-				displayAlert('warn', 'User not found');
-			}
-		}
 	};
 
 	const fetchMessages = async (usersData) => {
@@ -45,18 +33,6 @@ const ChatPage = () => {
 		const usersWithMessagesResolved = await Promise.all(usersWithMessages);
 		setUsers(usersWithMessagesResolved);
 	}
-
-	useEffect(() => {
-		const chatUserId = searchParams.get('id');
-		if (chatUserId && users) {
-			const user = users.find(user => user.id == chatUserId);
-			if (user) {
-				setSelectedUser(user);
-			} else {
-				displayAlert('warn', 'User not found');
-			}
-		}
-	}, [searchParams, users]);
 
     useEffect(() => {
         fetchUsers();

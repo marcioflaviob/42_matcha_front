@@ -1,12 +1,375 @@
-.edit-profile-container
-{
+.edit-profile-container {
     display: flex;
     height: calc(100vh - var(--footer-height) - var(--header-height));
+    background: linear-gradient(135deg, #f8faf9 0%, #e9f5f0 50%, #f8faf9 100%);
+    position: relative;
+    overflow: hidden;
+}
+
+.edit-profile-container::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: 
+        radial-gradient(circle at 20% 20%, rgba(42, 129, 91, 0.03) 0%, transparent 50%),
+        radial-gradient(circle at 80% 80%, rgba(42, 129, 91, 0.02) 0%, transparent 50%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+/* Left side - Edit Form */
+.edit-profile-form-section {
+    width: 50%;
+    height: 100%;
+    padding: 2rem;
+    overflow-y: auto;
+    background: linear-gradient(135deg, #ffffff 0%, #f8faf9 100%);
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    position: relative;
+    z-index: 2;
+    border-right: 1px solid rgba(42, 129, 91, 0.1);
+    scrollbar-width: thin;
+    scrollbar-color: rgba(42, 129, 91, 0.3) transparent;
+}
+
+.edit-profile-form-section::-webkit-scrollbar {
+    width: 6px;
+}
+
+.edit-profile-form-section::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.edit-profile-form-section::-webkit-scrollbar-thumb {
+    background-color: rgba(42, 129, 91, 0.3);
+    border-radius: 3px;
+}
+
+.edit-profile-form-section::-webkit-scrollbar-thumb:hover {
+    background-color: rgba(42, 129, 91, 0.5);
+}
+
+/* Right side - Live Preview */
+.edit-profile-preview-section {
+    width: 50%;
+    height: 100%;
+    position: relative;
+    z-index: 2;
+    background: linear-gradient(135deg, #f8faf9 0%, #e9f5f0 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2rem;
+}
+
+/* Header Section */
+.edit-profile-header {
+    background: white;
+    border-radius: 20px;
+    padding: 2rem;
+    box-shadow: 0 4px 20px rgba(42, 129, 91, 0.08);
+    border: 1px solid rgba(42, 129, 91, 0.1);
+    margin-bottom: 1.5rem;
+}
+
+.edit-profile-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: #2a815b;
+    margin: 0 0 0.5rem 0;
+    letter-spacing: -0.02em;
+}
+
+.edit-profile-subtitle {
+    color: #5e9c7f;
+    font-size: 1.1rem;
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* Form Cards */
+.edit-form-card {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(42, 129, 91, 0.06);
+    border: 1px solid rgba(42, 129, 91, 0.08);
+    transition: all 0.3s ease;
+}
+
+.edit-form-card:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 20px rgba(42, 129, 91, 0.12);
+}
+
+.edit-form-card h3 {
+    color: #2a815b;
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 0 0 1rem 0;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.edit-form-card h3 i {
+    color: #2a815b;
+    font-size: 1.1rem;
+}
+
+/* Form Fields */
+.form-field-group {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.form-field-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1rem;
+}
+
+.form-field {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-field label {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: #2a815b;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.form-field .p-inputtext,
+.form-field .p-inputtextarea,
+.form-field .p-multiselect {
+    border-radius: 12px !important;
+    border: 2px solid #e9f5f0 !important;
+    padding: 0.75rem !important;
+    transition: all 0.3s ease !important;
+}
+
+.form-field .p-inputtext:focus,
+.form-field .p-inputtextarea:focus,
+.form-field .p-multiselect:focus {
+    border-color: #2a815b !important;
+    box-shadow: 0 0 0 3px rgba(42, 129, 91, 0.1) !important;
+}
+
+/* Chip Selection */
+.chip-selection-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin-top: 0.5rem;
+}
+
+.selection-chip {
+    cursor: pointer;
+    transition: all 0.3s ease;
+    background-color: #f8faf9 !important;
+    color: #5e9c7f !important;
+    border: 2px solid #e9f5f0 !important;
+    padding: 0.5rem 1rem !important;
+    border-radius: 20px !important;
+    font-weight: 500 !important;
+}
+
+.selection-chip:hover {
+    background-color: #e9f5f0 !important;
+    border-color: #2a815b !important;
+    transform: translateY(-2px);
+}
+
+.selection-chip.selected {
+    background-color: #2a815b !important;
+    color: white !important;
+    border-color: #2a815b !important;
+}
+
+/* Interest Tags */
+.interests-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.5rem;
+    margin-top: 0.5rem;
+}
+
+.interest-tag {
+    background-color: #e9f5f0 !important;
+    color: #2a815b !important;
+    border: 1px solid rgba(42, 129, 91, 0.2) !important;
+    border-radius: 20px !important;
+    padding: 0.25rem 0.75rem !important;
+    font-size: 0.875rem !important;
+    font-weight: 500 !important;
+}
+
+.interest-tag .p-chip-remove-icon {
+    color: #2a815b !important;
+    margin-left: 0.5rem !important;
+}
+
+.interest-tag .p-chip-remove-icon:hover {
+    background-color: rgba(42, 129, 91, 0.1) !important;
+}
+
+/* Action Buttons */
+.edit-actions-section {
+    background: white;
+    border-radius: 16px;
+    padding: 1.5rem;
+    box-shadow: 0 4px 15px rgba(42, 129, 91, 0.06);
+    border: 1px solid rgba(42, 129, 91, 0.08);
+    display: flex;
+    gap: 1rem;
+    justify-content: flex-end;
+    margin-top: auto;
+}
+
+.edit-action-button {
+    padding: 0.75rem 1.5rem !important;
+    border-radius: 12px !important;
+    font-weight: 600 !important;
+    transition: all 0.3s ease !important;
+    min-width: 120px !important;
+}
+
+.edit-action-button.save-button {
+    background-color: #2a815b !important;
+    border-color: #2a815b !important;
+    color: white !important;
+}
+
+.edit-action-button.save-button:hover {
+    background-color: #3a9970 !important;
+    border-color: #3a9970 !important;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(42, 129, 91, 0.25) !important;
+}
+
+.edit-action-button.cancel-button {
+    background-color: transparent !important;
+    border: 2px solid #e9f5f0 !important;
+    color: #5e9c7f !important;
+}
+
+.edit-action-button.cancel-button:hover {
+    border-color: #2a815b !important;
+    color: #2a815b !important;
+    transform: translateY(-2px);
+}
+
+/* Preview Card Styling */
+.edit-profile-preview-card {
+    width: 100%;
+    max-width: 500px;
+    transform: scale(0.95);
+    transition: all 0.3s ease;
+}
+
+.edit-profile-preview-card:hover {
+    transform: scale(0.98);
+}
+
+/* Upload Section */
+.upload-section {
+    text-align: center;
+    padding: 1rem;
+    border: 2px dashed #e9f5f0;
+    border-radius: 12px;
+    transition: all 0.3s ease;
+    cursor: pointer;
+}
+
+.upload-section:hover {
+    border-color: #2a815b;
+    background-color: rgba(42, 129, 91, 0.02);
+}
+
+.upload-section i {
+    font-size: 2rem;
+    color: #2a815b;
+    margin-bottom: 0.5rem;
+}
+
+.upload-section p {
+    color: #5e9c7f;
+    margin: 0;
+    font-weight: 500;
+}
+
+/* Mobile Responsive */
+@media (max-width: 1024px) {
+    .edit-profile-container {
+        flex-direction: column;
+        height: auto;
+        min-height: calc(100vh - var(--footer-height) - var(--header-height));
+    }
+    
+    .edit-profile-form-section,
+    .edit-profile-preview-section {
+        width: 100%;
+        height: auto;
+        min-height: 50vh;
+    }
+    
+    .edit-profile-form-section {
+        order: 2;
+        border-right: none;
+        border-top: 1px solid rgba(42, 129, 91, 0.1);
+    }
+    
+    .edit-profile-preview-section {
+        order: 1;
+        padding: 1rem;
+    }
+    
+    .form-field-row {
+        grid-template-columns: 1fr;
+    }
 }
 
 @media (max-width: 768px) {
     .edit-profile-container {
-        flex-direction: column-reverse; /* Reverse order for mobile */
-        height: calc(200vh - var(--footer-height) - var(--header-height)); /* Adjust height for mobile */
+        padding: 0;
+    }
+    
+    .edit-profile-form-section,
+    .edit-profile-preview-section {
+        padding: 1rem;
+    }
+    
+    .edit-profile-header {
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+    }
+    
+    .edit-profile-title {
+        font-size: 2rem;
+    }
+    
+    .edit-form-card {
+        padding: 1rem;
+    }
+    
+    .edit-actions-section {
+        flex-direction: column;
+        gap: 0.75rem;
+    }
+    
+    .edit-action-button {
+        width: 100% !important;
+        min-width: unset !important;
     }
 }

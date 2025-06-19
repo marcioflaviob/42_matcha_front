@@ -1,7 +1,6 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
-import { ScrollPanel } from 'primereact/scrollpanel';
 import './Conversation.css';
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
@@ -17,6 +16,13 @@ const Conversation = ({ selectedUser, setSelectedUser, setUsers }) => {
     const { setMapStatus, setFocusedDate, setFocusedUser } = useContext(MapContext);
     const { dates, user } = useContext(UserContext);
     const { connected, channel } = useContext(SocketContext);
+    const messageListRef = useRef(null);
+
+    const scrollToBottom = () => {
+        if (messageListRef.current) {
+            messageListRef.current.scrollTop = messageListRef.current.scrollHeight;
+        }
+    };
 
     const saveMessage = async (message, isSent) => {
         const userId = isSent ? message.receiver_id : message.sender_id;
@@ -110,54 +116,85 @@ const Conversation = ({ selectedUser, setSelectedUser, setUsers }) => {
         setFocusedUser(selectedUser);
     }
 
+    useEffect(() => {
+        if (selectedUser && selectedUser.messages) {
+            setTimeout(scrollToBottom, 0);
+        }
+    }, [selectedUser]);
+
     return (
         <div className="conversation">
             {selectedUser ? (
                 <>
                     <ConversationHeader selectedUser={selectedUser} setSelectedUser={setSelectedUser} setUsers={setUsers} />
 
-                    <ScrollPanel className="message-list">
-                        {selectedUser?.messages && selectedUser.messages.length > 0 ?
-                            (selectedUser.messages.map((msg) => {
-                                if (msg.date_id) {
-                                    const date = dates.find(date => date.id === msg.date_id);
+                    <div className="message-list" ref={messageListRef}>
+                        <div className="message-list-content">
+                            {selectedUser?.messages && selectedUser.messages.length > 0 ?
+                                (selectedUser.messages.map((msg) => {
+                                    if (msg.date_id) {
+                                        const date = dates.find(date => date.id === msg.date_id);
+                                        return (
+                                            <div key={msg.id} className={`message-date ${msg.sender_id === selectedUser.id ? 'received' : 'sent'}`}>
+                                                <div className='message-date-title'>Let's go on a date!</div>
+                                                <div className='message-date-info'>
+                                                    {date && `${date.location} on ${new Date(date.datetime).toLocaleDateString()}`}
+                                                </div>
+                                                <Button text className="message-date-button" label="See details" onClick={() => openMap(date)}></Button>
+                                            </div>
+                                        )
+                                    }
                                     return (
-                                        <div key={msg.id} className={`message-date ${msg.sender_id === selectedUser.id ? 'received' : 'sent'}`}>
-                                            <span className='message-date-title'>Let's go on a date!</span>
-                                            <Button text className="message-date-button" label="See details" onClick={() => openMap(date)}></Button>
-                                        </div>
+                                        <div key={msg.id} className={`message ${msg.sender_id === selectedUser.id ? 'received' : 'sent'}`}>
+                                            <div className="message-content">{msg.content}</div>
+                                            <div className="message-time">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                                        </div> 
                                     )
-                                }
-                                return (
-                                    <div key={msg.id} className={`message ${msg.sender_id === selectedUser.id ? 'received' : 'sent'}`}>
-                                        <span>{msg.content}</span>
-                                        <span className="message-time">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}
-                                        </span>
-                                    </div> 
-                                )
+                                }))
+                                :
+                                <div className="no-conversation">
+                                    <div className="no-conversation-icon">
+                                        <i className="pi pi-comments"></i>
+                                    </div>
+                                    <h3 className="no-conversation-title">Start the conversation!</h3>
+                                    <p className="no-conversation-subtitle">
+                                        Say hello to {selectedUser.first_name} and start building a connection.
+                                    </p>
+                                </div>
                             }
-                            ))
-                            :
-                            <div className="no-conversation">
-                                <p>No messages yet. Say hello!</p>
-                            </div>
-                        }
-                    </ScrollPanel>
+                        </div>
+                    </div>
 
                     <div className="message-input">
-                        <InputText value={input}
-                        onChange={(e) => setInput(e.target.value)}
-                        onKeyDown={(e) => {
-                            if (e.key === 'Enter') {
-                                sendMessage();
-                            }
-                        }} 
-                        placeholder="Type a message..." />
-                        <Button label="Send" onClick={sendMessage} className='register-button p-button-raised p-button-rounded' />
+                        <InputText 
+                            value={input}
+                            onChange={(e) => setInput(e.target.value)}
+                            onKeyDown={(e) => {
+                                if (e.key === 'Enter' && !e.shiftKey) {
+                                    e.preventDefault();
+                                    sendMessage();
+                                }
+                            }} 
+                            placeholder={`Message ${selectedUser.first_name}...`}
+                        />
+                        <Button 
+                            icon="pi pi-send" 
+                            onClick={sendMessage} 
+                            disabled={!input.trim()}
+                            aria-label="Send message"
+                        />
                     </div>
                 </>
             ) : (
-                <div className="no-conversation">Select a user to start a conversation</div>
+                <div className="welcome-conversation">
+                    <div className="no-conversation-icon">
+                        <i className="pi pi-comment"></i>
+                    </div>
+                    <h3 className="no-conversation-title">Welcome to Chat</h3>
+                    <p className="no-conversation-subtitle">
+                        Select a conversation from the sidebar to start messaging.
+                    </p>
+                </div>
             )}
         </div>
     );

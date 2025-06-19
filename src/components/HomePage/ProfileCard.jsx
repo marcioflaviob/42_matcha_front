@@ -1,14 +1,17 @@
-import { useRef } from "react";
+import { useContext, useRef, useState } from "react";
 import PhotoCarousel from "../../components/HomePage/PhotoCarousel";
 import './ProfileCard.css'; 
-import { Chip } from "primereact/chip";
 import { Button } from "primereact/button";
 import { Menu } from "primereact/menu";
 import { displayAlert } from '../Notification/Notification';
+import InterestChip from '../InterestChip/InterestChip';
+import { UserContext } from "../../context/UserContext";
 
 const ProfileCard = ({ profile, handleLike, handleBlock, showButtons, showUnlike }) => {
 
   const menuRef = useRef(null);
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+  const { user } = useContext(UserContext);
 
   let items = [
     {
@@ -50,7 +53,7 @@ const ProfileCard = ({ profile, handleLike, handleBlock, showButtons, showUnlike
 
   return (
     <div className="profile-card">
-      <PhotoCarousel photos={profile.pictures} name={profile.name} />
+      <PhotoCarousel userInfo={profile} currentImageIndex={currentImageIndex} setCurrentImageIndex={setCurrentImageIndex} />
       <div className="profile-content">
         <div className="profile-header">
           <div className="profile-header-left">
@@ -65,8 +68,13 @@ const ProfileCard = ({ profile, handleLike, handleBlock, showButtons, showUnlike
           </div>
           <div className="profile-header-right">
             {profile.liked_me && <div className="profile-card-liked-you">liked you <i className="pi pi-heart-fill profile-card-liked-you-heart"></i></div>}
-            <Button icon="pi pi-ellipsis-v" className="profile-card-dropdown-button" onClick={(e) => menuRef.current.toggle(e)} />
-            <Menu ref={menuRef} model={items} popup className="profile-card-dropdown"/>
+            {
+              user.id !== profile.id &&
+              <>
+                <Button icon="pi pi-ellipsis-v" className="profile-card-dropdown-button" onClick={(e) => menuRef.current.toggle(e)} />
+                <Menu ref={menuRef} model={items} popup className="profile-card-dropdown"/>
+              </>
+            }
           </div>
         </div>
 
@@ -77,18 +85,20 @@ const ProfileCard = ({ profile, handleLike, handleBlock, showButtons, showUnlike
           <div className="interests-container">
             <div className="interests-list">
               {profile.interests.map((interest) => (
-                <Chip key={interest.id} label={interest.name} className="interest-item" />
+                <InterestChip key={interest.id} label={interest.name} />
               ))}
             </div>
           </div>
         </div>
-
-		{showButtons && <div className="match-buttons">
-      <Button icon="pi pi-times" className="match-button reject-match-button" onClick={profileBlock} rounded />
-			<Button icon="pi pi-heart-fill" className="match-button accept-match-button" onClick={profileLike} rounded />
-		</div>}
-
       </div>
+
+      {/* Moved buttons outside profile-content to fix z-index issues */}
+      {showButtons && (
+        <div className="match-buttons">
+          <Button icon="pi pi-times" className="match-button reject-match-button" onClick={profileBlock} rounded />
+          <Button icon="pi pi-heart-fill" className="match-button accept-match-button" onClick={profileLike} rounded />
+        </div>
+      )}
     </div>
   );
 };

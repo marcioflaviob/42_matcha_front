@@ -1,6 +1,7 @@
 import React from 'react';
 import './CallDialog.css'
 import WebcamVideo from './WebcamVideo';
+import CallControls from './CallControls';
 
 const AwaitingAcceptance = ({ selectedUser, stream, handleHangUp }) => {
 
@@ -13,11 +14,11 @@ const AwaitingAcceptance = ({ selectedUser, stream, handleHangUp }) => {
                     <div className="calling-status">Waiting for {selectedUser.first_name} to answer...</div>
                 </div>
             </div>
-            <div className="call-buttons">
-                <button className="hangup-button" onClick={handleHangUp}>
-                    Cancel
-                </button>
-            </div>
+            <CallControls
+                showCallButton={false}
+                onHangUp={handleHangUp}
+                stream={stream}
+            />
         </div>
     );
 };

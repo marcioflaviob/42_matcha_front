@@ -5,10 +5,6 @@ import { displayAlert } from '../../Notification/Notification';
 const AwaitingPermissions = ({ setStream, setPermissionGranted }) => {
 
     useEffect(() => {
-        if (!navigator || !navigator.mediaDevices || !navigator.mediaDevices.getUserMedia) {
-            displayAlert('error', 'Your browser does not support camera or microphone access.');
-            return;
-        }
         navigator.mediaDevices
             .getUserMedia({ 
                 video: {
@@ -26,7 +22,7 @@ const AwaitingPermissions = ({ setStream, setPermissionGranted }) => {
                 console.error('Media access error:', err);
                 displayAlert('error', 'Unable to access camera or microphone. Please grant permissions.');
             });
-    }, [setStream, setPermissionGranted]);
+    }, []);
 
     return (
         <div className="permission-prompt">

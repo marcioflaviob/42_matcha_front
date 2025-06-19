@@ -1,9 +1,9 @@
 import React from 'react';
-import './Error.css';
+import './ErrorPage.css';
 import { useNavigate } from 'react-router-dom';
 import { Button } from 'primereact/button';
 
-const Error = () => {
+const ErrorPage = () => {
     const navigate = useNavigate();
 
     return (
@@ -31,4 +31,4 @@ const Error = () => {
     );
 };
 
-export default Error;
+export default ErrorPage;

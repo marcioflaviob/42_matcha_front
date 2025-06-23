@@ -62,10 +62,6 @@ p {
     border-color: #2a815b !important;
 }
 
-.p-rating .p-rating-item.p-rating-item-active .p-rating-icon {
-    color: #2a815b !important;
-}
-
 @media (max-width: 768px) {
     .your-preferences-panel {
         gap: 20px;

@@ -12,6 +12,7 @@ import { AuthContext } from '../../../context/AuthContext';
 import { Slider } from 'primereact/slider';
 import { Rating } from 'primereact/rating';
 import AskLocation from '../../Location/AskLocation/AskLocation';
+import StarRating from '../../StarRating/StarRating';
 
 const YourPreferences = ({ setActiveStep }) => {
 	const { user, setUser } = useContext(UserContext);
@@ -19,7 +20,7 @@ const YourPreferences = ({ setActiveStep }) => {
 	const [isLoading, setIsLoading] = useState(false);
 	const [ageRange, setAgeRange] = useState([18, 99]);
 	const [allInterests, setAllInterests] = useState(null);
-	const { setLocation } = AskLocation();
+	const { setLocation } = AskLocation(false);
 	const [formData, setFormData] = useState({
 		gender: '',
 		sexual_interest: '',
@@ -82,6 +83,14 @@ const YourPreferences = ({ setActiveStep }) => {
 			age_range_max: value[1],
 		}));
     };
+
+	const handleRatingChange = (newRating) => {
+		setTouchedFields((prev) => ({ ...prev, min_desired_rating: true }));
+		setFormData((prevData) => ({
+			...prevData,
+			min_desired_rating: newRating,
+		}));
+	};
 
 	const handleButtonNext = () => {
 		setIsLoading(true);
@@ -154,7 +163,15 @@ const YourPreferences = ({ setActiveStep }) => {
 				</span>
 				<span>
 					<p>Minimum desired rating</p>
-					<Rating id='min_desired_rating' value={formData.min_desired_rating} onChange={(e) => handleSelectChange(e, 'min_desired_rating')} cancel={false} />
+					<StarRating
+						id='min_desired_rating'
+						value={formData.min_desired_rating}
+						isModifiable={true}
+						onChange={handleRatingChange}
+						showValue={true}
+						className='star-rating'
+						size='medium'
+					/>
 				</span>
 			</div>
 			<Divider align="center" />

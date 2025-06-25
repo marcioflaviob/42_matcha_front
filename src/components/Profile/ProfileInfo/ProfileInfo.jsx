@@ -4,6 +4,7 @@ import { UserContext } from '../../../context/UserContext';
 import { Button } from 'primereact/button';
 import { useNavigate } from 'react-router-dom';
 import InterestChip from '../../InterestChip/InterestChip';
+import StarRating from '../../StarRating/StarRating';
         
 const ProfileInfo = ({ userInfo }) => {
     const navigate = useNavigate();
@@ -97,14 +98,15 @@ const ProfileInfo = ({ userInfo }) => {
                     <div className="info-content">
                         <span className="info-label">Fame Rating</span>
                         <div className="fame-rating">
-                            <span className="fame-score">{userInfo.fame_rating || 69}</span>
+                            <span className="fame-score">{userInfo.rating || 0}</span>
                             <div className="fame-stars">
-                                {[...Array(5)].map((_, i) => (
-                                    <i 
-                                        key={i}
-                                        className={`pi pi-star${i < Math.floor((userInfo.fame_rating || 69) / 20) ? '-fill' : ''}`}
-                                    ></i>
-                                ))}
+                                <StarRating
+                                    value={userInfo.rating || 0}
+                                    isModifiable={false}
+                                    showValue={true}
+                                    className="fame-star-rating"
+                                    size="small"
+                                />
                             </div>
                         </div>
                     </div>

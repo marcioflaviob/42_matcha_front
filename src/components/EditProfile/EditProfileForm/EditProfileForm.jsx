@@ -10,6 +10,7 @@ import { InputTextarea } from 'primereact/inputtextarea';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../../context/AuthContext';
 import { Button } from 'primereact/button';
+import StarRating from '../../StarRating/StarRating';
 import PictureSelector from '../../PictureSelector/PictureSelector';
 import AskLocation from '../../Location/AskLocation/AskLocation';
 
@@ -19,7 +20,7 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
     const { user, setUser } = useContext(UserContext);
     const [allInterests, setAllInterests] = useState(null);
     const [openPictureSelector, setOpenPictureSelector] = useState(false);
-    const { setLocation } = AskLocation();
+    const { setLocation } = AskLocation(true);
     const [loadingButton, setLoadingButton] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
 
@@ -49,6 +50,10 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
         setLoadingButton(true);
         await setLocation(user.id, token);
         setLoadingButton(false);
+    };
+
+    const handleRatingChange = (newRating) => {
+        setShadowUser(prev => ({ ...prev, min_desired_rating: newRating }));
     };
 
     const updateUser = async () => {
@@ -274,6 +279,28 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
                 </div>
             </div>
 
+            {/* Minimum Fame Rating */}
+            <div className="edit-form-card">
+                <h3>
+                    <i className="pi pi-star" />
+                    {' '}Minimum Fame Rating
+                </h3>
+                <div className="form-field-group">
+                    <div className="form-field">
+                        <StarRating 
+                            value={shadowUser.min_desired_rating || 0}
+                            isModifiable={true}
+                            onChange={handleRatingChange}
+                            showValue={true}
+                            size="medium"
+                        />
+                        <small className="rating-help-text">
+                            Set the minimum fame rating you're interested in (0-100). Each star equals 20 points.
+                        </small>
+                    </div>
+                </div>
+            </div>
+
             {/* Action Buttons */}
             <div className="edit-actions-section">
                 <Button 
@@ -291,7 +318,6 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
                     loading={isLoading}
                 />
             </div>
-
         </div>
     );
 };

@@ -17,6 +17,18 @@ const PhotoCarousel = ({ userInfo, currentImageIndex, setCurrentImageIndex }) =>
     );
   };
 
+  if (!userInfo || !userInfo.pictures || userInfo.pictures.length === 0) {
+    return (
+      <div className="profile-main-image-container">
+        <img 
+          src={placeholderImage}
+          alt="No image available"
+          className="profile-main-image"
+        />
+      </div>
+    );
+  }
+
   return (
     <div className="profile-main-image-container">
       {userInfo.pictures.length > 0 && (

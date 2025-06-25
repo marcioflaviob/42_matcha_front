@@ -34,27 +34,27 @@ export const getAddress = async (latitude, longitude, token) => {
   }
 };
 
-export const AskLocation = () => {
+export const AskLocation = (showNotification) => {
 
   const setCityAndCountry = async (latitude, longitude, token, userId) => {
-  try {
-    await axios.post(`${import.meta.env.VITE_API_URL}/location/city`,
-      {
-        userId: userId,
-        latitude: latitude,
-        longitude: longitude,
-      },
-      {
-        headers: {
-            Authorization: `Bearer ${token}`,
+    try {
+      await axios.post(`${import.meta.env.VITE_API_URL}/location/city`,
+        {
+          userId: userId,
+          latitude: latitude,
+          longitude: longitude,
         },
-        withCredentials: true,
-      })
-  } catch (err) {
-    console.error('Error fetching city and country:', err);
-    return { city: 'Unknown', country: 'Unknown' };
-  }
-};
+        {
+          headers: {
+              Authorization: `Bearer ${token}`,
+          },
+          withCredentials: true,
+        })
+    } catch (err) {
+      console.error('Error fetching city and country:', err);
+      return { city: 'Unknown', country: 'Unknown' };
+    }
+  };
 
   const setLocationFromIP = async (userId, token) => {
     try {
@@ -63,7 +63,7 @@ export const AskLocation = () => {
               Authorization: `Bearer ${token}`,
           },
       });
-      displayAlert('success', 'Location updated successfully');
+      if (showNotification) displayAlert('success', 'Location updated successfully');
     } catch (err) {
       console.error('Error getting location from IP:', err);
       displayAlert('error', 'Unable to get your location. Please try again later or check your network connection.');
@@ -97,7 +97,7 @@ export const AskLocation = () => {
 
           const { latitude, longitude } = position.coords;
           await setCityAndCountry(latitude, longitude, token, userId);
-          displayAlert('success', 'Location updated successfully');
+          if (showNotification) displayAlert('success', 'Location updated successfully');
         } catch (error) {
           await setLocationFromIP(userId);
         }

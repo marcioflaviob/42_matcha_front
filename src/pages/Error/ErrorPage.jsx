@@ -2,6 +2,7 @@ import React from 'react';
 import './ErrorPage.css';
 import { useNavigate } from 'react-router-dom';
 import { Button } from 'primereact/button';
+import sadCat from '/sad-cat.jpg';
 
 const ErrorPage = () => {
     const navigate = useNavigate();
@@ -10,7 +11,7 @@ const ErrorPage = () => {
         <div className='error-page-container'>
             <div className='error-content'>
                 <img 
-                    src={import.meta.env.VITE_BLOB_URL + '/' + 'sad_cat-wXhqHEgDRcBPGjsOb5copxfaDG1wrr.jpg'}
+                    src={sadCat}
                     alt="Sad Cat" 
                     className="error-cat-image"
                 />

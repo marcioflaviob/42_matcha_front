@@ -6,6 +6,7 @@ import { AuthContext } from '../../context/AuthContext';
 import ProfileCard from '../../components/HomePage/ProfileCard';
 import GuestHomePage from './GuestHomePage';
 import { UserContext } from '../../context/UserContext';
+import sadCat from '/sad-cat.jpg';
 
 const HomePage = () => {
 	const { potentialMatches, setPotentialMatches } = useContext(UserContext);
@@ -149,7 +150,7 @@ const HomePage = () => {
 						<div className='no-matches-content'>
 							<h2>No More Matches</h2>
 							<div className="no-matches-icon">
-								<img src={import.meta.env.VITE_BLOB_URL + '/' + 'sad_cat-wXhqHEgDRcBPGjsOb5copxfaDG1wrr.jpg'}
+								<img src={sadCat}
 				alt="Sad Cat" style={{width:'300px'}} />
 							</div>
 							<p>You've seen all potential matches in your area. Check back later for new profiles!</p>

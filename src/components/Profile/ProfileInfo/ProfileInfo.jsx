@@ -98,7 +98,6 @@ const ProfileInfo = ({ userInfo }) => {
                     <div className="info-content">
                         <span className="info-label">Fame Rating</span>
                         <div className="fame-rating">
-                            <span className="fame-score">{userInfo.rating || 0}</span>
                             <div className="fame-stars">
                                 <StarRating
                                     value={userInfo.rating || 0}

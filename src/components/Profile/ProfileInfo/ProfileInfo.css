@@ -211,7 +211,6 @@
 .profile-info-section .fame-rating {
     display: flex;
     align-items: center;
-    gap: 0.75rem;
 }
 
 .profile-info-section .fame-score {

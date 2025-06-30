@@ -1,9 +1,12 @@
 import React from "react";
 import './PhotoCarousel.css';
 import { Button } from "primereact/button";
+import { useLocation } from 'react-router-dom';
 
 const PhotoCarousel = ({ userInfo, currentImageIndex, setCurrentImageIndex }) => {
   const placeholderImage = "https://placehold.co/500x700/f3f4f6/a1a1aa?text=No+Image";
+  const location = useLocation();
+  const isProfilePage = location.pathname.includes('/profile');
 
   const nextImage = () => {
     setCurrentImageIndex((prev) => 
@@ -30,7 +33,7 @@ const PhotoCarousel = ({ userInfo, currentImageIndex, setCurrentImageIndex }) =>
   }
 
   return (
-    <div className="profile-main-image-container">
+    <div className={`profile-main-image-container ${isProfilePage ? 'bottom-border' : ''}`}>
       {userInfo.pictures.length > 0 && (
         <>
           <img 

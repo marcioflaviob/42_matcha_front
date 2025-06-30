@@ -7,6 +7,9 @@ import ProfileCard from '../../components/HomePage/ProfileCard';
 import GuestHomePage from './GuestHomePage';
 import { UserContext } from '../../context/UserContext';
 import sadCat from '/sad-cat.jpg';
+import { Skeleton } from 'primereact/skeleton';
+import SkeletonHomePage from './SkeletonHomePage';
+        
 
 const HomePage = () => {
 	const { potentialMatches, setPotentialMatches } = useContext(UserContext);
@@ -67,18 +70,11 @@ const HomePage = () => {
 		return <GuestHomePage />;
 	}
 	
-	if (!potentialMatches) {
-		return (
-			<div className='home-page-container'>
-				<div className="home-loading">
-					<div className="loading-spinner">
-						<div className="spinner"></div>
-					</div>
-					<p>Finding your perfect matches...</p>
-				</div>
-			</div>
-		);
-	}
+    if (!potentialMatches) {
+        return (
+            <SkeletonHomePage />
+        );
+    }
 
 	const remainingMatches = potentialMatches.length - matchIndex;
 

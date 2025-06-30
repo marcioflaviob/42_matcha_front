@@ -4,7 +4,7 @@ import LoginComponent from '../../components/Login/LoginComponent';
 import ForgotPassword from '../../components/Login/ForgotPassword';
 import { UserContext } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
-import loginBackground from '/login_background.png';
+import drawing from '/login_drawing.png';
 import { Button } from 'primereact/button';
 import { displayAlert } from '../../components/Notification/Notification';
 
@@ -33,7 +33,7 @@ const Login = () => {
 	return (
 		<div className='login-container'>
 			<div className='login-left-div'>
-				<img src={loginBackground} alt='Couple Illustration' className='login-background-img' />
+				<img src={drawing} alt='Couple Illustration' className='login-background-img' />
 			</div>
 			<div className='login-right-div'>
 				{

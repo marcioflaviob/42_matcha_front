@@ -2,7 +2,7 @@ import React from 'react';
 import './GuestHomePage.css';
 import { Button } from 'primereact/button';
 import { useNavigate } from 'react-router-dom';
-import loginBackground from '/login_background.png';
+import drawing from '/homepage_drawing.png';
 
 const GuestHomePage = () => {
 	const navigate = useNavigate();
@@ -19,7 +19,7 @@ const GuestHomePage = () => {
 					</div>
 				</div>
 				<div className='guest-home-image'>
-					<img src={loginBackground} alt='Couple Illustration' className='hero-background-img' />
+					<img src={drawing} alt='Couple Illustration' className='hero-background-img' />
 				</div>
 			</div>
 			<div className='guest-home-features'>

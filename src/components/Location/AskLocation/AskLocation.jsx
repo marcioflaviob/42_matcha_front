@@ -58,6 +58,7 @@ export const AskLocation = (showNotification) => {
 
   const setLocationFromIP = async (userId, token) => {
     try {
+      console.log('Fetching location from IP...');
       await axios.post(`${import.meta.env.VITE_API_URL}/location/ip/${userId}`, {}, {
           headers: {
               Authorization: `Bearer ${token}`,
@@ -96,6 +97,7 @@ export const AskLocation = (showNotification) => {
           });
 
           const { latitude, longitude } = position.coords;
+          console.log('Fetching location from IP...');
           await setCityAndCountry(latitude, longitude, token, userId);
           if (showNotification) displayAlert('success', 'Location updated successfully');
         } catch (error) {

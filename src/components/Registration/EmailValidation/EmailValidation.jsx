@@ -74,10 +74,9 @@ const EmailValidation = () => {
             ) : (
                 <>
                     <h2>Validate your account</h2>
-                    <p>We have sent you an email with a link to validate your account.</p>
                     <p>Click on the link in the email to validate your account.</p>
                     <Button 
-                        label="Resend email" 
+                        label="send email" 
                         disabled={!isButtonActive} 
                         onClick={handleEmailResend} 
                         icon="pi pi-envelope" 

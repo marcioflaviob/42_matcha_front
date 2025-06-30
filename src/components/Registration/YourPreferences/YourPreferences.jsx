@@ -10,7 +10,6 @@ import { UserContext } from '../../../context/UserContext';
 import { displayAlert } from '../../Notification/Notification';
 import { AuthContext } from '../../../context/AuthContext';
 import { Slider } from 'primereact/slider';
-import { Rating } from 'primereact/rating';
 import AskLocation from '../../Location/AskLocation/AskLocation';
 import StarRating from '../../StarRating/StarRating';
 

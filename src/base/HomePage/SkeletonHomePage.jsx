@@ -2,14 +2,29 @@ import React from 'react';
 import { Skeleton } from 'primereact/skeleton';
 
 const SkeletonHomePage = () => {
+    const tips = [
+        { icon: "pi pi-camera", text: "Upload high-quality photos" },
+        { icon: "pi pi-pencil", text: "Write an engaging biography" },
+        { icon: "pi pi-heart", text: "Add your interests and hobbies" },
+        { icon: "pi pi-map-marker", text: "Keep your location updated" },
+        { icon: "pi pi-user", text: "Be authentic and genuine" }
+    ];
+
+    const TipItem = ({ icon, text }) => (
+        <div className='tip-item'>
+            <i className={icon} />
+            <span>{text}</span>
+        </div>
+    );
+
     return (
         <div className='home-page-container'>
-			<div className="home-header">
-				<h1 className="home-title">Discover</h1>
-			</div>
+            <div className="home-header">
+                <h1 className="home-title">Discover</h1>
+            </div>
 
-			<div className="home-main-content">
-						<div className="profile-card-container">
+            <div className="home-main-content">
+                        <div className="profile-card-container">
                             <div className="profile-card-skeleton" >
                                 <Skeleton width="400px" height="400px" className="mb-3" borderRadius="12px" />
                                 
@@ -32,43 +47,26 @@ const SkeletonHomePage = () => {
                             </div>
                         </div>
 
-						<div className='home-sidebar-modern'>
-							<div className='quick-stats'>
-								<div className='stat-item'>
-									<Skeleton width="60px" height="2.5rem" className="mb-1" />
-									<span className='stat-label'>Potential Matches</span>
-								</div>
-							</div>
-							
-							<div className='quick-tips'>
-								<h4>
-									<i className="pi pi-lightbulb" />
-									{' '}Tips for Better Matches
-								</h4>
-								<div className='tip-item'>
-									<i className="pi pi-camera" />
-									<span>Upload high-quality photos</span>
-								</div>
-								<div className='tip-item'>
-									<i className="pi pi-pencil" />
-									<span>Write an engaging biography</span>
-								</div>
-								<div className='tip-item'>
-									<i className="pi pi-heart" />
-									<span>Add your interests and hobbies</span>
-								</div>
-								<div className='tip-item'>
-									<i className="pi pi-map-marker" />
-									<span>Keep your location updated</span>
-								</div>
-								<div className='tip-item'>
-									<i className="pi pi-user" />
-									<span>Be authentic and genuine</span>
-								</div>
-							</div>
-						</div>
-			</div>
-		</div>
+                        <div className='home-sidebar-modern'>
+                            <div className='quick-stats'>
+                                <div className='stat-item'>
+                                    <Skeleton width="60px" height="2.5rem" className="mb-1" />
+                                    <span className='stat-label'>Potential Matches</span>
+                                </div>
+                            </div>
+                            
+                            <div className='quick-tips'>
+                                <h4>
+                                    <i className="pi pi-lightbulb" />
+                                    {' '}Tips for Better Matches
+                                </h4>
+                                {tips.map((tip, index) => (
+                                    <TipItem key={index} icon={tip.icon} text={tip.text} />
+                                ))}
+                            </div>
+                        </div>
+            </div>
+        </div>
     );
 };
 

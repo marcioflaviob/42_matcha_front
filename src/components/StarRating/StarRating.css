@@ -1,7 +1,7 @@
 .star-rating-container {
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.4rem;
 }
 
 .star-rating {
@@ -130,6 +130,10 @@
 .star-rating-large .star-rating-value {
     font-size: 1.1rem;
     padding: 0.5rem 1rem;
+}
+
+.p-rating {
+    gap: 0.1rem
 }
 
 /* Responsive */

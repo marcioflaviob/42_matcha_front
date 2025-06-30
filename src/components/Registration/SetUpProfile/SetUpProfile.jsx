@@ -11,7 +11,7 @@ import { displayAlert } from '../../Notification/Notification';
 import PictureSelector from '../../PictureSelector/PictureSelector';
 
 const SetUpProfile = ({ setActiveStep }) => {
-    const { setUser } = useContext(UserContext);
+    const { setUser, user } = useContext(UserContext);
     const { token } = useContext(AuthContext);
     const [openPictureSelector, setOpenPictureSelector] = useState(false);
     const [formData, setFormData] = useState({
@@ -106,7 +106,7 @@ const SetUpProfile = ({ setActiveStep }) => {
 			<div className='button-div'>
 				<Button label="Back" severity="secondary" icon="pi pi-arrow-left" onClick={() => setActiveStep(1)} />
 				<Button label="Next" icon="pi pi-arrow-right" iconPos="right" onClick={() => handleButtonNext()} 
-                    disabled={!formData.biography || !isBirthdateValid(formData.birthdate)} />
+                    disabled={!formData.biography || !isBirthdateValid(formData.birthdate) || user.pictures.length == 0} />
 			</div>
 		</div>
 	);

@@ -5,6 +5,7 @@ import { Button } from 'primereact/button';
 import { useNavigate } from 'react-router-dom';
 import InterestChip from '../../InterestChip/InterestChip';
 import StarRating from '../../StarRating/StarRating';
+import { Skeleton } from 'primereact/skeleton';
         
 const ProfileInfo = ({ userInfo }) => {
     const navigate = useNavigate();
@@ -12,7 +13,7 @@ const ProfileInfo = ({ userInfo }) => {
     const [showEditButton, setShowEditButton] = useState(false);
 
     useEffect(() => {
-        if (user && user.id == userInfo.id)
+        if (user && userInfo && user.id == userInfo.id)
             setShowEditButton(true);
     }, [userInfo, user]);
 
@@ -20,28 +21,39 @@ const ProfileInfo = ({ userInfo }) => {
         navigate(`/edit-profile/`);
     }
 
-    if (!userInfo || !user) return (
-        <div className='profile-info-loading'>
-            <div className="loading-skeleton"></div>
-        </div>
-    );
-
     return (
         <div className='profile-info-section'>
             {/* Header Card */}
             <div className="profile-header-card">
                 <div className="profile-name-section">
-                    <h1 className="profile-display-name">
-                        {userInfo.first_name} {userInfo.last_name}
-                    </h1>
+                    {
+                        userInfo ? 
+                        <h1 className="profile-display-name">
+                            {userInfo.first_name} {userInfo.last_name}
+                        </h1>
+                        :
+                        <div style={{ marginBottom: '0.5rem' }}>
+                            <Skeleton width="200px" height="3rem" />
+                        </div>
+                    }
                     <div className="profile-age-location">
-                        <span className="profile-page-age">{userInfo.age} years old</span>
-                        {userInfo.location && (
-                            <div className="profile-location">
-                                <i className="pi pi-map-marker"></i>
-                                <span>{userInfo.location.city}, {userInfo.location.country}</span>
+                        {
+                            userInfo ?
+                            <span className="profile-page-age">{userInfo.age} years old</span>
+                            :
+                            <div style={{ marginBottom: '0.5rem' }}>
+                                <Skeleton width="100px" height="1.5rem" />
                             </div>
-                        )}
+                        }
+                        <div className="profile-location">
+                            <i className="pi pi-map-marker"></i>
+                            {
+                                userInfo ?
+                                <span>{userInfo.location.city}, {userInfo.location.country}</span>
+                                :
+                                <Skeleton width="150px" height="1.5rem" />
+                            }
+                        </div>
                     </div>
                 </div>
                 {showEditButton && (
@@ -56,12 +68,17 @@ const ProfileInfo = ({ userInfo }) => {
             </div>
 
             {/* Bio Card */}
-            {userInfo.biography && (
-                <div className="profile-bio-card">
-                    <h3 className="section-title">About Me</h3>
+            <div className="profile-bio-card">
+                <h3 className="section-title">About Me</h3>
+                {
+                    userInfo ?
                     <p className="bio-text">{userInfo.biography}</p>
-                </div>
-            )}
+                    :
+                    <div style={{ marginBottom: '1rem' }}>
+                        <Skeleton width="100%" height="4rem" />
+                    </div>
+                }
+            </div>
 
             {/* Info Grid */}
             <div className="profile-info-grid">
@@ -71,10 +88,17 @@ const ProfileInfo = ({ userInfo }) => {
                     </div>
                     <div className="info-content">
                         <span className="info-label">Gender</span>
-                        <InterestChip 
-                            label={userInfo.gender} 
-                            className="info-chip gender-chip"
-                        />
+                        {
+                            userInfo ?
+                            <InterestChip 
+                                label={userInfo.gender} 
+                                className="info-chip gender-chip"
+                            />
+                            : 
+                            <div style={{ marginBottom: '0.5rem' }}>
+                                <Skeleton width="100px" height="1.5rem" />
+                            </div>
+                        }
                     </div>
                 </div>
 
@@ -84,10 +108,17 @@ const ProfileInfo = ({ userInfo }) => {
                     </div>
                     <div className="info-content">
                         <span className="info-label">Looking for</span>
-                        <InterestChip 
-                            label={userInfo.sexual_interest} 
-                            className="info-chip interest-chip"
-                        />
+                        {
+                            userInfo ?
+                            <InterestChip 
+                                label={userInfo.sexual_interest} 
+                                className="info-chip interest-chip"
+                            />
+                            :
+                            <div style={{ marginBottom: '0.5rem' }}>
+                                <Skeleton width="100px" height="1.5rem" />
+                            </div>
+                        }
                     </div>
                 </div>
 
@@ -100,7 +131,7 @@ const ProfileInfo = ({ userInfo }) => {
                         <div className="fame-rating">
                             <div className="fame-stars">
                                 <StarRating
-                                    value={userInfo.rating || 0}
+                                    value={userInfo?.rating || 0}
                                     isModifiable={false}
                                     showValue={true}
                                     className="fame-star-rating"
@@ -111,7 +142,7 @@ const ProfileInfo = ({ userInfo }) => {
                     </div>
                 </div>
 
-                {userInfo.id == user.id && (
+                {userInfo?.id == user?.id && (
                     <div className="info-card email-card">
                         <div className="info-icon">
                             <i className="pi pi-envelope"></i>
@@ -125,12 +156,13 @@ const ProfileInfo = ({ userInfo }) => {
             </div>
 
             {/* Interests Card */}
-            {userInfo.interests && userInfo.interests.length > 0 && (
-                <div className="profile-interests-card">
-                    <h3 className="section-title">
-                        <i className="pi pi-tags" />
-                        Interests
-                    </h3>
+            <div className="profile-interests-card">
+                <h3 className="section-title">
+                    <i className="pi pi-tags" />
+                    Interests
+                </h3>
+                {
+                    userInfo ?
                     <div className="interests-grid">
                         {userInfo.interests.map((interest) => (
                             <InterestChip 
@@ -140,8 +172,12 @@ const ProfileInfo = ({ userInfo }) => {
                             />
                         ))}
                     </div>
-                </div>
-            )}
+                    :
+                    <div style={{ marginBottom: '0.5rem' }}>
+                        <Skeleton width="100%" height="2rem" />
+                    </div>
+                }
+            </div>
         </div>
     );
 };

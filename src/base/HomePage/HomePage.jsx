@@ -6,6 +6,11 @@ import { AuthContext } from '../../context/AuthContext';
 import ProfileCard from '../../components/HomePage/ProfileCard';
 import GuestHomePage from './GuestHomePage';
 import { UserContext } from '../../context/UserContext';
+import sadCat from '/sad-cat.jpg';
+import SkeletonHomePage from './SkeletonHomePage';
+import { TIPS } from '../../components/HomePage/constants';
+import TipItem from '../../components/HomePage/TipItem';
+        
 
 const HomePage = () => {
 	const { potentialMatches, setPotentialMatches } = useContext(UserContext);
@@ -66,18 +71,11 @@ const HomePage = () => {
 		return <GuestHomePage />;
 	}
 	
-	if (!potentialMatches) {
-		return (
-			<div className='home-page-container'>
-				<div className="home-loading">
-					<div className="loading-spinner">
-						<div className="spinner"></div>
-					</div>
-					<p>Finding your perfect matches...</p>
-				</div>
-			</div>
-		);
-	}
+    if (!potentialMatches) {
+        return (
+            <SkeletonHomePage />
+        );
+    }
 
 	const remainingMatches = potentialMatches.length - matchIndex;
 
@@ -121,26 +119,9 @@ const HomePage = () => {
 									<i className="pi pi-lightbulb" />
 									{' '}Tips for Better Matches
 								</h4>
-								<div className='tip-item'>
-									<i className="pi pi-camera" />
-									<span>Upload high-quality photos</span>
-								</div>
-								<div className='tip-item'>
-									<i className="pi pi-pencil" />
-									<span>Write an engaging biography</span>
-								</div>
-								<div className='tip-item'>
-									<i className="pi pi-heart" />
-									<span>Add your interests and hobbies</span>
-								</div>
-								<div className='tip-item'>
-									<i className="pi pi-map-marker" />
-									<span>Keep your location updated</span>
-								</div>
-								<div className='tip-item'>
-									<i className="pi pi-user" />
-									<span>Be authentic and genuine</span>
-								</div>
+								{TIPS.map((tip, index) => (
+									<TipItem key={index} icon={tip.icon} text={tip.text} />
+								))}
 							</div>
 						</div>
 					</>
@@ -149,7 +130,7 @@ const HomePage = () => {
 						<div className='no-matches-content'>
 							<h2>No More Matches</h2>
 							<div className="no-matches-icon">
-								<img src={import.meta.env.VITE_BLOB_URL + '/' + 'sad_cat-wXhqHEgDRcBPGjsOb5copxfaDG1wrr.jpg'}
+								<img src={sadCat}
 				alt="Sad Cat" style={{width:'300px'}} />
 							</div>
 							<p>You've seen all potential matches in your area. Check back later for new profiles!</p>

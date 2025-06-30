@@ -297,6 +297,9 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
                         <h3>
                             <i className="pi pi-link" />
                             {' '}Import from social media
+                            <small className="upload-limit" style={{ marginLeft: 'auto', fontWeight: 'normal' }}>
+                                Maximum 5 photos ({previews.length}/5)
+                            </small>
                         </h3>
                         <div style={{ display: 'flex', flexDirection: 'column', gap: '1rem' }}>
                             <input
@@ -315,7 +318,6 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
                                 onClick={handleImportFromUrl}
                                 disabled={previews.length >= 5 || isUrlLoading}
                                 />
-                            <small className="upload-limit">Maximum 5 photos ({previews.length}/5)</small>
                         </div>
                     </div>
 

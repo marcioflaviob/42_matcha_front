@@ -85,10 +85,6 @@
     object-fit: cover;
 }
 
-/* .profile-main-image:hover {
-    transform: scale(1.02);
-} */
-
 .profile-gallery-nav-button {
     position: absolute;
     top: 50%;

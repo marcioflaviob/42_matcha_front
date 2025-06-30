@@ -3,6 +3,7 @@ import { Avatar } from 'primereact/avatar';
 import './UserList.css';
 import { Badge } from 'primereact/badge';
 import { SocketContext } from '../../context/SocketContext';
+import { Skeleton } from 'primereact/skeleton';
 
 const UserList = ({ users, selectedUser, setSelectedUser, setUsers }) => {
     const { connected, channel } = useContext(SocketContext);
@@ -20,6 +21,29 @@ const UserList = ({ users, selectedUser, setSelectedUser, setUsers }) => {
             });
         }
     }, [connected, channel]);
+
+    if (!users) {
+        return (
+            <div className="user-list">
+                <div className="user-list-header">
+                    Conversations
+                </div>
+                <div className="user-list-content">
+                    {[1, 2, 3].map(index => (
+                        <div key={index} className="user-item">
+                            <Skeleton shape="circle" size="3rem" />
+                            <div className="user-list-info">
+                                <div style={{ marginBottom: '0.5rem' }}>
+                                    <Skeleton width="8rem" height="1rem" />
+                                </div>
+                                <Skeleton width="5rem" height="0.8rem" />
+                            </div>
+                        </div>
+                    ))}
+                </div>
+            </div>
+        );
+    }
 
     return (
         <div className="user-list">

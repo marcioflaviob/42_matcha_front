@@ -45,11 +45,6 @@ const Profile = () => {
 		syncFunction();
 	}, [userId, user]);
 
-	if (!currentUser) {
-		return(
-			<div></div>
-	)};
-
 	return (
 		<div className='profile-container'>
 			<ProfilePicture userId={userId} userInfo={currentUser}></ProfilePicture>

@@ -1,12 +1,18 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import './SetUpProfile.css';
 import { Button } from 'primereact/button';
 import { Divider } from 'primereact/divider';
+import { AuthContext } from '../../../context/AuthContext';
 import { InputTextarea } from 'primereact/inputtextarea';
 import { Calendar } from 'primereact/calendar';
+import axios from 'axios';
+import { UserContext } from '../../../context/UserContext';
+import { displayAlert } from '../../Notification/Notification';
 import PictureSelector from '../../PictureSelector/PictureSelector';
 
 const SetUpProfile = ({ setActiveStep }) => {
+    const { setUser } = useContext(UserContext);
+    const { token } = useContext(AuthContext);
     const [openPictureSelector, setOpenPictureSelector] = useState(false);
     const [formData, setFormData] = useState({
         biography: '',
@@ -47,6 +53,27 @@ const SetUpProfile = ({ setActiveStep }) => {
 		}));
 	};
 
+    const handleButtonNext = async () => {
+		axios.put(
+			`${import.meta.env.VITE_API_URL}/update-user`,
+			formData,
+			{
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+				withCredentials: true,
+			}
+		)
+		.then((response) => {
+			setUser(response.data);
+			setActiveStep(4);
+		})
+		.catch((error) => {
+			console.error('Error:', error);
+			displayAlert('error', 'An error occurred. Please try again later.');
+		})
+	}
+
 	return (
 		<div className='set-up-panel'>
 			<div className='biography-div'>
@@ -78,7 +105,7 @@ const SetUpProfile = ({ setActiveStep }) => {
 			</div>
 			<div className='button-div'>
 				<Button label="Back" severity="secondary" icon="pi pi-arrow-left" onClick={() => setActiveStep(1)} />
-				<Button label="Next" icon="pi pi-arrow-right" iconPos="right" onClick={() => setActiveStep(3)} 
+				<Button label="Next" icon="pi pi-arrow-right" iconPos="right" onClick={() => handleButtonNext()} 
                     disabled={!formData.biography || !isBirthdateValid(formData.birthdate)} />
 			</div>
 		</div>

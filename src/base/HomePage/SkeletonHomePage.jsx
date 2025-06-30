@@ -1,21 +1,9 @@
 import React from 'react';
 import { Skeleton } from 'primereact/skeleton';
+import { TIPS } from '../../components/HomePage/constants';
+import TipItem from '../../components/HomePage/TipItem';
 
 const SkeletonHomePage = () => {
-    const tips = [
-        { icon: "pi pi-camera", text: "Upload high-quality photos" },
-        { icon: "pi pi-pencil", text: "Write an engaging biography" },
-        { icon: "pi pi-heart", text: "Add your interests and hobbies" },
-        { icon: "pi pi-map-marker", text: "Keep your location updated" },
-        { icon: "pi pi-user", text: "Be authentic and genuine" }
-    ];
-
-    const TipItem = ({ icon, text }) => (
-        <div className='tip-item'>
-            <i className={icon} />
-            <span>{text}</span>
-        </div>
-    );
 
     return (
         <div className='home-page-container'>
@@ -60,7 +48,7 @@ const SkeletonHomePage = () => {
                                     <i className="pi pi-lightbulb" />
                                     {' '}Tips for Better Matches
                                 </h4>
-                                {tips.map((tip, index) => (
+                                {TIPS.map((tip, index) => (
                                     <TipItem key={index} icon={tip.icon} text={tip.text} />
                                 ))}
                             </div>

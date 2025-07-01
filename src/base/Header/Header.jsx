@@ -2,7 +2,6 @@ import React, { useContext, useRef} from 'react';
 import './Header.css';
 import { UserContext } from '../../context/UserContext';
 import { useNavigate } from 'react-router-dom';
-import { AuthContext } from '../../context/AuthContext';
 import logoMatcha from '/logo_matcha.png';
 import { Button } from 'primereact/button';
 import NotificationButton from './NotificationButton';

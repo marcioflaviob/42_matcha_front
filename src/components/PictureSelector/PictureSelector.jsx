@@ -80,8 +80,7 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
             resetState();
             setIsLoading(false);
         } catch (error) {
-            console.error('Error:', error);
-            displayAlert('error', 'An error occurred. Please try again later.');
+            displayAlert('error', error.response?.data?.message || 'Error uploading files');
         }
     };
 
@@ -144,8 +143,7 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
                 }));
                 setPreviews(prev => prev.filter(p => p.id !== preview.id));
             } catch (error) {
-                console.error('Error deleting picture:', error);
-                displayAlert('error', 'Error deleting file');
+                displayAlert('error', error.response?.data?.message || 'Failed to delete picture');
                 return;
             }
         } else { // If it's a local file, just remove it from previews
@@ -223,7 +221,6 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
                 displayAlert('success', 'Photo imported successfully!');
             }
         } catch (error) {
-            console.error('Error importing photo from URL:', error);
             displayAlert('error', error.response?.data?.message || 'Failed to import photo from URL');
         } finally {
             setIsUrlLoading(false);

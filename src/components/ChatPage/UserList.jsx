@@ -9,7 +9,7 @@ const UserList = ({ users, selectedUser, setSelectedUser, setUsers }) => {
     const { connected, channel } = useContext(SocketContext);
 
     useEffect(() => {
-        if (connected) {
+        if (connected && users) {
             channel.bind('status-change', (data) => {
                 const updatedUsers = users.map(user => {
                     if (user.id == data.sender_id) {
@@ -18,9 +18,21 @@ const UserList = ({ users, selectedUser, setSelectedUser, setUsers }) => {
                     return user;
                 });
                 setUsers(updatedUsers);
+                setSelectedUser(prevSelected => {
+                    if (prevSelected && prevSelected.id == data.sender_id) {
+                        return { ...prevSelected, online: data.status == 'online' };
+                    }
+                    return prevSelected;
+                });
             });
         }
-    }, [connected, channel]);
+
+        return () => {
+            if (connected) {
+                channel.unbind('status-change');
+            }
+        }
+    }, [connected, channel, users]);
 
     if (!users) {
         return (

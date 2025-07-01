@@ -18,8 +18,7 @@ const AwaitingPermissions = ({ setStream, setPermissionGranted }) => {
                 setStream(mediaStream);
                 setPermissionGranted(true);
             })
-            .catch((err) => {
-                console.error('Media access error:', err);
+            .catch(() => {
                 displayAlert('error', 'Unable to access camera or microphone. Please grant permissions.');
             });
     }, []);

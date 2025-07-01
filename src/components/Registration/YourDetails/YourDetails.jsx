@@ -64,8 +64,7 @@ const YourDetails = ({ setActiveStep }) => {
 			});
 		})
 		.catch(error => {
-			console.error('Error saving user details:', error);
-			displayAlert('error', 'Error saving user details');
+			displayAlert('error', error.response?.data?.message || 'Error creating user');
 		});
 		setIsLoading(false);
 	}

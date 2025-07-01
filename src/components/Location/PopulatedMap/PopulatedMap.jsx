@@ -129,9 +129,8 @@ const PopulatedMap = () => {
       displayAlert('success', 'Date planned!');
       setClickedPosition('');
       setDates((prev) => [...prev, response.data]);
-    } catch (err) {
-      console.error('Error sending date:', err);
-      displayAlert('error', 'Error sending date');
+    } catch (error) {
+      displayAlert('error', error.response?.data?.message || 'Error scheduling date');
     }
   }
 
@@ -167,9 +166,8 @@ const PopulatedMap = () => {
             return { ...match, icon : userIcon};
           });
           setMatches(updatedMatches);
-        } catch (err) {
-          console.error('Error fetching matches:', err);
-          displayAlert('error', 'Error fetching matches');
+        } catch (error) {
+          displayAlert('error', error.response?.data?.message || 'Error fetching matches');
         }
       };
 
@@ -248,8 +246,7 @@ const PopulatedMap = () => {
       }));
       setFocusedDate(null);
 		} catch (error) {
-			console.error("error accepting date:", error);
-			displayAlert("error", "error accepting date");
+			displayAlert("error", error.response?.data?.message || "Error updating date status");
 		}
 	}
 

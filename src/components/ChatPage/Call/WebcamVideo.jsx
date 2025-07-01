@@ -13,9 +13,8 @@ const WebcamVideo = ({ stream, name, mute }) => {
         
         try {
             playPromise = localVideoRef.current.play();
-        } catch (err) {
+        } catch {
             displayAlert('error', 'Error playing video, try refreshing the page');
-            console.error('Exception during play():', err);
         }
 
         return () => {

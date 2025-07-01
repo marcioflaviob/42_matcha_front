@@ -3,7 +3,6 @@ import './ConversationHeader.css';
 import { Avatar } from 'primereact/avatar';
 import { Button } from 'primereact/button';
 import { useNavigate, useSearchParams } from 'react-router-dom';
-import axios from 'axios';
 import { displayAlert } from '../Notification/Notification';
 import { AuthContext } from '../../context/AuthContext';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
@@ -54,14 +53,30 @@ const ConversationHeader = ({ selectedUser, setSelectedUser, setUsers }) => {
 				});
 			}
 		} catch (error) {
-			console.error('Error blocking user:', error);
-			displayAlert('error', 'Error blocking user');
+			displayAlert('error', error.response?.data?.message || 'Failed to block user');
 		}
 	}
 
 	const handleProfileClick = async () => {
 		navigate('/profile/' + selectedUser.id);
 	}
+
+	const getRelativeTime = (lastSeen) => {
+		const now = new Date();
+		const lastSeenDate = new Date(lastSeen);
+		const diffInMinutes = Math.floor((now - lastSeenDate) / (1000 * 60));
+		
+		if (diffInMinutes < 1) return 'just now';
+		if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
+		
+		const diffInHours = Math.floor(diffInMinutes / 60);
+		if (diffInHours < 24) return `${diffInHours}h ago`;
+		
+		const diffInDays = Math.floor(diffInHours / 24);
+		if (diffInDays < 7) return `${diffInDays}d ago`;
+		
+		return lastSeenDate.toLocaleDateString();
+	};
 	
 	useEffect(() => {
 		const calling = searchParams.get('call');
@@ -95,9 +110,16 @@ const ConversationHeader = ({ selectedUser, setSelectedUser, setUsers }) => {
 				/>
 				<div className="header-info">
 					<span className="header-name">{selectedUser.first_name} {selectedUser.last_name}</span>
-					<span className={`header-status ${selectedUser?.online ? 'online' : 'offline'}`}>
-						{selectedUser?.online ? 'Online' : 'Offline'}
-					</span>
+					<div className="header-status-container">
+						<span className={`header-status ${selectedUser?.online ? 'online' : 'offline'}`}>
+							{selectedUser?.online ? 'Online' : 'Offline'}
+						</span>
+						{!selectedUser?.online && selectedUser?.last_connection && (
+							<span className="header-last-seen">
+								last seen {getRelativeTime(selectedUser?.last_connection)}
+							</span>
+						)}
+					</div>
 				</div>
 			</div>
 			<div className="header-actions">

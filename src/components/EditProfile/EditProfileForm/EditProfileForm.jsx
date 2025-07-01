@@ -13,6 +13,7 @@ import { Button } from 'primereact/button';
 import StarRating from '../../StarRating/StarRating';
 import PictureSelector from '../../PictureSelector/PictureSelector';
 import AskLocation from '../../Location/AskLocation/AskLocation';
+import { Slider } from 'primereact/slider';
 
 const EditProfileForm = ({ shadowUser, setShadowUser }) => {
     const navigate = useNavigate();
@@ -23,6 +24,8 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
     const { setLocation } = AskLocation(true);
     const [loadingButton, setLoadingButton] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
+    const [ageRange, setAgeRange] = useState([18, 99]);
+    
 
     const handleFieldChange = useCallback((field) => (e) => {
         const value = e.target.value;
@@ -41,6 +44,12 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
     const handleSelectChange = (e, field) => {
         const value = e.target.value;
         const valueSet = new Set(value);
+
+        if (value.length === 0) {
+            displayAlert('warn', 'Please select at least one interest');
+            return;
+        }
+
         const changes = allInterests.filter(interest => valueSet.has(interest.name));
         setShadowUser(prev => ({ ...prev, interests: changes }));
     };
@@ -54,6 +63,15 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
 
     const handleRatingChange = (newRating) => {
         setShadowUser(prev => ({ ...prev, min_desired_rating: newRating }));
+    };
+
+    const handleAgeRangeChange = (value) => {
+        setAgeRange(value);
+		setShadowUser((prevData) => ({
+			...prevData,
+			age_range_min: value[0],
+			age_range_max: value[1],
+		}));
     };
 
     const updateUser = async () => {
@@ -110,7 +128,7 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
                 console.error('Error fetching information:', err);
             }
         };
-
+        setAgeRange([shadowUser.age_range_min, shadowUser.age_range_max]);
         fetchData();
     }, []);
 
@@ -297,6 +315,25 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
                         <small className="rating-help-text">
                             Set the minimum fame rating you're interested in (0-100). Each star equals 20 points.
                         </small>
+                    </div>
+                </div>
+            </div>
+
+            <div className="edit-form-card">
+                <h3>
+                    <i className="pi pi-star" />
+                    {' '}Age range
+                </h3>
+                <div className="form-field-group">
+                    <div className="form-field">
+                        <p>Desired age range</p>
+                        <div className="slider-container">
+                            <Slider id='age_range' value={ageRange} onChange={(e) => handleAgeRangeChange(e.value)} range min={0} max={100} />
+                            <div className="age-range-display">
+                                <span>{shadowUser.age_range_min}</span>
+                                <span>{shadowUser.age_range_max}</span>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>

@@ -183,7 +183,6 @@
     opacity: 0.7;
 }
 
-/* Tooltip customization for this component only */
 .conversation-header .p-tooltip .p-tooltip-text {
     background-color: #2a815b !important;
     color: white !important;

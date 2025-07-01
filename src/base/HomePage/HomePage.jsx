@@ -19,7 +19,7 @@ const HomePage = () => {
 	const { isAuthenticated, isLoading } = useContext(AuthContext);
 	
 	useEffect(() => {
-		if (isAuthenticated && !isLoading) {
+		if (isAuthenticated && !isLoading && !potentialMatches) {
 			fetchPotentialMatches();
 		}
 	}, [isAuthenticated, isLoading]);
@@ -67,6 +67,19 @@ const HomePage = () => {
 		}
 	}
 	
+	const handleReport = async () => {
+		try {
+			await axios.post(`${import.meta.env.VITE_API_URL}/report/${potentialMatches[matchIndex].id}`, {}, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			});
+			setMatchIndex((prevIndex) => prevIndex + 1);
+		} catch (error) {
+			displayAlert('error', error.response?.data?.message || 'Error reporting user');
+		}
+	}
+	
 	if (!isAuthenticated || isLoading) {
 		return <GuestHomePage />;
 	}
@@ -100,7 +113,8 @@ const HomePage = () => {
 							<ProfileCard 
 								profile={potentialMatches[matchIndex]} 
 								handleLike={handleLike} 
-								handleBlock={handleBlock} 
+								handleBlock={handleBlock}
+								handleReport={handleReport}
 								showButtons={true} 
 							/>
 						</div>
@@ -131,7 +145,7 @@ const HomePage = () => {
 							<h2>No More Matches</h2>
 							<div className="no-matches-icon">
 								<img src={sadCat}
-				alt="Sad Cat" style={{width:'300px'}} />
+									alt="Sad Cat" style={{width:'300px'}} />
 							</div>
 							<p>You've seen all potential matches in your area. Check back later for new profiles!</p>
 							

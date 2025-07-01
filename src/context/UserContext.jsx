@@ -1,6 +1,7 @@
 import React, { createContext, useState, useEffect, useContext, useMemo } from 'react';
 import axios from 'axios';
 import { AuthContext } from './AuthContext';
+import { MapContext } from './MapContext';
 
 export const UserContext = createContext();
 
@@ -8,9 +9,21 @@ export const UserProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [potentialMatches, setPotentialMatches] = useState(null);
     const [loading, setLoading] = useState(true);
-    const { token, isAuthenticated, isLoading } = useContext(AuthContext);
+    const { token, isAuthenticated, isLoading, logout } = useContext(AuthContext);
+    const { setFocusedDate, setFocusedUser, setMapStatus } = useContext(MapContext);
     const [dates, setDates] = useState([]);
     
+    const logoutUser = () => {
+        logout();
+        setUser(null);
+        setPotentialMatches(null);
+        setDates([]);
+        setLoading(true);
+        setFocusedDate(null);
+        setFocusedUser(null);
+        setMapStatus('closed');
+    };
+
     const props = useMemo(() => ({
         user, 
         setUser,
@@ -19,6 +32,7 @@ export const UserProvider = ({ children }) => {
         setPotentialMatches,
         dates,
         setDates,
+        logoutUser
     }), [user, potentialMatches, dates, loading]);
 
     const fetchDates = async () => {

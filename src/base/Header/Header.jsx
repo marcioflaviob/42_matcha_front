@@ -9,14 +9,13 @@ import NotificationButton from './NotificationButton';
 import { MapContext } from '../../context/MapContext';
 
 const Header = () => {
-	const { user } = useContext(UserContext);
-	const { logout } = useContext(AuthContext);
+	const { user, logoutUser } = useContext(UserContext);
 	const { setMapStatus, setFocusedDate, mapStatus } = useContext(MapContext);
 	const profilePicture = user?.pictures?.find(picture => picture.is_profile);
 	const navigate = useNavigate();
 	const headerRef = useRef(null);
 	const handleLogout = async () => {
-		logout();
+		logoutUser();
 		navigate('/');
 	};
 

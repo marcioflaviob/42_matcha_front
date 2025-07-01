@@ -61,29 +61,49 @@ const ProfilePicture = ({ userInfo }) => {
       });
   }
 
-  const handleReport = () => {
-    // TODO
-    displayAlert('warn', 'This feature is not implemented yet');
-  }
-
-  const handleUnlike = () => {
-    // TODO
-    displayAlert('warn', 'This feature is not implemented yet');
-  }
-
-  const handleBlock = async () => {
-    try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/block/${userInfo.id}`, {}, {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      });
+  const handleReport = async () => {
+    axios.post(`${import.meta.env.VITE_API_URL}/report/${userInfo.id}`, {}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then(() => {
       setTimeout(() => {
         navigate('/');
       }, 500);
-    } catch (error) {
-      displayAlert('error', error.response?.data?.message || 'Failed to block user');
-    }
+      displayAlert('success', `${userInfo.first_name} reported successfully`);
+    }).catch((error) => {
+      displayAlert('error', error.response?.data?.message || 'Error reporting user');
+    });
+  }
+
+  const handleUnlike = async () => {
+    axios.delete(`${import.meta.env.VITE_API_URL}/unlike/${userInfo.id}`, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then(() => {
+      setTimeout(() => {
+        navigate('/');
+      }, 500);
+      displayAlert('success', `${userInfo.first_name} unliked successfully`);
+    }).catch((error) => {
+      displayAlert('error', error.response?.data?.message || 'Error unliking user');
+    });
+  }
+
+  const handleBlock = async () => {
+    axios.post(`${import.meta.env.VITE_API_URL}/block/${userInfo.id}`, {}, {
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+    }).then(() => {
+      setTimeout(() => {
+        navigate('/');
+      }, 500);
+      displayAlert('success', `${userInfo.first_name} blocked successfully`);
+    }).catch((error) => {
+      displayAlert('error', error.response?.data?.message || 'Error blocking user');
+    });
   }
 
   const menuItems = [

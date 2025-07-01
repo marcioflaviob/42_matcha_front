@@ -19,8 +19,7 @@ const AwaitingCall = ({ isInvited, selectedUser, stream, setCallStarted, channel
                     },
                     withCredentials: true,
                 }).catch((error) => {
-                    console.error('Error making call:', error);
-                    displayAlert('error', 'Error making call');
+                    displayAlert('error', error.response?.data?.message || 'Error starting call');
                 });
             }
             setCallStarted(true);

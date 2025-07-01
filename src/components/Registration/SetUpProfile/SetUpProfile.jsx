@@ -69,8 +69,7 @@ const SetUpProfile = ({ setActiveStep }) => {
 			setActiveStep(4);
 		})
 		.catch((error) => {
-			console.error('Error:', error);
-			displayAlert('error', 'An error occurred. Please try again later.');
+			displayAlert('error', error.response?.data?.message || 'Error updating profile');
 		})
 	}
 
@@ -78,7 +77,7 @@ const SetUpProfile = ({ setActiveStep }) => {
 		<div className='set-up-panel'>
 			<div className='biography-div'>
 				<h2 className='h2-bio'>Write your biography</h2>
-				<InputTextarea rows={5} cols={40} autoResize value={formData.biography} onChange={handleChange} invalid={biographyTouched && !formData.biography} />
+				<InputTextarea rows={5} cols={40} autoResize value={formData.biography} onChange={handleChange} invalid={biographyTouched && !formData.biography} maxLength={255} />
 			</div>
             <div className='row-div'>
 				<h2 className='h2-bio'>Birthdate</h2>

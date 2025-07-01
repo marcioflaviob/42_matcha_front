@@ -36,8 +36,8 @@ const HomePage = () => {
 				displayAlert('warn', 'No potential matches found');
 				return;
 			}
-		} catch (err) {
-			console.error('Error fetching pictures:', err);
+		} catch (error) {
+			displayAlert('error', error.response?.data?.message || 'Error fetching potential matches');
 		}
 	};
 
@@ -49,8 +49,8 @@ const HomePage = () => {
 				},
 			});
 			setMatchIndex((prevIndex) => prevIndex + 1);
-		} catch (err) {
-			console.error('Error liking match:', err);
+		} catch (error) {
+			displayAlert('error', error.response?.data?.message || 'Error liking match');
 		}
 	}
 	
@@ -62,8 +62,8 @@ const HomePage = () => {
 				},
 			});
 			setMatchIndex((prevIndex) => prevIndex + 1);
-		} catch (err) {
-			console.error('Error liking match:', err);
+		} catch (error) {
+			displayAlert('error', error.response?.data?.message || 'Error blocking user');
 		}
 	}
 	

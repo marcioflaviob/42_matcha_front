@@ -8,6 +8,7 @@ import axios from 'axios';
 import { useNavigate } from 'react-router-dom';
 import { AuthContext } from '../../context/AuthContext';
 import { UserContext } from '../../context/UserContext';
+import { displayAlert } from '../Notification/Notification';
 
 const LoginComponent = ({ setIsPasswordForgotten }) => {
 	const navigate = useNavigate();
@@ -60,7 +61,7 @@ const LoginComponent = ({ setIsPasswordForgotten }) => {
 			setUser(response.data.user);
 			navigate('/');
         } catch (error) {
-            console.error('Login failed:', error.response?.data || error.message);
+            displayAlert('error', error.response?.data?.message || 'Login failed. Please check your credentials.');
         } finally {
             setLoading(false);
         }

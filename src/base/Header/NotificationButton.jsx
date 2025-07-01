@@ -46,8 +46,7 @@ const NotificationButton = () => {
 						setPotentialMatches([response.data, ...prevMatches]);
 					}
 				} catch (error) {
-					displayAlert('error', 'Error fetching user data');
-					console.error('Error fetching user data:', error);
+					displayAlert('error', error.response?.data?.message || 'Error updating potential matches');
 				}
 			};
 			
@@ -74,8 +73,7 @@ const NotificationButton = () => {
 				},
 			});
 		} catch (error) {
-			console.error('Error marking notifications as read:', error);
-			displayAlert('error', 'Error marking notifications as read');
+			displayAlert('error', error.response?.data?.message || 'Error marking notifications as seen');
 		}
 	};
 
@@ -89,8 +87,7 @@ const NotificationButton = () => {
 				});
 				setNotifications(response.data);
 			} catch (error) {
-				console.error('Error fetching notifications:', error);
-				displayAlert('error', 'Error fetching notifications');
+				displayAlert('error', error.response?.data?.message || 'Error fetching notifications');
 			}
 		};
 		if (user) {

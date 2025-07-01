@@ -19,8 +19,7 @@ const ForgotPassword = ({ setIsPasswordForgotten }) => {
 			const response = await axios.post(import.meta.env.VITE_API_URL + '/email/forgot-password', { email });
 			setEmailSent(true);
 		} catch (error) {
-			console.error('Password recovery failed:', error.response?.data || error.message);
-			displayAlert('error', 'Password recovery failed');
+			displayAlert('error', error.response?.data?.message || 'Error sending password recovery email');
 		} finally {
 			setLoading(false);
 		}

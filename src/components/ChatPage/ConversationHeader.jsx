@@ -66,7 +66,7 @@ const ConversationHeader = ({ selectedUser, setSelectedUser, setUsers }) => {
 		const lastSeenDate = new Date(lastSeen);
 		const diffInMinutes = Math.floor((now - lastSeenDate) / (1000 * 60));
 		
-		if (diffInMinutes < 1) return 'Just now';
+		if (diffInMinutes < 1) return 'just now';
 		if (diffInMinutes < 60) return `${diffInMinutes}m ago`;
 		
 		const diffInHours = Math.floor(diffInMinutes / 60);

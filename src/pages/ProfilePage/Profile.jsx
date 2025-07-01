@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useContext } from 'react';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import './Profile.css';
 import ProfilePicture from '../../components/Profile/ProfilePicture/ProfilePicture';
 import ProfileInfo from '../../components/Profile/ProfileInfo/ProfileInfo';
@@ -13,14 +13,21 @@ const Profile = () => {
 	const {user} = useContext(UserContext);
 	const [currentUser, setCurrentUser] = useState(null);
 	const { token } = useContext(AuthContext);
+	const navigate = useNavigate();
 
 	const fetchData = async () => {
-		try {
-			const response = await axios.get(`${import.meta.env.VITE_API_URL}/users/${userId}`);
-			setCurrentUser(response.data);
-		} catch (error) {
-			displayAlert('error', error.response?.data?.message || 'Error fetching user data');
-		}
+		axios.get(`${import.meta.env.VITE_API_URL}/users/${userId}`, {
+				headers: {
+					Authorization: `Bearer ${token}`,
+				},
+			}).then((response) => {
+				setCurrentUser(response.data);
+			}).catch((error) => {
+				displayAlert('error', error.response?.data?.message || 'Error fetching user data');
+				if (error.response?.status === 401) {
+					navigate('/');
+				}
+		});
 	};
 
 	const sendViewNotification = async () => {

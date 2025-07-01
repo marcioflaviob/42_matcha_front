@@ -54,8 +54,9 @@ const Conversation = ({ selectedUser, setSelectedUser, setUsers }) => {
     
             const response = await axios.post(import.meta.env.VITE_API_URL + '/messages', {
                 content: trimmedInput,
+                timestamp: new Date(),
                 receiver_id: selectedUser.id,
-            }, {
+            }, {    
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
@@ -146,7 +147,12 @@ const Conversation = ({ selectedUser, setSelectedUser, setUsers }) => {
                                     return (
                                         <div key={msg.id} className={`message ${msg.sender_id === selectedUser.id ? 'received' : 'sent'}`}>
                                             <div className="message-content">{msg.content}</div>
-                                            <div className="message-time">{new Date(msg.timestamp).toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' })}</div>
+                                            <div className="message-time">{new Intl.DateTimeFormat('en-US', { 
+                                                    hour: '2-digit', 
+                                                    minute: '2-digit', 
+                                                    timeZone: Intl.DateTimeFormat().resolvedOptions().timeZone
+                                                }).format(new Date(msg.timestamp))}
+                                            </div>
                                         </div> 
                                     )
                                 }))

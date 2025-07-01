@@ -26,6 +26,7 @@ const YourPreferences = ({ setActiveStep }) => {
 		interests: [],
 		age_range_min: 18,
 		age_range_max: 99,
+		location_range: 20,
 		min_desired_rating: 0,
 		status: 'step_two'
 	});
@@ -49,6 +50,14 @@ const YourPreferences = ({ setActiveStep }) => {
             [field]: value,
         }));
     };
+
+	const handleLocationRangeChange = (value) => {
+		setTouchedFields((prev) => ({ ...prev, location_range: true }));
+		setFormData((prevData) => ({
+			...prevData,
+			location_range: value,
+		}));
+	};
 
 	const handleInterestChange = (e, field) => {
 		const value = e.selectedOption;
@@ -168,7 +177,22 @@ const YourPreferences = ({ setActiveStep }) => {
 						showValue={true}
 						className='star-rating'
 						size='medium'
+						/>
+				</span>
+			</div>
+			<div className='location-range-selection'>
+				<span>
+					<p>Desired location range</p>
+					<Slider 
+						id='location_range' 
+						value={formData.location_range || 20} 
+						onChange={(e) => handleLocationRangeChange(e.value)}
+						min={1}
+						max={100} 
 					/>
+					<div className="age-range-display">
+						<span>{formData.location_range || 50} km</span>
+					</div>
 				</span>
 			</div>
 			<Divider align="center" />

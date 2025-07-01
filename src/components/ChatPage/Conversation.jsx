@@ -51,7 +51,6 @@ const Conversation = ({ selectedUser, setSelectedUser, setUsers }) => {
             const trimmedInput = input.trim();
     
             if (!trimmedInput) return;
-            const timestamp = new Date();
     
             const response = await axios.post(import.meta.env.VITE_API_URL + '/messages', {
                 content: trimmedInput,

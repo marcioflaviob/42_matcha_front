@@ -28,8 +28,8 @@ export const getAddress = async (latitude, longitude, token) => {
     } else {
         throw new Error('Unable to fetch address.');
     }
-  } catch (err) {
-    console.error('Error fetching address:', err);
+  } catch (error) {
+    displayAlert('error', error.response?.data?.message || 'Error fetching address');
     return 'Unknown';
   }
 };
@@ -50,8 +50,8 @@ export const AskLocation = (showNotification) => {
           },
           withCredentials: true,
         })
-    } catch (err) {
-      console.error('Error fetching city and country:', err);
+    } catch (error) {
+      displayAlert('error', error.response?.data?.message || 'Error setting city and country');
       return { city: 'Unknown', country: 'Unknown' };
     }
   };
@@ -64,9 +64,8 @@ export const AskLocation = (showNotification) => {
           },
       });
       if (showNotification) displayAlert('success', 'Location updated successfully');
-    } catch (err) {
-      console.error('Error getting location from IP:', err);
-      displayAlert('error', 'Unable to get your location. Please try again later or check your network connection.');
+    } catch (error) {
+      displayAlert('error', error.response?.data?.message || 'Unable to get your location. Please try again later or check your network connection.');
     }
   };
 

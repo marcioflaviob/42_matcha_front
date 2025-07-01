@@ -18,8 +18,8 @@ const Profile = () => {
 		try {
 			const response = await axios.get(`${import.meta.env.VITE_API_URL}/users/${userId}`);
 			setCurrentUser(response.data);
-		} catch (err) {
-			displayAlert('error', 'Error fetching information'); // Handle errors
+		} catch (error) {
+			displayAlert('error', error.response?.data?.message || 'Error fetching user data');
 		}
 	};
 
@@ -30,8 +30,8 @@ const Profile = () => {
 					Authorization: `Bearer ${token}`,
 				},
 			});
-		} catch (err) {
-			console.error('Error sending profile view notification:', err);
+		} catch (error) {
+			console.error('Error sending profile view notification:', error);
 		}
 	}
 
@@ -47,8 +47,8 @@ const Profile = () => {
 
 	return (
 		<div className='profile-container'>
-			<ProfilePicture userId={userId} userInfo={currentUser}></ProfilePicture>
-			<ProfileInfo userId={userId} userInfo={currentUser}></ProfileInfo>
+			<ProfilePicture userId={userId} userInfo={currentUser} />
+			<ProfileInfo userId={userId} userInfo={currentUser} />
 		</div>
 	);
 }

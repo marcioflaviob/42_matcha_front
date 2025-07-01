@@ -41,8 +41,7 @@ const EmailValidation = () => {
                 setTimeout(() => navigate('/'), 1500);
             }
         } catch (error) {
-            console.error('Error validating email:', error);
-            displayAlert('error', 'Invalid or expired token');
+            displayAlert('error', error.response?.data?.message || 'Error validating email');
         } finally {
             setValidating(false);
         }
@@ -59,8 +58,7 @@ const EmailValidation = () => {
             displayAlert('success', 'Validation email sent');
         })
         .catch((error) => {
-            console.error('Error resending email:', error);
-            displayAlert('error', 'Error resending email');
+            displayAlert('error', error.response?.data?.message || 'Error sending validation email');
         });
     };
 

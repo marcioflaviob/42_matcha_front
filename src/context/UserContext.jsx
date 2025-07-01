@@ -29,9 +29,8 @@ export const UserProvider = ({ children }) => {
                 },
             });
             setDates(response.data);
-        } catch (err) {
-            console.error('Error fetching dates:', err);
-            displayAlert('error', 'Error fetching matches');
+        } catch (error) {
+            displayAlert('error', error.response?.data?.message || 'Error fetching dates');
         }
     }
 

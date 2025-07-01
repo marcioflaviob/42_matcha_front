@@ -79,7 +79,7 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
             },
             withCredentials: true,
         }).catch(error => {
-            console.error('Error stopping call:', error);
+            displayAlert('error', error.response?.data?.message || 'Error ending call');
         });
         
         setIsCalling(false);

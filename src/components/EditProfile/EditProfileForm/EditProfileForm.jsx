@@ -75,9 +75,7 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
                 }, 100);
             }
         } catch (error) {
-            console.error('Error:', error);
-            displayAlert('error', 'An error occurred. Please try again later.');
-            throw error;
+            displayAlert('error', error.response?.data?.message || 'Error updating profile');
         }
     };
 
@@ -88,9 +86,6 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
                 shadowUser.status = 'validation';
             }
             await updateUser();
-        } catch (error) {
-            console.error('Error updating profile:', error);
-            displayAlert('error', 'Failed to update profile');
         } finally {
             setIsLoading(false);
         }
@@ -105,9 +100,8 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
             try {
                 const response = await axios.get(`${import.meta.env.VITE_API_URL}/interests`);
                 setAllInterests(response.data);
-            } catch (err) {
-                displayAlert('error', 'Error fetching information');
-                console.error('Error fetching information:', err);
+            } catch (error) {
+                displayAlert('error', error.response?.data?.message || 'Error fetching interests');
             }
         };
 
@@ -173,6 +167,7 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
                             placeholder="Tell others about yourself..."
                             rows={4}
                             autoResize
+                            maxLength={255}
                         />
                     </div>
                 </div>

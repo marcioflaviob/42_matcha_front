@@ -8,6 +8,7 @@ import axios from 'axios';
 import { UserContext } from '../../../context/UserContext';
 import { displayAlert } from '../../Notification/Notification';
 import PhotoCarousel from '../../HomePage/PhotoCarousel';
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
         
 const ProfilePicture = ({ userInfo }) => {
   const navigate = useNavigate();
@@ -22,6 +23,42 @@ const ProfilePicture = ({ userInfo }) => {
     } else {
       navigate('/');
     }
+  }
+
+  const confirmBlockUser = () => {
+      confirmDialog({
+        message: `Are you sure you want to block ${userInfo.first_name}?`,
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: 'Yes',
+        rejectLabel: 'No',
+        acceptClassName: 'p-button-danger',
+        accept: handleBlock,
+      });
+  }
+
+  const confirmReportUser = () => {
+      confirmDialog({
+        message: `Are you sure you want to report ${userInfo.first_name}?`,
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: 'Yes',
+        rejectLabel: 'No',
+        acceptClassName: 'p-button-danger',
+        accept: handleReport,
+      });
+  }
+
+  const confirmUnlikeUser = () => {
+      confirmDialog({
+        message: `Are you sure you want to unlike ${userInfo.first_name}?`,
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: 'Yes',
+        rejectLabel: 'No',
+        acceptClassName: 'p-button-danger',
+        accept: handleUnlike,
+      });
   }
 
   const handleReport = () => {
@@ -44,8 +81,8 @@ const ProfilePicture = ({ userInfo }) => {
       setTimeout(() => {
         navigate('/');
       }, 500);
-    } catch (err) {
-      console.error('Error blocking user:', err);
+    } catch (error) {
+      displayAlert('error', error.response?.data?.message || 'Failed to block user');
     }
   }
 
@@ -53,17 +90,17 @@ const ProfilePicture = ({ userInfo }) => {
     {
       label: 'Unlike user',
       icon: 'pi pi-heart',
-      command: () => handleUnlike()
+      command: () => confirmUnlikeUser()
     },
     {
       label: 'Report',
       icon: 'pi pi-fw pi-flag',
-      command: () => handleReport()
+      command: () => confirmReportUser()
     },
     {
       label: 'Block',
       icon: 'pi pi-fw pi-ban',
-      command: () => handleBlock()
+      command: () => confirmBlockUser()
     }
   ];
 
@@ -83,6 +120,7 @@ const ProfilePicture = ({ userInfo }) => {
 
   return (
     <div className="profile-gallery-container">
+      <ConfirmDialog />
       <div className="profile-gallery-header">
         <Button 
           icon="pi pi-arrow-left" 

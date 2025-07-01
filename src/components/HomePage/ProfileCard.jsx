@@ -6,8 +6,9 @@ import { Menu } from "primereact/menu";
 import { displayAlert } from '../Notification/Notification';
 import InterestChip from '../InterestChip/InterestChip';
 import { UserContext } from "../../context/UserContext";
+import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
-const ProfileCard = ({ profile, handleLike, handleBlock, showButtons, showUnlike }) => {
+const ProfileCard = ({ profile, handleLike, handleBlock, showButtons }) => {
 
   const menuRef = useRef(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -17,18 +18,13 @@ const ProfileCard = ({ profile, handleLike, handleBlock, showButtons, showUnlike
     {
       label: 'Report',
       icon: 'pi pi-fw pi-flag',
-      command: () => handleReport()
+      command: () => confirmReportUser()
     },
     {
       label: 'Block',
       icon: 'pi pi-fw pi-ban',
-      command: () => profileBlock()
-    },
-    ...(showUnlike ? [{
-      label: 'Unlike',
-      icon: 'pi pi-fw pi-heart',
-      command: () => profileBlock()
-    }] : [])
+      command: () => confirmBlockUser()
+    }
   ];
 
 	if (!profile) {
@@ -36,6 +32,30 @@ const ProfileCard = ({ profile, handleLike, handleBlock, showButtons, showUnlike
 			<p className="loading-message">Loading...</p>
 		);
 	}
+
+  const confirmBlockUser = () => {
+      confirmDialog({
+        message: `Are you sure you want to block ${profile.first_name}?`,
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: 'Yes',
+        rejectLabel: 'No',
+        acceptClassName: 'p-button-danger',
+        accept: profileBlock,
+      });
+  }
+
+  const confirmReportUser = () => {
+      confirmDialog({
+        message: `Are you sure you want to report ${profile.first_name}?`,
+        header: 'Confirmation',
+        icon: 'pi pi-exclamation-triangle',
+        acceptLabel: 'Yes',
+        rejectLabel: 'No',
+        acceptClassName: 'p-button-danger',
+        accept: handleReport,
+      });
+  }
 
   const profileBlock = () => {
     displayAlert("info", `${profile.first_name} blocked successfully`);
@@ -53,6 +73,7 @@ const ProfileCard = ({ profile, handleLike, handleBlock, showButtons, showUnlike
 
   return (
     <div className="profile-card">
+      <ConfirmDialog />
       <PhotoCarousel userInfo={profile} currentImageIndex={currentImageIndex} setCurrentImageIndex={setCurrentImageIndex} />
       <div className="profile-content">
         <div className="profile-header">

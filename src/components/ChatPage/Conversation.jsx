@@ -63,8 +63,7 @@ const Conversation = ({ selectedUser, setSelectedUser, setUsers }) => {
 
             saveMessage(response.data, true);
         } catch (error) {
-            console.error('Error sending message:', error);
-            displayAlert('error', 'Error sending message');
+            displayAlert('error', error.response?.data?.message || 'Failed to send message');
         } finally {
             setInput('');
         }
@@ -176,6 +175,7 @@ const Conversation = ({ selectedUser, setSelectedUser, setUsers }) => {
                                 }
                             }} 
                             placeholder={`Message ${selectedUser.first_name}...`}
+                            maxLength={5000}
                         />
                         <Button 
                             icon="pi pi-send" 

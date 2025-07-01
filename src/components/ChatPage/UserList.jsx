@@ -18,6 +18,12 @@ const UserList = ({ users, selectedUser, setSelectedUser, setUsers }) => {
                     return user;
                 });
                 setUsers(updatedUsers);
+                setSelectedUser(prevSelected => {
+                    if (prevSelected && prevSelected.id == data.sender_id) {
+                        return { ...prevSelected, online: data.status == 'online' };
+                    }
+                    return prevSelected;
+                });
             });
         }
 

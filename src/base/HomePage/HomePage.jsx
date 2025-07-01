@@ -32,10 +32,6 @@ const HomePage = () => {
 				},
 			});
 			setPotentialMatches(response.data);
-			if (response.data.length == 0) {
-				displayAlert('warn', 'No potential matches found');
-				return;
-			}
 		} catch (error) {
 			displayAlert('error', error.response?.data?.message || 'Error fetching potential matches');
 		}

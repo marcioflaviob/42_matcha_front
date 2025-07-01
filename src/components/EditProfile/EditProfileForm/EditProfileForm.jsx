@@ -37,6 +37,10 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
     }, [setShadowUser]);
 
     const handleRemoveInterest = (interestId) => {
+        if (!shadowUser.interests || shadowUser.interests.length === 1) {
+            displayAlert('warn', 'You must have at least one interest selected');
+            return;
+        }
         const array = shadowUser.interests.filter(item => item.id !== interestId);
         setShadowUser(prev => ({ ...prev, interests: array }));
     };
@@ -255,7 +259,7 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
                                     key={interest.id}
                                     label={interest.name}
                                     className="interest-tag"
-                                    removable
+                                    removable={shadowUser.interests.length > 1}
                                     onRemove={() => handleRemoveInterest(interest.id)}
                                 />
                             ))}

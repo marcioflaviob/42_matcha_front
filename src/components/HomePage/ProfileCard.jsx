@@ -8,7 +8,7 @@ import InterestChip from '../InterestChip/InterestChip';
 import { UserContext } from "../../context/UserContext";
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
-const ProfileCard = ({ profile, handleLike, handleBlock, showButtons }) => {
+const ProfileCard = ({ profile, handleLike, handleBlock, handleReport, showButtons }) => {
 
   const menuRef = useRef(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
@@ -53,7 +53,7 @@ const ProfileCard = ({ profile, handleLike, handleBlock, showButtons }) => {
         acceptLabel: 'Yes',
         rejectLabel: 'No',
         acceptClassName: 'p-button-danger',
-        accept: handleReport,
+        accept: profileReport,
       });
   }
 
@@ -66,9 +66,9 @@ const ProfileCard = ({ profile, handleLike, handleBlock, showButtons }) => {
     handleLike();
   }
 
-  const handleReport = () => {
+  const profileReport = () => {
     displayAlert("info", `${profile.first_name} reported successfully`);
-    handleBlock();
+    handleReport();
   }
 
   return (
@@ -116,7 +116,7 @@ const ProfileCard = ({ profile, handleLike, handleBlock, showButtons }) => {
       {/* Moved buttons outside profile-content to fix z-index issues */}
       {showButtons && (
         <div className="match-buttons">
-          <Button icon="pi pi-times" className="match-button reject-match-button" onClick={profileBlock} rounded />
+          <Button icon="pi pi-times" className="match-button reject-match-button" onClick={handleBlock} rounded />
           <Button icon="pi pi-heart-fill" className="match-button accept-match-button" onClick={profileLike} rounded />
         </div>
       )}

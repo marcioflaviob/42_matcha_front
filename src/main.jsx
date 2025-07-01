@@ -13,15 +13,15 @@ import { PrimeReactProvider } from 'primereact/api';
 createRoot(document.getElementById('root')).render(
   <PrimeReactProvider>
     <AuthProvider>
-      <UserProvider>
-        <SocketProvider>
-          <MapProvider>
-            <Router>
-              <App />
-            </Router>
-          </MapProvider>
-        </SocketProvider>
-      </UserProvider>
+      <MapProvider>
+        <UserProvider>
+          <SocketProvider>
+              <Router>
+                <App />
+              </Router>
+          </SocketProvider>
+        </UserProvider>
+      </MapProvider>
     </AuthProvider>
   </PrimeReactProvider>
 );

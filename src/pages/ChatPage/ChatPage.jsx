@@ -40,7 +40,7 @@ const ChatPage = () => {
 	}
 
     useEffect(() => {
-		if (!matches) fetchUsers();
+		fetchUsers();
     }, []);
 
 	useEffect(() => {

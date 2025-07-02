@@ -4,7 +4,7 @@ import './UserList.css';
 import { Badge } from 'primereact/badge';
 import { SocketContext } from '../../context/SocketContext';
 import { Skeleton } from 'primereact/skeleton';
-import useIsMobile from './MobileHook';
+import useIsMobile from '../../../utils/MobileHook';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
 

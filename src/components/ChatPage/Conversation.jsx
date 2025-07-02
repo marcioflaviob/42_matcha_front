@@ -132,7 +132,7 @@ const Conversation = ({ selectedUser, setSelectedUser }) => {
                                     if (msg.date) {
                                         return (
                                             <div key={msg.id} className={`message-date ${msg.sender_id === selectedUser.id ? 'received' : 'sent'} ${msg.date.status === "refused" ? "refused" : ""}`}>
-                                                <div className={`message-date-title ${msg.date.status === "refused" ? "refused" : ""}`}>{(msg.date.status === 'refused' || !msg.date) ? "Date refused" : "Let's go on a date!"}</div>
+                                                <div className={`message-date-title ${msg.date.status === "refused" ? "refused" : ""}`}>{(msg.date.status === 'refused' || !msg.date) ? "Date refused" : msg.date.status == 'accepted' ? "Date accepted" : "Let's go on a date!"}</div>
                                                 <div className={`message-date-info ${msg.date.status === "refused" ? "refused" : ""}`}>
                                                     {msg.date && `${msg.date.address} on ${new Date(msg.date.scheduled_date).toLocaleDateString()}`}
                                                 </div>

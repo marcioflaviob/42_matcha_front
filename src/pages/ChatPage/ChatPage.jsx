@@ -14,33 +14,25 @@ const ChatPage = () => {
     const [selectedUser, setSelectedUser] = useState(null);
 	const navigate = useNavigate();
 	const { matches, setMatches } = useContext(UserContext);
-	
-	const fetchUsers = async () => {
-		const response = await axios.get(import.meta.env.VITE_API_URL + '/matches', {
-			headers: {
-				Authorization: `Bearer ${token}`,
-			},
-		});
-		fetchMessages(response.data);
-		setMatches(response.data);
-	};
 
-	const fetchMessages = async (usersData) => {
-		const usersWithMessages = usersData?.map(async (user) => {
+	const fetchMessages = async () => {
+		const usersWithMessages = matches.map(async (user) => {
 			const response = await axios.get(import.meta.env.VITE_API_URL + '/messages/' + user.id, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},
 			});
-			user.messages = response.data;
-			return user;
+			return {
+				...user,
+				messages: response.data
+			};
 		});
 		const usersWithMessagesResolved = await Promise.all(usersWithMessages);
 		setMatches(usersWithMessagesResolved);	
 	}
 
     useEffect(() => {
-		fetchUsers();
+		fetchMessages();
     }, []);
 
 	useEffect(() => {

@@ -52,6 +52,15 @@ export const UserProvider = ({ children }) => {
         }
     }
 
+    const fetchUsers = async () => {
+		const response = await axios.get(import.meta.env.VITE_API_URL + '/matches', {
+			headers: {
+				Authorization: `Bearer ${token}`,
+			},
+		});
+		setMatches(response.data);
+	};
+
     useEffect(() => {
         if (isLoading) return;
         
@@ -64,6 +73,8 @@ export const UserProvider = ({ children }) => {
                     if (response.data.user.id) {
                         setUser(response.data.user);
                         fetchDates();
+                        if (!matches || matches.length === 0)
+                            fetchUsers();
                     } else {
                         setUser(null);
                     }

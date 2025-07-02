@@ -83,6 +83,7 @@ const YourPreferences = ({ setActiveStep }) => {
 	};
 
 	const handleAgeRangeChange = (value) => {
+		if (value[0] < 18 || value[1] > 99 || value[0] >= value[1]) return;
         setTouchedFields((prev) => ({ ...prev, age_range: true }));
         setAgeRange(value);
 		setFormData((prevData) => ({
@@ -160,7 +161,7 @@ const YourPreferences = ({ setActiveStep }) => {
 				<span>
 					<p>Desired age range</p>
 					<div className="slider-container">
-                        <Slider id='age_range' value={ageRange} onChange={(e) => handleAgeRangeChange(e.value)} range min={0} max={100} />
+                        <Slider id='age_range' value={ageRange} onChange={(e) => handleAgeRangeChange(e.value)} range min={18} max={99} />
                         <div className="age-range-display">
                             <span>{formData.age_range_min}</span>
                             <span>{formData.age_range_max}</span>

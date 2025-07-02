@@ -69,6 +69,7 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
     };
 
     const handleAgeRangeChange = (value) => {
+        if (value[0] < 18 || value[1] > 99 || value[0] >= value[1]) return;
         setAgeRange(value);
 		setShadowUser((prevData) => ({
 			...prevData,

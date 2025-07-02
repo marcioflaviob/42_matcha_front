@@ -13,7 +13,7 @@ import TipItem from '../../components/HomePage/TipItem';
         
 
 const HomePage = () => {
-	const { potentialMatches, setPotentialMatches } = useContext(UserContext);
+	const { potentialMatches, setPotentialMatches, setMatches, matches } = useContext(UserContext);
 	const { token } = useContext(AuthContext);
 	const [matchIndex, setMatchIndex] = useState(0);
 	const { isAuthenticated, isLoading } = useContext(AuthContext);
@@ -45,6 +45,9 @@ const HomePage = () => {
 				},
 			});
 			setMatchIndex((prevIndex) => prevIndex + 1);
+
+			const user = potentialMatches[matchIndex];
+			if (user.liked_me) addUserToMatches(user);
 		} catch (error) {
 			displayAlert('error', error.response?.data?.message || 'Error liking match');
 		}
@@ -74,6 +77,17 @@ const HomePage = () => {
 		} catch (error) {
 			displayAlert('error', error.response?.data?.message || 'Error reporting user');
 		}
+	}
+
+	const addUserToMatches = (user) => {
+		setMatches((prevMatches) => {
+			const matchesArr = prevMatches || [];
+			const existingIndex = matchesArr.findIndex((match) => match.id === user.id);
+			if (existingIndex !== -1) {
+				return matchesArr;
+			}
+			return [user, ...matchesArr];
+		});
 	}
 	
 	if (!isAuthenticated || isLoading) {

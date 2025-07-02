@@ -12,7 +12,7 @@ import useFavicon from '../../../utils/useFavicon';
 
 const NotificationButton = () => {
     const { channel, connected } = useContext(SocketContext);
-    const { user, potentialMatches, setPotentialMatches } = useContext(UserContext);
+    const { user, potentialMatches, setPotentialMatches, setMatches, matches } = useContext(UserContext);
     const [notifications, setNotifications] = useState(null);
     const { token } = useContext(AuthContext);
     const navigate = useNavigate();
@@ -45,9 +45,13 @@ const NotificationButton = () => {
 								Authorization: `Bearer ${token}`,
 							},
 						});
+						response.data.liked_me = true;
 						setPotentialMatches([response.data, ...prevMatches]);
 					}
 					navigate('/');
+					setNotifications((prevNotifications) =>
+						prevNotifications.filter((n) => n.id !== notification.id)
+					);
 				} catch (error) {
 					displayAlert('error', error.response?.data?.message || 'Error updating potential matches');
 				}
@@ -110,6 +114,9 @@ const NotificationButton = () => {
 					});
 					displayNotification('info', data.title, data.message);
 				}
+
+				if (data.type == 'new-match') addUserToMatches(data.body);
+				if (data.type == 'new-like') addLikedYouTag(data.concerned_user_id);
 			});
 		}
 
@@ -118,7 +125,32 @@ const NotificationButton = () => {
 				channel.unbind('new-notification');
 			}
 		}
-	}, [connected, channel]);
+	}, [connected, channel, potentialMatches, matches]);
+
+	const addUserToMatches = (user) => {
+		setMatches((prevMatches) => {
+			const matchesArr = prevMatches || [];
+			const existingIndex = matchesArr.findIndex((match) => match.id === user.id);
+			if (existingIndex !== -1) {
+				return matchesArr;
+			}
+			return [user, ...matchesArr];
+		});
+	}
+
+	const addLikedYouTag = (id) => {
+		if (!potentialMatches) return;
+		setPotentialMatches((prevMatches) => {
+			const existingIndex = prevMatches.findIndex((match) => match.id == id);
+			if (existingIndex !== -1) {
+				const updatedMatches = [...prevMatches];
+				const existingMatch = updatedMatches[existingIndex];
+				existingMatch.liked_me = true;
+				updatedMatches.splice(existingIndex, 1);
+				return [existingMatch, ...updatedMatches];
+			}
+		});
+	}
 
     return (
         <div className="notification-container">

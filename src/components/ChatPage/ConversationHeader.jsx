@@ -8,8 +8,9 @@ import { AuthContext } from '../../context/AuthContext';
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 import CallDialog from './Call/CallDialog';
 import { MapContext } from '../../context/MapContext';
+import { UserContext} from '../../context/UserContext';
 
-const ConversationHeader = ({ selectedUser, setSelectedUser, setUsers }) => {
+const ConversationHeader = ({ selectedUser, setSelectedUser }) => {
 	const { token } = useContext(AuthContext);
 	const { setMapStatus, setFocusedUser } = useContext(MapContext)
 	const [isCalling, setIsCalling] = useState(false);
@@ -17,10 +18,10 @@ const ConversationHeader = ({ selectedUser, setSelectedUser, setUsers }) => {
 	const profilePicture = selectedUser?.pictures.find(picture => picture.is_profile)?.url || '';
 	const [searchParams] = useSearchParams();
 	const navigate = useNavigate();
+	const { setMatches } = useContext(UserContext);
 
 	const handleCall = () => {
 		console.log('Initiating new call - resetting states');
-		// Reset states for a fresh call
 		setIsInvited(false);
 		setIsCalling(true);
 	}
@@ -46,7 +47,7 @@ const ConversationHeader = ({ selectedUser, setSelectedUser, setUsers }) => {
 			});
 			if (response.status === 200) {
 				displayAlert('success', `You have blocked ${selectedUser.first_name}`);
-				setUsers((prevUsers) => {
+				setMatches((prevUsers) => {
 					const updatedUsers = prevUsers.filter(user => user.id !== selectedUser.id);
 					setSelectedUser(null);
 					return updatedUsers;

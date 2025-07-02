@@ -217,6 +217,10 @@
     transition: transform 0.2s ease;
   }
 
+  .header-left {
+    padding-right: 1rem;
+  }
+
   .header {
     padding: 0.25rem 1rem
   }
@@ -240,6 +244,6 @@
 
   .notification-button {
     font-size: 0.7rem;
-    padding: 5px 10px;
+    padding: 2px 4px;
   }
 }

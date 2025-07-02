@@ -5,17 +5,18 @@ import { Badge } from 'primereact/badge';
 import { SocketContext } from '../../context/SocketContext';
 import { Skeleton } from 'primereact/skeleton';
 import useIsMobile from './MobileHook';
+import { useNavigate } from 'react-router-dom';
+import { UserContext } from '../../context/UserContext';
 
-const UserList = ({ users, selectedUser, setSelectedUser, setUsers }) => {
+const UserList = ({ users, selectedUser, setSelectedUser}) => {
     const { connected, channel } = useContext(SocketContext);
-    const [isMobileClicked, setIsMobileClicked] = useState(false);
     const isMobile = useIsMobile();
+    const { setMatches } = useContext(UserContext);
+    const navigate = useNavigate();
+
 
     const handleContactClick = (user) => {
-        setSelectedUser(user);
-        if (isMobile) {
-            setIsMobileClicked(true);
-        }
+        navigate(`/chat?id=${user.id}`);
     };
 
     useEffect(() => {
@@ -27,7 +28,7 @@ const UserList = ({ users, selectedUser, setSelectedUser, setUsers }) => {
                     }
                     return user;
                 });
-                setUsers(updatedUsers);
+                setMatches(updatedUsers);
                 setSelectedUser(prevSelected => {
                     if (prevSelected && prevSelected.id == data.sender_id) {
                         return { ...prevSelected, online: data.status == 'online' };
@@ -68,7 +69,7 @@ const UserList = ({ users, selectedUser, setSelectedUser, setUsers }) => {
     }
 
     return (
-        <div className={`user-list ${isMobileClicked ? 'hide' : ''}`}>
+        <div className={`user-list ${selectedUser && isMobile ? 'hide' : ''}`}>
             <div className="user-list-header">
                 Conversations
             </div>

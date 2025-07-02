@@ -132,6 +132,7 @@
 {
     margin-bottom: 5vh;
     margin-top: 2vh;
+    text-align: center;
 }
 
 .p-datepicker table td.p-datepicker-today > span
@@ -158,4 +159,39 @@
     width: 13vw;
     margin-top: 30px;
     color: #385a21c6;
+}
+
+@media (max-width: 768px) {
+  .map-date-calendar-container {
+    width: 100vw;
+    left: 100vw;
+    animation: slide-in-mobile 0.8s ease-in-out forwards;
+  }
+
+  @keyframes slide-in-mobile {
+    from {
+      left: 100vw;
+    }
+    to {
+      left: 0;
+    }
+  }
+
+  .map-date-calendar-container.slide-out-animation
+  {
+      animation: slide-out-mobile 0.8s ease-in-out forwards;
+  }
+
+  @keyframes slide-out-mobile {
+    from {
+      left: 0vw;
+    }
+    to {
+      left: 100vw;
+    }
+  }
+
+  .map-date-button {
+    width: 10rem;
+  }
 }

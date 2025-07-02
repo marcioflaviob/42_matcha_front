@@ -34,7 +34,7 @@ const PopulatedMap = () => {
   const [position, setPosition] = useState({ y: window.innerHeight });
   const positionRef = useRef(position.y);
   const isAnimating = useRef(true);
-  const [matches, setMatches] = useState([]);
+  const [mapMatches, setMapMatches] = useState([]);
   const { token } = useContext(AuthContext);
   const [clickedPosition, setClickedPosition] = useState(null);
   const calendarRef = useRef(null);
@@ -130,7 +130,7 @@ const PopulatedMap = () => {
       setClickedPosition('');
       setDates((prev) => [...prev, response.data]);
     } catch (error) {
-      displayAlert('error', error.response?.data?.message || 'Error scheduling date');
+      displayAlert('error', 'Error scheduling date');
     }
   }
 
@@ -165,7 +165,7 @@ const PopulatedMap = () => {
             });
             return { ...match, icon : userIcon};
           });
-          setMatches(updatedMatches);
+          setMapMatches(updatedMatches);
         } catch (error) {
           displayAlert('error', error.response?.data?.message || 'Error fetching matches');
         }
@@ -240,9 +240,9 @@ const PopulatedMap = () => {
       });
       setDates(dates.map((date) => {
         if (date.id === dateId) {
-          return { ...date, status }; // return a new object with updated status
+          return { ...date, status };
         }
-        return date; // unchanged
+        return date;
       }));
       setFocusedDate(null);
 		} catch (error) {
@@ -301,7 +301,7 @@ const PopulatedMap = () => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
         />
 
-        {matches.map((match) => (
+        {mapMatches.map((match) => (
           <Marker key={match.id} position={[match.location.latitude, match.location.longitude]} icon={match.icon} style={{ cursor: 'pointer'}}>
             <Popup>
               <h3>{match.first_name}</h3>
@@ -311,6 +311,7 @@ const PopulatedMap = () => {
         ))}
 
         {dates.map((date) => (
+          date?.status !== "refused" &&
           <Marker key={date.id}
             ref={(ref) => {
               if (ref) markerRefs.current[date.id] = ref;

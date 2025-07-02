@@ -297,6 +297,19 @@
     align-self: flex-start;
 }
 
+.message-date.refused {
+    background: linear-gradient(135deg, #fdf9f0 0%, #f7f0e8 50%, #f0e6d2 100%);
+    border-color: rgba(160, 138, 112, 0.2);
+}
+
+.message-date-title.refused {
+    color: #92400e;
+}
+
+.message-date-info.refused {
+    color: #78716c;
+}
+
 .message-date-title {
     font-size: 1.1rem;
     font-weight: 600;
@@ -305,12 +318,17 @@
     text-align: center;
 }
 
+
 .message-date-info {
     font-size: 0.9rem;
     color: #5e9c7f;
     text-align: center;
     line-height: 1.4;
 }
+
+/* .message-date-info.refused {
+    color: rgba(225, 76, 76, 0.703);
+} */
 
 .message-date-button.p-button-text {
     color: #2a815b !important;

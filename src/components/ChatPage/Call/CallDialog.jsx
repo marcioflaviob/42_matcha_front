@@ -83,7 +83,7 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
         });
         
         setIsCalling(false);
-        navigate('/chat');
+        navigate('/chat?id=' + selectedUser.id);
     }, [peer, stream, remoteStream, channel, callStarted, user.id, selectedUser.id, token, setIsCalling, navigate]);
 
     useEffect(() => {

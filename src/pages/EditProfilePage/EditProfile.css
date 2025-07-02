@@ -364,7 +364,19 @@
     }
     
     .edit-profile-title {
-        font-size: 2rem;
+        font-size: 1.3rem;
+    }
+
+    .edit-form-card h3 {
+        font-size: 1.1rem;
+    }
+
+    .form-field label {
+        font-size: 0.8rem;
+    }
+
+    .edit-profile-subtitle {
+        font-size: 0.8rem;
     }
     
     .edit-form-card {
@@ -379,5 +391,9 @@
     .edit-action-button {
         width: 100% !important;
         min-width: unset !important;
+    }
+
+    .form-field .p-inputtext {
+        font-size: 0.8rem;
     }
 }

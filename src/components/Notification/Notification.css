@@ -264,6 +264,11 @@
 }
 
 @media (max-width: 768px) {
+
+	.p-toast {
+		right: 0 !important;
+	}
+
 	.p-toast .p-toast-message {
 		min-width: 280px !important;
 		max-width: 90vw !important;

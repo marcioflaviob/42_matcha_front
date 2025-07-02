@@ -195,3 +195,27 @@
 .conversation-header .p-tooltip .p-tooltip-arrow {
     border-top-color: #2a815b !important;
 }
+
+@media (max-width: 768px) {
+    .conversation-header {
+        padding : 7px 12px;
+    }
+
+    .header-action-button {
+        padding: 0 8px !important;
+        width: 33px !important;
+        height: 33px !important;
+    }
+
+    .header-name {
+        font-size: 0.9rem;
+    }
+
+    .header-status {
+        font-size: 0.7rem;
+    }
+
+    .header-status-container {
+        gap: 0.5rem;
+    }
+}

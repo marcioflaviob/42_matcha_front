@@ -11,7 +11,7 @@ import axios from 'axios';
 
 const NotificationButton = () => {
     const { channel, connected } = useContext(SocketContext);
-    const { user, potentialMatches, setPotentialMatches } = useContext(UserContext);
+    const { user, potentialMatches, setPotentialMatches, setMatches } = useContext(UserContext);
     const [notifications, setNotifications] = useState(null);
     const { token } = useContext(AuthContext);
     const navigate = useNavigate();
@@ -20,11 +20,11 @@ const NotificationButton = () => {
     const unseenNotifications = () => notifications?.filter(notification => !notification.seen).length || null;
 
 	const redirectUser = async (notification) => {
+		overlayPanelRef.current.hide();
 		if (notification.type == 'new-message') navigate('/chat?id=' + notification.concerned_user_id);
 		if (notification.type == 'new-match') navigate('/chat?id=' + notification.concerned_user_id);
 		if (notification.type == 'new-date') navigate('/chat?id=' + notification.concerned_user_id);
-		if (notification.type == 'new-like')
-		{
+		if (notification.type == 'new-like') {
 			const updatePotentialMatches = async () => {
 				try {
 					const prevMatches = potentialMatches || [];
@@ -45,6 +45,7 @@ const NotificationButton = () => {
 						});
 						setPotentialMatches([response.data, ...prevMatches]);
 					}
+					navigate('/');
 				} catch (error) {
 					displayAlert('error', error.response?.data?.message || 'Error updating potential matches');
 				}
@@ -55,7 +56,6 @@ const NotificationButton = () => {
 				prevNotifications.filter((n) => n.id !== notification.id)
 			);
 		}
-		if (notification.type == 'new-block') navigate('/');
 		if (notification.type == 'new-profile-view') navigate('/profile/' + notification.user_id);
 	}
 

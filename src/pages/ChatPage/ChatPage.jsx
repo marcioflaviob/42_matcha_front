@@ -5,13 +5,15 @@ import './ChatPage.css';
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
 import sadCat from '/sad-cat.jpg';
-import { useSearchParams } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
+import { UserContext } from '../../context/UserContext';
 
 const ChatPage = () => {
 	const { token } = useContext(AuthContext);
 	const [searchParams] = useSearchParams();
     const [selectedUser, setSelectedUser] = useState(null);
-	const [users, setUsers] = useState(null);
+	const navigate = useNavigate();
+	const { matches, setMatches } = useContext(UserContext);
 	
 	const fetchUsers = async () => {
 		const response = await axios.get(import.meta.env.VITE_API_URL + '/matches', {
@@ -20,7 +22,7 @@ const ChatPage = () => {
 			},
 		});
 		fetchMessages(response.data);
-		setUsers(response.data);
+		setMatches(response.data);
 	};
 
 	const fetchMessages = async (usersData) => {
@@ -34,24 +36,27 @@ const ChatPage = () => {
 			return user;
 		});
 		const usersWithMessagesResolved = await Promise.all(usersWithMessages);
-		setUsers(usersWithMessagesResolved);
+		setMatches(usersWithMessagesResolved);	
 	}
 
     useEffect(() => {
-		if (!users) fetchUsers();
+		if (!matches) fetchUsers();
     }, []);
 
 	useEffect(() => {
-		if (users && users.length > 0) {
+		if (matches && matches.length > 0) {
 			const userIdFromUrl = searchParams.get('id');
 			if (userIdFromUrl) {
-				const user = users.find(user => user.id == userIdFromUrl);
-				if (user) setSelectedUser(user);
+				const user = matches.find(user => user.id == userIdFromUrl);
+				if (user && user.id != selectedUser?.id) setSelectedUser(user);
+			} else {
+				setSelectedUser(null);
+				navigate('/chat');
 			}
 		}
-	}, [searchParams, users]);
+	}, [searchParams, matches]);
 
-	if (users && users.length == 0) {
+	if (matches && matches.length == 0) {
 		return (
 			<div className="chat-page no-matches">
 				<img src={sadCat}
@@ -64,8 +69,12 @@ const ChatPage = () => {
 
     return (
         <div className="chat-page">
-            <UserList users={users} selectedUser={selectedUser} setSelectedUser={setSelectedUser} setUsers={setUsers} />
-            <Conversation selectedUser={selectedUser} setSelectedUser={setSelectedUser} setUsers={setUsers}/>
+            <UserList 
+				users={matches}
+				selectedUser={selectedUser}
+				setSelectedUser={setSelectedUser}
+			/>
+            <Conversation selectedUser={selectedUser} setSelectedUser={setSelectedUser}/>
         </div>
     );
 };

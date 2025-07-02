@@ -43,26 +43,58 @@ const Conversation = ({ selectedUser, setSelectedUser }) => {
     }
 
     const sendMessage = async () => {
+        const trimmedInput = input.trim();
+        if (!trimmedInput) return;
+
+        const optimisticMessage = {
+            id: `temp-${Date.now()}`,
+            content: trimmedInput,
+            timestamp: new Date().toISOString(),
+            sender_id: user.id,
+            receiver_id: selectedUser.id,
+            is_read: true,
+            optimistic: true,
+        };
+        
+        saveMessage(optimisticMessage, true);
+        setInput('');
+
         try {
-            const trimmedInput = input.trim();
-    
-            if (!trimmedInput) return;
-    
             const response = await axios.post(import.meta.env.VITE_API_URL + '/messages', {
                 content: trimmedInput,
                 timestamp: new Date(),
                 receiver_id: selectedUser.id,
-            }, {    
+            }, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             });
 
-            saveMessage(response.data, true);
+            setMatches((prevMatches) =>
+                prevMatches.map(u =>
+                    u.id === selectedUser.id
+                        ? {
+                            ...u,
+                            messages: u.messages.map(msg =>
+                                msg.id === optimisticMessage.id ? response.data : msg
+                            ),
+                        }
+                        : u
+                )
+            );
+
         } catch (error) {
+            setMatches((prevMatches) =>
+                prevMatches.map(u =>
+                    u.id === selectedUser.id
+                        ? {
+                            ...u,
+                            messages: u.messages.filter(msg => msg.id !== optimisticMessage.id),
+                        }
+                        : u
+                )
+            );
             displayAlert('error', error.response?.data?.message || 'Failed to send message');
-        } finally {
-            setInput('');
         }
     };
 

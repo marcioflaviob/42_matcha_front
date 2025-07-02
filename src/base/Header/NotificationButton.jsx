@@ -8,6 +8,7 @@ import { clearNotifications, displayAlert, displayCall, displayNotification } fr
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
 import axios from 'axios';
+import useFavicon from '../../../utils/useFavicon';
 
 const NotificationButton = () => {
     const { channel, connected } = useContext(SocketContext);
@@ -16,8 +17,9 @@ const NotificationButton = () => {
     const { token } = useContext(AuthContext);
     const navigate = useNavigate();
     const overlayPanelRef = useRef(null);
-
     const unseenNotifications = () => notifications?.filter(notification => !notification.seen).length || null;
+	const faviconUrl = unseenNotifications() ? '/favicon_notification.png' : '/favicon.png';
+    useFavicon(faviconUrl);
 
 	const redirectUser = async (notification) => {
 		if (notification.type == 'new-message') navigate('/chat?id=' + notification.concerned_user_id);

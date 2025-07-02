@@ -340,7 +340,6 @@
     transform: translateY(-1px) !important;
 }
 
-/* Scrollbar styling */
 .message-list::-webkit-scrollbar {
     width: 6px;
 }
@@ -358,7 +357,6 @@
     background: #3a9970;
 }
 
-/* Message grouping for consecutive messages */
 .message + .message.sent {
     margin-top: -6px;
 }

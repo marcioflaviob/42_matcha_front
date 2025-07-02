@@ -144,8 +144,8 @@ const PopulatedMap = () => {
 
   useEffect(() => {
     if (isMapOpen) {
-
-      const allUsers = [...matches, user];
+      const userAlreadyInMatches = matches.some(match => match.id === user.id);
+      const allUsers = userAlreadyInMatches ? matches : [...matches, user];
       const updatedMatches = allUsers.map((match) => {
         const firstPictureUrl = match.pictures?.[0]?.url || '';
         const userIcon = new L.divIcon({

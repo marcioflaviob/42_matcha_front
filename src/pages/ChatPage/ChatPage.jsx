@@ -5,12 +5,14 @@ import './ChatPage.css';
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
 import sadCat from '/sad-cat.jpg';
+import { useSearchParams } from 'react-router-dom';
 
 const ChatPage = () => {
 	const { token } = useContext(AuthContext);
+	const [searchParams] = useSearchParams();
     const [selectedUser, setSelectedUser] = useState(null);
 	const [users, setUsers] = useState(null);
-
+	
 	const fetchUsers = async () => {
 		const response = await axios.get(import.meta.env.VITE_API_URL + '/matches', {
 			headers: {
@@ -36,8 +38,18 @@ const ChatPage = () => {
 	}
 
     useEffect(() => {
-        fetchUsers();
+		if (!users) fetchUsers();
     }, []);
+
+	useEffect(() => {
+		if (users && users.length > 0) {
+			const userIdFromUrl = searchParams.get('id');
+			if (userIdFromUrl) {
+				const user = users.find(user => user.id == userIdFromUrl);
+				if (user) setSelectedUser(user);
+			}
+		}
+	}, [searchParams, users]);
 
 	if (users && users.length == 0) {
 		return (

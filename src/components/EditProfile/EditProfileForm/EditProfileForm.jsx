@@ -25,7 +25,6 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
     const [loadingButton, setLoadingButton] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [ageRange, setAgeRange] = useState([18, 99]);
-    
 
     const handleFieldChange = useCallback((field) => (e) => {
         const value = e.target.value;
@@ -201,7 +200,7 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
                     <i className="pi pi-heart" />
                     {' '}Preferences
                 </h3>
-                <div className="form-field-group">
+                <div className="form-field-group-preferences">
                     <div className="form-field">
                         <label>I am a</label>
                         <div className="chip-selection-group">
@@ -320,17 +319,41 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
 
             <div className="edit-form-card">
                 <h3>
-                    <i className="pi pi-star" />
+                    <i className="pi pi-id-card" />
                     {' '}Age range
                 </h3>
                 <div className="form-field-group">
                     <div className="form-field">
                         <p>Desired age range</p>
                         <div className="slider-container">
-                            <Slider id='age_range' value={ageRange} onChange={(e) => handleAgeRangeChange(e.value)} range min={0} max={100} />
+                            <Slider id='age_range' value={ageRange} onChange={(e) => handleAgeRangeChange(e.value)} range min={18} max={99} />
                             <div className="age-range-display">
                                 <span>{shadowUser.age_range_min}</span>
                                 <span>{shadowUser.age_range_max}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div className="edit-form-card">
+                <h3>
+                    <i className="pi pi-globe" />
+                    {' '}Location range
+                </h3>
+                <div className="form-field-group">
+                    <div className="form-field">
+                        <p>Desired location range (km)</p>
+                        <div className="slider-container">
+                            <Slider 
+                                id='location_range' 
+                                value={shadowUser.location_range || 20} 
+                                onChange={(e) => setShadowUser(prev => ({ ...prev, location_range: e.value }))} 
+                                min={1} 
+                                max={100} 
+                            />
+                            <div className="age-range-display">
+                                <span>{shadowUser.location_range || 50} km</span>
                             </div>
                         </div>
                     </div>

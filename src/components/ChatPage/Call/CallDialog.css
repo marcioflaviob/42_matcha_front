@@ -233,4 +233,21 @@
         width: 95vw;
         min-width: 320px;
     }
+
+    .call-controls {
+        gap: 0.8rem;
+    }
+
+    .call-action-button {
+        padding: 10px 15px !important;
+    }
+
+    .hangup-button {
+        padding: 10px 15px !important;
+    }
+
+    .control-button {
+        width: 42px !important;
+        height: 42px !important;
+    }
 }

@@ -49,7 +49,7 @@ const ProfileInfo = ({ userInfo }) => {
                             <i className="pi pi-map-marker"></i>
                             {
                                 userInfo ?
-                                <span>{userInfo.location.city}, {userInfo.location.country}</span>
+                                <span className='profile-location-txt'>{userInfo.location.city}, {userInfo.location.country}</span>
                                 :
                                 <Skeleton width="150px" height="1.5rem" />
                             }

@@ -257,18 +257,51 @@
         gap: 1rem;
     }
 
+    .profile-info-section .profile-page-age {
+        font-size: 0.8rem;
+    }
+
+    .profile-location-txt {
+        font-size: 0.8rem;
+    }
+
+    .profile-info-section .edit-profile-btn {
+       font-size: 0.875rem;
+        padding: 0.5rem 0.7rem !important;
+        align-self: flex-start;
+    }
+
+    .profile-info-section .section-title {
+        font-size: 1.1rem;
+    }
+
+    .profile-info-section .info-chip{
+        font-size: 0.7rem !important;
+        padding: 0.1rem 0.6rem !important;
+
+    }
+
+    .profile-info-section .bio-text {
+        font-size: 0.8rem;
+    }
+
     .profile-info-section .profile-header-card {
         flex-direction: column;
         gap: 1.5rem;
         padding: 1.5rem;
     }
 
-    .profile-info-section .profile-display-name {
-        font-size: 2rem;
+    .profile-info-section .info-label {
+        font-size: 0.7rem;
     }
 
-    .profile-info-section .edit-profile-btn {
-        align-self: flex-start;
+    .p-chip .p-chip-text {
+        margin-top: 0.2rem;
+        margin-bottom: 0.2rem;
+    }
+
+    .profile-info-section .profile-display-name {
+        font-size: 1.2rem;
     }
 
     .profile-info-section .profile-info-grid {
@@ -302,11 +335,15 @@
         padding: 0.4rem 0.8rem !important;
         font-size: 0.875rem;
     }
+
+    .profile-info-section .info-value {
+        font-size: 0.7rem;
+    }
 }
 
 @media (max-width: 480px) {
     .profile-info-section .profile-display-name {
-        font-size: 1.75rem;
+        font-size: 1.2rem;
     }
 
     .profile-info-section .profile-info-grid {

@@ -8,6 +8,7 @@
 
 @media (max-width: 768px)
 {
+
     .profile-card-container
     {
         width: 100%;
@@ -213,7 +214,6 @@
 
     .profile-main-image-container {
         height: 80%;
-        border-radius: 16px;
     }
 
     .profile-gallery-nav-button {

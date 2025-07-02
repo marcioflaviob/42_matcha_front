@@ -208,3 +208,42 @@
 {
   color: #2a815b;
 }
+
+@media (max-width: 767px) {
+  .logo {
+    width: 100px;
+    cursor: pointer;
+    mix-blend-mode: multiply;
+    transition: transform 0.2s ease;
+  }
+
+  .header-left {
+    padding-right: 1rem;
+  }
+
+  .header {
+    padding: 0.25rem 1rem
+  }
+
+  .user-nav {
+    gap: 6px;
+  }
+
+  .user-name {
+    font-size: 0.8rem !important;
+  }
+
+  .header-map-button {
+    font-size: 1.3rem;
+  }
+
+  .chat-button {
+    font-size: 0.7rem;
+    padding: 5px 10px;
+  }
+
+  .notification-button {
+    font-size: 0.7rem;
+    padding: 2px 4px;
+  }
+}

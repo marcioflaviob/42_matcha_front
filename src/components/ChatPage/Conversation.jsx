@@ -10,11 +10,11 @@ import { SocketContext } from '../../context/SocketContext';
 import { UserContext } from '../../context/UserContext';
 import { MapContext } from '../../context/MapContext';
 
-const Conversation = ({ selectedUser, setSelectedUser, setUsers }) => {
+const Conversation = ({ selectedUser, setSelectedUser }) => {
     const { token } = useContext(AuthContext);
     const [input, setInput] = useState('');
     const { setMapStatus, setFocusedDate, setFocusedUser } = useContext(MapContext);
-    const { dates, user } = useContext(UserContext);
+    const { user, setMatches, matches } = useContext(UserContext);
     const { connected, channel } = useContext(SocketContext);
     const messageListRef = useRef(null);
 
@@ -25,25 +25,21 @@ const Conversation = ({ selectedUser, setSelectedUser, setUsers }) => {
     };
 
     const saveMessage = async (message, isSent) => {
-        const userId = isSent ? message.receiver_id : message.sender_id;
-        setUsers((prevUsers) => {
-            const updatedUsers = prevUsers.map(user => {
-                if (user.id === userId) {
-                    return {
-                        ...user,
-                        messages: [...user.messages, message],
-                    };
-                }
-                return user;
-            });
-            
-            if (selectedUser && selectedUser.id == userId) {
-                const updatedSelectedUser = updatedUsers.find(user => user.id === selectedUser.id);
-                setSelectedUser(updatedSelectedUser);
+        const receiverId = isSent ? message.receiver_id : message.sender_id;
+        const updatedMatches = matches.map(user => {
+            if (user.id == receiverId) {
+                return {
+                    ...user,
+                    messages: [...user.messages, message],
+                };
             }
-            
-            return updatedUsers;
+            return user;
         });
+        setMatches(updatedMatches);
+        const updatedSelectedUser = updatedMatches.find(user => user.id === selectedUser.id);
+        if (updatedSelectedUser && updatedSelectedUser !== selectedUser) {
+            setSelectedUser(updatedSelectedUser);
+        }
     }
 
     const sendMessage = async () => {
@@ -80,7 +76,7 @@ const Conversation = ({ selectedUser, setSelectedUser, setUsers }) => {
                         Authorization: `Bearer ${token}`,
                     },
                 });
-                setUsers((prevUsers) => {
+                setMatches((prevUsers) => {
                     return prevUsers.map(user => {
                         if (user?.id === selectedUser.id) {
                             const updatedMessages = user?.messages?.map(msg => ({ ...msg, is_read: true }));
@@ -100,7 +96,8 @@ const Conversation = ({ selectedUser, setSelectedUser, setUsers }) => {
                 if (message.sender_id == selectedUser?.id) {
                     message.is_read = true;
                 }
-                saveMessage(message, false);
+                const isSent = message.date && message.sender_id == user.id;
+                saveMessage(message, isSent);
             });
         }
         return () => {
@@ -126,21 +123,20 @@ const Conversation = ({ selectedUser, setSelectedUser, setUsers }) => {
         <div className="conversation">
             {selectedUser ? (
                 <>
-                    <ConversationHeader selectedUser={selectedUser} setSelectedUser={setSelectedUser} setUsers={setUsers} />
+                    <ConversationHeader selectedUser={selectedUser} setSelectedUser={setSelectedUser} />
 
                     <div className="message-list" ref={messageListRef}>
                         <div className="message-list-content">
                             {selectedUser?.messages && selectedUser.messages.length > 0 ?
                                 (selectedUser.messages.map((msg) => {
-                                    if (msg.date_id) {
-                                        const date = dates.find(date => date.id === msg.date_id);
+                                    if (msg.date) {
                                         return (
-                                            <div key={msg.id} className={`message-date ${msg.sender_id === selectedUser.id ? 'received' : 'sent'}`}>
-                                                <div className='message-date-title'>Let's go on a date!</div>
-                                                <div className='message-date-info'>
-                                                    {date && `${date.location} on ${new Date(date.datetime).toLocaleDateString()}`}
+                                            <div key={msg.id} className={`message-date ${msg.sender_id === selectedUser.id ? 'received' : 'sent'} ${msg.date.status === "refused" ? "refused" : ""}`}>
+                                                <div className={`message-date-title ${msg.date.status === "refused" ? "refused" : ""}`}>{(msg.date.status === 'refused' || !msg.date) ? "Date refused" : "Let's go on a date!"}</div>
+                                                <div className={`message-date-info ${msg.date.status === "refused" ? "refused" : ""}`}>
+                                                    {msg.date && `${msg.date.address} on ${new Date(msg.date.scheduled_date).toLocaleDateString()}`}
                                                 </div>
-                                                <Button text className="message-date-button" label="See details" onClick={() => openMap(date)}></Button>
+                                                {!(msg.date?.status === 'refused' || !msg.date) && <Button text className="message-date-button" label="See details" onClick={() => openMap(msg.date)}></Button>}
                                             </div>
                                         )
                                     }

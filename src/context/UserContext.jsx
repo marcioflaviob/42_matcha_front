@@ -12,6 +12,7 @@ export const UserProvider = ({ children }) => {
     const { token, isAuthenticated, isLoading, logout } = useContext(AuthContext);
     const { setFocusedDate, setFocusedUser, setMapStatus } = useContext(MapContext);
     const [dates, setDates] = useState([]);
+    const [matches, setMatches] = useState(null);
     
     const logoutUser = () => {
         logout();
@@ -22,6 +23,7 @@ export const UserProvider = ({ children }) => {
         setFocusedDate(null);
         setFocusedUser(null);
         setMapStatus('closed');
+        setMatches(null);
     };
 
     const props = useMemo(() => ({
@@ -32,14 +34,16 @@ export const UserProvider = ({ children }) => {
         setPotentialMatches,
         dates,
         setDates,
-        logoutUser
-    }), [user, potentialMatches, dates, loading]);
+        logoutUser,
+        matches,
+        setMatches
+    }), [user, potentialMatches, dates, loading, matches]);
 
     const fetchDates = async () => {
         try {
             const response = await axios.get(import.meta.env.VITE_API_URL + '/dates', {
                 headers: {
-                Authorization: `Bearer ${token}`,
+                    Authorization: `Bearer ${token}`,
                 },
             });
             setDates(response.data);

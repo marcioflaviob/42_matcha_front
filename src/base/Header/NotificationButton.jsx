@@ -22,11 +22,11 @@ const NotificationButton = () => {
     useFavicon(faviconUrl);
 
 	const redirectUser = async (notification) => {
+		overlayPanelRef.current.hide();
 		if (notification.type == 'new-message') navigate('/chat?id=' + notification.concerned_user_id);
 		if (notification.type == 'new-match') navigate('/chat?id=' + notification.concerned_user_id);
 		if (notification.type == 'new-date') navigate('/chat?id=' + notification.concerned_user_id);
-		if (notification.type == 'new-like')
-		{
+		if (notification.type == 'new-like') {
 			const updatePotentialMatches = async () => {
 				try {
 					const prevMatches = potentialMatches || [];
@@ -47,6 +47,7 @@ const NotificationButton = () => {
 						});
 						setPotentialMatches([response.data, ...prevMatches]);
 					}
+					navigate('/');
 				} catch (error) {
 					displayAlert('error', error.response?.data?.message || 'Error updating potential matches');
 				}
@@ -57,7 +58,6 @@ const NotificationButton = () => {
 				prevNotifications.filter((n) => n.id !== notification.id)
 			);
 		}
-		if (notification.type == 'new-block') navigate('/');
 		if (notification.type == 'new-profile-view') navigate('/profile/' + notification.user_id);
 	}
 

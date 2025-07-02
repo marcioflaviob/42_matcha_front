@@ -4,20 +4,31 @@ import './UserList.css';
 import { Badge } from 'primereact/badge';
 import { SocketContext } from '../../context/SocketContext';
 import { Skeleton } from 'primereact/skeleton';
+import useIsMobile from './MobileHook';
+import { useNavigate } from 'react-router-dom';
+import { UserContext } from '../../context/UserContext';
 
-const UserList = ({ users, selectedUser, setSelectedUser, setUsers }) => {
+const UserList = ({ selectedUser, setSelectedUser}) => {
     const { connected, channel } = useContext(SocketContext);
+    const isMobile = useIsMobile();
+    const { setMatches, matches } = useContext(UserContext);
+    const navigate = useNavigate();
+
+
+    const handleContactClick = (user) => {
+        navigate(`/chat?id=${user.id}`);
+    };
 
     useEffect(() => {
-        if (connected && users) {
+        if (connected && matches) {
             channel.bind('status-change', (data) => {
-                const updatedUsers = users.map(user => {
+                const updatedUsers = matches.map(user => {
                     if (user.id == data.sender_id) {
                         return { ...user, online: data.status == 'online' };
                     }
                     return user;
                 });
-                setUsers(updatedUsers);
+                setMatches(updatedUsers);
                 setSelectedUser(prevSelected => {
                     if (prevSelected && prevSelected.id == data.sender_id) {
                         return { ...prevSelected, online: data.status == 'online' };
@@ -32,11 +43,11 @@ const UserList = ({ users, selectedUser, setSelectedUser, setUsers }) => {
                 channel.unbind('status-change');
             }
         }
-    }, [connected, channel, users]);
+    }, [connected, channel, matches]);
 
-    if (!users) {
+    if (!matches) {
         return (
-            <div className="user-list">
+            <div className='user-list'>
                 <div className="user-list-header">
                     Conversations
                 </div>
@@ -58,12 +69,12 @@ const UserList = ({ users, selectedUser, setSelectedUser, setUsers }) => {
     }
 
     return (
-        <div className="user-list">
+        <div className={`user-list ${selectedUser && isMobile ? 'hide' : ''}`}>
             <div className="user-list-header">
                 Conversations
             </div>
             <div className="user-list-content">
-                {users.map(user => {
+                {matches.map(user => {
                     const profilePicture = user.pictures.find(picture => picture.is_profile)?.url || '';
                     const unreadMessagesCount = user.messages?.filter(msg => !msg.is_read && msg.sender_id == user.id).length || null;
                     
@@ -71,7 +82,7 @@ const UserList = ({ users, selectedUser, setSelectedUser, setUsers }) => {
                         <div
                             key={user.id}
                             className={`user-item ${selectedUser?.id === user.id ? 'selected' : ''}`}
-                            onClick={() => setSelectedUser(user)}
+                            onClick={() => handleContactClick(user)}
                         >
                             <Avatar image={import.meta.env.VITE_BLOB_URL + '/' + profilePicture} shape="circle" size='large' />
                             <div className="user-list-info">

@@ -390,16 +390,10 @@
     transform: translateY(-2px);
 }
 
-/* Responsive Design */
 @media (max-width: 768px) {
     .picture-selector-content {
         padding: 1rem;
         gap: 1rem;
-    }
-    
-    .upload-card,
-    .photos-card {
-        padding: 1rem;
     }
     
     .upload-drop-zone {

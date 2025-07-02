@@ -1,12 +1,22 @@
-import React, { useContext, useEffect } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { Avatar } from 'primereact/avatar';
 import './UserList.css';
 import { Badge } from 'primereact/badge';
 import { SocketContext } from '../../context/SocketContext';
 import { Skeleton } from 'primereact/skeleton';
+import useIsMobile from './MobileHook';
 
 const UserList = ({ users, selectedUser, setSelectedUser, setUsers }) => {
     const { connected, channel } = useContext(SocketContext);
+    const [isMobileClicked, setIsMobileClicked] = useState(false);
+    const isMobile = useIsMobile();
+
+    const handleContactClick = (user) => {
+        setSelectedUser(user);
+        if (isMobile) {
+            setIsMobileClicked(true);
+        }
+    };
 
     useEffect(() => {
         if (connected && users) {
@@ -36,7 +46,7 @@ const UserList = ({ users, selectedUser, setSelectedUser, setUsers }) => {
 
     if (!users) {
         return (
-            <div className="user-list">
+            <div className='user-list'>
                 <div className="user-list-header">
                     Conversations
                 </div>
@@ -58,7 +68,7 @@ const UserList = ({ users, selectedUser, setSelectedUser, setUsers }) => {
     }
 
     return (
-        <div className="user-list">
+        <div className={`user-list ${isMobileClicked ? 'hide' : ''}`}>
             <div className="user-list-header">
                 Conversations
             </div>
@@ -71,7 +81,7 @@ const UserList = ({ users, selectedUser, setSelectedUser, setUsers }) => {
                         <div
                             key={user.id}
                             className={`user-item ${selectedUser?.id === user.id ? 'selected' : ''}`}
-                            onClick={() => setSelectedUser(user)}
+                            onClick={() => handleContactClick(user)}
                         >
                             <Avatar image={import.meta.env.VITE_BLOB_URL + '/' + profilePicture} shape="circle" size='large' />
                             <div className="user-list-info">

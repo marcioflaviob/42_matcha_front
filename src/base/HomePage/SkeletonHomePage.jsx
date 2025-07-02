@@ -11,7 +11,7 @@ const SkeletonHomePage = () => {
                 <h1 className="home-title">Discover</h1>
             </div>
 
-            <div className="home-main-content">
+            <div className="home-main-content skeleton">
                         <div className="profile-card-container">
                             <div className="profile-card-skeleton" >
                                 <Skeleton width="400px" height="400px" className="mb-3" borderRadius="12px" />

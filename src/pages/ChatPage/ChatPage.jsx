@@ -53,7 +53,7 @@ const ChatPage = () => {
     return (
         <div className="chat-page">
             <UserList users={users} selectedUser={selectedUser} setSelectedUser={setSelectedUser} setUsers={setUsers} />
-            <Conversation selectedUser={selectedUser} setSelectedUser={setSelectedUser} setUsers={setUsers} />
+            <Conversation selectedUser={selectedUser} setSelectedUser={setSelectedUser} setUsers={setUsers}/>
         </div>
     );
 };

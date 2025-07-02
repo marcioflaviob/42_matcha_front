@@ -275,26 +275,26 @@
   overflow: hidden;
 }
 
-/* Mobile responsiveness with better space management */
 @media (max-width: 768px) {
   .profile-card {
-    max-width: 100%;
-    margin: 0;
-    overflow: visible;
-    height: auto;
+    /* max-width: 100%; */
+    /* margin: 0; */
+    /* overflow: visible; */
+    /* height: auto; */
+    overflow-y: auto;
   }
   
   .profile-content {
-    padding: 1rem; /* Further reduced on mobile */
+    padding: 1rem;
     gap: 0.875rem;
   }
   
   .profile-name {
-    font-size: 1.4rem; /* Reduced from 1.5rem */
+    font-size: 1.4rem;
   }
   
   .profile-age {
-    font-size: 1rem; /* Reduced from 1.1rem */
+    font-size: 1rem;
   }
   
   .profile-bio {
@@ -304,23 +304,23 @@
   }
   
   .match-buttons {
-    gap: 2rem; /* Reduced from 2.5rem */
-    padding: 1rem; /* Reduced padding */
+    gap: 2rem;
+    padding: 1rem;
   }
   
   .match-button {
-    width: 50px !important; /* Reduced from 55px */
+    width: 50px !important;
     height: 50px !important;
   }
   
   .match-button .pi {
-    font-size: 1.2rem !important; /* Reduced from 1.3rem */
+    font-size: 1.2rem !important;
   }
 }
 
 @media (max-width: 480px) {
   .profile-content {
-    padding: 0.875rem; /* Further optimized */
+    padding: 0.875rem;
     gap: 0.75rem;
   }
   

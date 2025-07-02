@@ -24,7 +24,7 @@ L.Icon.Default.mergeOptions({
 });
 
 const PopulatedMap = () => {
-  const { user, dates, setDates} = useContext(UserContext);
+  const { user, dates, setDates, matches, setMatches} = useContext(UserContext);
   const { mapStatus, setMapStatus, focusedDate, setFocusedDate, focusedUser} = useContext(MapContext);
   const isMapOpen = mapStatus != 'closed';
   const isSettingDate = mapStatus == 'setting_date';
@@ -34,7 +34,6 @@ const PopulatedMap = () => {
   const [position, setPosition] = useState({ y: window.innerHeight });
   const positionRef = useRef(position.y);
   const isAnimating = useRef(true);
-  const [mapMatches, setMapMatches] = useState([]);
   const { token } = useContext(AuthContext);
   const [clickedPosition, setClickedPosition] = useState(null);
   const calendarRef = useRef(null);
@@ -130,7 +129,7 @@ const PopulatedMap = () => {
       setClickedPosition('');
       setDates((prev) => [...prev, response.data]);
     } catch (error) {
-      displayAlert('error', 'Error scheduling date');
+      displayAlert('error', error.response?.data?.message || 'Error scheduling date');
     }
   }
 
@@ -145,31 +144,22 @@ const PopulatedMap = () => {
 
   useEffect(() => {
     if (isMapOpen) {
-      const fetchUsers = async () => {
-        try {
-          const response = await axios.get(import.meta.env.VITE_API_URL + '/matches', {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          });
-          const allUsers = [...response.data, user];
-          const updatedMatches = allUsers.map((match) => {
-            const firstPictureUrl = match.pictures?.[0]?.url || '';
-            const userIcon = new L.divIcon({
-              className: 'circular-icon',
-              html: `<div class="icon-wrapper" style="background-image: url('${import.meta.env.VITE_BLOB_URL + '/' + firstPictureUrl}');"></div>`,
-              iconUrl: import.meta.env.VITE_BLOB_URL + '/' + firstPictureUrl,
-              iconSize: [32, 32],
-              iconAnchor: [16, 32],
-              popupAnchor: [0, -32],
-            });
-            return { ...match, icon : userIcon};
-          });
-          setMapMatches(updatedMatches);
-        } catch (error) {
-          displayAlert('error', error.response?.data?.message || 'Error fetching matches');
-        }
-      };
+
+      const allUsers = [...matches, user];
+      const updatedMatches = allUsers.map((match) => {
+        const firstPictureUrl = match.pictures?.[0]?.url || '';
+        const userIcon = new L.divIcon({
+          className: 'circular-icon',
+          html: `<div class="icon-wrapper" style="background-image: url('${import.meta.env.VITE_BLOB_URL + '/' + firstPictureUrl}');"></div>`,
+          iconUrl: import.meta.env.VITE_BLOB_URL + '/' + firstPictureUrl,
+          iconSize: [32, 32],
+          iconAnchor: [16, 32],
+          popupAnchor: [0, -32],
+        });
+        return { ...match, icon : userIcon};
+      });
+      setMatches(updatedMatches);
+
 
       if (focusedUser) {
         setDateForm((prev => ({
@@ -178,7 +168,6 @@ const PopulatedMap = () => {
           senderId: user.id
         })));
       }
-      fetchUsers();
       isAnimating.current = true;
       animateToTop();
     }
@@ -301,7 +290,7 @@ const PopulatedMap = () => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
         />
 
-        {mapMatches.map((match) => (
+        {matches.map((match) => (
           <Marker key={match.id} position={[match.location.latitude, match.location.longitude]} icon={match.icon} style={{ cursor: 'pointer'}}>
             <Popup>
               <h3>{match.first_name}</h3>

@@ -268,6 +268,7 @@
     .profile-info-section .edit-profile-btn {
        font-size: 0.875rem;
         padding: 0.5rem 0.7rem !important;
+        align-self: flex-start;
     }
 
     .profile-info-section .section-title {
@@ -301,10 +302,6 @@
 
     .profile-info-section .profile-display-name {
         font-size: 1.2rem;
-    }
-
-    .profile-info-section .edit-profile-btn {
-        align-self: flex-start;
     }
 
     .profile-info-section .profile-info-grid {

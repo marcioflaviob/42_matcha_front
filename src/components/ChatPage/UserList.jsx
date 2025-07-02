@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import { Avatar } from 'primereact/avatar';
 import './UserList.css';
 import { Badge } from 'primereact/badge';
@@ -8,10 +8,10 @@ import useIsMobile from './MobileHook';
 import { useNavigate } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
 
-const UserList = ({ users, selectedUser, setSelectedUser}) => {
+const UserList = ({ selectedUser, setSelectedUser}) => {
     const { connected, channel } = useContext(SocketContext);
     const isMobile = useIsMobile();
-    const { setMatches } = useContext(UserContext);
+    const { setMatches, matches } = useContext(UserContext);
     const navigate = useNavigate();
 
 
@@ -20,9 +20,9 @@ const UserList = ({ users, selectedUser, setSelectedUser}) => {
     };
 
     useEffect(() => {
-        if (connected && users) {
+        if (connected && matches) {
             channel.bind('status-change', (data) => {
-                const updatedUsers = users.map(user => {
+                const updatedUsers = matches.map(user => {
                     if (user.id == data.sender_id) {
                         return { ...user, online: data.status == 'online' };
                     }
@@ -43,9 +43,9 @@ const UserList = ({ users, selectedUser, setSelectedUser}) => {
                 channel.unbind('status-change');
             }
         }
-    }, [connected, channel, users]);
+    }, [connected, channel, matches]);
 
-    if (!users) {
+    if (!matches) {
         return (
             <div className='user-list'>
                 <div className="user-list-header">
@@ -74,7 +74,7 @@ const UserList = ({ users, selectedUser, setSelectedUser}) => {
                 Conversations
             </div>
             <div className="user-list-content">
-                {users.map(user => {
+                {matches.map(user => {
                     const profilePicture = user.pictures.find(picture => picture.is_profile)?.url || '';
                     const unreadMessagesCount = user.messages?.filter(msg => !msg.is_read && msg.sender_id == user.id).length || null;
                     

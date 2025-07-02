@@ -1,4 +1,4 @@
-import React, { use, useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Button } from 'primereact/button';
 import { InputText } from 'primereact/inputtext';
 import './Conversation.css';
@@ -14,7 +14,7 @@ const Conversation = ({ selectedUser, setSelectedUser }) => {
     const { token } = useContext(AuthContext);
     const [input, setInput] = useState('');
     const { setMapStatus, setFocusedDate, setFocusedUser } = useContext(MapContext);
-    const { dates, user, setMatches, matches } = useContext(UserContext);
+    const { user, setMatches, matches } = useContext(UserContext);
     const { connected, channel } = useContext(SocketContext);
     const messageListRef = useRef(null);
 

@@ -11,7 +11,7 @@ import axios from 'axios';
 
 const NotificationButton = () => {
     const { channel, connected } = useContext(SocketContext);
-    const { user, potentialMatches, setPotentialMatches, setMatches } = useContext(UserContext);
+    const { user, potentialMatches, setPotentialMatches } = useContext(UserContext);
     const [notifications, setNotifications] = useState(null);
     const { token } = useContext(AuthContext);
     const navigate = useNavigate();

@@ -277,10 +277,6 @@
 
 @media (max-width: 768px) {
   .profile-card {
-    /* max-width: 100%; */
-    /* margin: 0; */
-    /* overflow: visible; */
-    /* height: auto; */
     overflow-y: auto;
   }
   

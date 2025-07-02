@@ -70,7 +70,6 @@ const ChatPage = () => {
     return (
         <div className="chat-page">
             <UserList 
-				users={matches}
 				selectedUser={selectedUser}
 				setSelectedUser={setSelectedUser}
 			/>

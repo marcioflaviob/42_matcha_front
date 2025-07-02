@@ -326,10 +326,6 @@
     line-height: 1.4;
 }
 
-/* .message-date-info.refused {
-    color: rgba(225, 76, 76, 0.703);
-} */
-
 .message-date-button.p-button-text {
     color: #2a815b !important;
     font-weight: 600 !important;

@@ -1,4 +1,4 @@
-import React, { useContext, useState, useEffect, useCallback, useRef } from 'react';
+import React, { useContext, useState, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import SimplePeer from 'simple-peer';
 import axios from 'axios';
@@ -14,11 +14,9 @@ import ConnectedCall from './ConnectedCall';
 import './CallDialog.css';
 
 const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
-    const { connected, pusher } = useContext(SocketContext);
+    const { connected, pusher, channel: notificationChannel } = useContext(SocketContext);
     const { user } = useContext(UserContext);
     const { token } = useContext(AuthContext);
-    
-    const isMountedRef = useRef(true);
     
     const [peer, setPeer] = useState(null);
     const [channel, setChannel] = useState(null);
@@ -31,8 +29,6 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
     const navigate = useNavigate();
 
     useEffect(() => {
-        console.log('CallDialog mounted/user changed. isInvited:', isInvited);
-        
         setPeer(null);
         setChannel(null);
         setStream(null);
@@ -41,16 +37,9 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
         setPermissionGranted(false);
         setWaitingForAcceptance(true);
         setCallStarted(false);
-        isMountedRef.current = true;
-
-        return () => {
-            isMountedRef.current = false;
-        };
     }, [selectedUser.id, isInvited]);
 
     const handleHangUp = useCallback(async () => {
-        console.log('Hanging up call');
-        
         if (peer) {
             peer.destroy();
             setPeer(null);
@@ -81,7 +70,7 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
         }).catch(error => {
             displayAlert('error', error.response?.data?.message || 'Error ending call');
         });
-        
+
         setIsCalling(false);
         navigate('/chat?id=' + selectedUser.id);
     }, [peer, stream, remoteStream, channel, callStarted, user.id, selectedUser.id, token, setIsCalling, navigate]);
@@ -134,10 +123,10 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
 
         newPeer.on('stream', (incomingStream) => {
             setRemoteStream(incomingStream);
-            setConnectionEstablished(true);
         });
-
+        
         newPeer.on('connect', () => {
+            setConnectionEstablished(true);
         });
 
         newPeer.on('error', (err) => {
@@ -154,7 +143,6 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
     const handleAcceptCall = useCallback(() => {
         if (waitingForAcceptance) {
             setWaitingForAcceptance(false);
-            console.log('Call accepted, setting up peer connection');
             channel.trigger('client-call-accepted', {
                 sender_id: user.id,
                 receiver_id: selectedUser.id,
@@ -175,8 +163,6 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
             const newChannel = pusher.subscribe(channelName);
             setChannel(newChannel);
 
-            console.log('Subscribed to channel:', channelName);
-
             return () => {
                 newChannel.unbind_all();
                 pusher.unsubscribe(channelName);
@@ -192,51 +178,54 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
         if (channel) {
 
             channel.bind('client-call-accepted', (data) => {
-                if (data.receiver_id === user.id && data.sender_id === selectedUser.id) {
+                if (data.receiver_id == user.id && data.sender_id == selectedUser.id) {
                     setWaitingForAcceptance(false);
                     setUpPeerConnection();
                 }
             });
 
             channel.bind('client-call-ended', (data) => {
-                if (data.receiver_id === user.id && data.sender_id === selectedUser.id) {
+                if (data.receiver_id == user.id && data.sender_id == selectedUser.id) {
                     displayAlert('info', `${selectedUser.first_name} ended the call`);
                     handleHangUp();
                 }
             });
 
             channel.bind('client-signal', (data) => {
-                if (data.receiver_id === user.id && data.sender_id === selectedUser.id && peer) {
+                if (data.receiver_id == user.id && data.sender_id == selectedUser.id && peer) {
                     peer.signal(data.signal);
                 }
             });
+
+            if (notificationChannel) {
+                notificationChannel.bind('new-notification', (data) => {
+                    if (data.type == 'new-refused-call' && data.concerned_user_id == selectedUser.id && data.user_id == user.id)
+                        handleHangUp();
+                });
+            }
         }
         return () => {
             if (channel) {
                 channel.unbind('client-call-accepted');
                 channel.unbind('client-call-ended');
                 channel.unbind('client-signal');
+                channel.unbind('new-notification');
             }
         };
     }, [channel, handleHangUp, peer, selectedUser.first_name, selectedUser.id, user.id, setUpPeerConnection]);
 
     useEffect(() => {
         if (channel && callStarted && isInvited) {
-            console.log('Call started, accepting call');
             handleAcceptCall();
         }
     }, [isInvited, channel, callStarted, handleAcceptCall]);
-
-    useEffect(() => {
-        console.log('Waiting for acceptance:', waitingForAcceptance);
-    }, [waitingForAcceptance])
 
     const renderDialog = () => {
         if (!permissionGranted) {
             return <AwaitingPermissions setStream={setStream} setPermissionGranted={setPermissionGranted} />;
         } else if (!callStarted) {
             return <AwaitingCall isInvited={isInvited} selectedUser={selectedUser} setCallStarted={setCallStarted} stream={stream} channel={channel} handleHangUp={handleHangUp} />;
-        } else if (waitingForAcceptance) {
+        } else if (waitingForAcceptance && !isInvited) {
             return <AwaitingAcceptance selectedUser={selectedUser} stream={stream} handleHangUp={handleHangUp} />;
         } else {
             return <ConnectedCall selectedUser={selectedUser} remoteStream={remoteStream} localStream={stream} handleHangUp={handleHangUp} connectionEstablished={connectionEstablished} />;

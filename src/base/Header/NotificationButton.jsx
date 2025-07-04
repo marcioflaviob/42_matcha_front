@@ -166,7 +166,7 @@ const NotificationButton = () => {
                         <ul>
                             {notifications.map(notification => (
                                 <li 
-                                    key={notification.id} 
+                                    key={notification.id + '-' + notification.type} 
                                     className={'read'}
                                     onClick={() => redirectUser(notification)}>
                                     <div className="notification-title">{notification.title}</div>

@@ -21,7 +21,6 @@ const ConversationHeader = ({ selectedUser, setSelectedUser }) => {
 	const { setMatches } = useContext(UserContext);
 
 	const handleCall = () => {
-		console.log('Initiating new call - resetting states');
 		setIsInvited(false);
 		setIsCalling(true);
 	}
@@ -91,9 +90,7 @@ const ConversationHeader = ({ selectedUser, setSelectedUser }) => {
 		setFocusedUser(selectedUser);
 	}, [searchParams, selectedUser]);
 
-	// Reset call states when selectedUser changes
 	useEffect(() => {
-		console.log('Selected user changed, resetting call states');
 		setIsCalling(false);
 		setIsInvited(false);
 	}, [selectedUser.id]);

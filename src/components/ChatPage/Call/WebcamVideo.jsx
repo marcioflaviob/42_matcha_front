@@ -13,26 +13,15 @@ const WebcamVideo = ({ stream, name, mute }) => {
         
         try {
             playPromise = localVideoRef.current.play();
+            if (playPromise !== undefined) {
+                playPromise.then(() => {
+                }).catch(error => {
+                    console.error('Error playing video:', error);
+                    displayAlert('error', 'Error playing video, try refreshing the page');
+                });
+            }
         } catch {
             displayAlert('error', 'Error playing video, try refreshing the page');
-        }
-
-        return () => {
-            if (playPromise !== undefined && typeof playPromise.then === 'function') {
-                playPromise.then(() => {
-                    if (localVideoRef.current && localVideoRef.current.srcObject) {
-                        const tracks = localVideoRef.current.srcObject.getTracks();
-                        tracks.forEach(track => track.stop());
-                        localVideoRef.current.srcObject = null;
-                    }
-                });
-            } else {
-                if (localVideoRef.current && localVideoRef.current.srcObject) {
-                    const tracks = localVideoRef.current.srcObject.getTracks();
-                    tracks.forEach(track => track.stop());
-                    localVideoRef.current.srcObject = null;
-                }
-            }
         }
     }, [stream]);
 

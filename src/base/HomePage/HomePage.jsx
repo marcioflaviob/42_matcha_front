@@ -13,7 +13,7 @@ import TipItem from '../../components/HomePage/TipItem';
         
 
 const HomePage = () => {
-	const { potentialMatches, setPotentialMatches, setMatches, matches } = useContext(UserContext);
+	const { potentialMatches, setPotentialMatches, setMatches } = useContext(UserContext);
 	const { token } = useContext(AuthContext);
 	const [matchIndex, setMatchIndex] = useState(0);
 	const { isAuthenticated, isLoading } = useContext(AuthContext);

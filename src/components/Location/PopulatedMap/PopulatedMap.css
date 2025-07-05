@@ -145,6 +145,21 @@
     background-color: #0f853b53;
 }
 
+.circular-icon .avatar-placeholder {
+    width: 32px;
+    height: 32px;
+    background-color: #e6f0eb;
+    color: #2a815b;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1rem;
+    border-radius: 50%;
+    border: 2px solid #333; /* Add border to match icon-wrapper */
+    box-sizing: border-box;
+}
+
 .map-calendar-close-button
 {
     position: absolute;

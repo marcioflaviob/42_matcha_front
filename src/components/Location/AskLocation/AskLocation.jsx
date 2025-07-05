@@ -98,7 +98,7 @@ export const AskLocation = (showNotification) => {
           await setCityAndCountry(latitude, longitude, token, userId);
           if (showNotification) displayAlert('success', 'Location updated successfully');
         } catch (error) {
-          await setLocationFromIP(userId);
+          await setLocationFromIP(userId, token);
         }
     } else {
       await setLocationFromIP(userId, token);

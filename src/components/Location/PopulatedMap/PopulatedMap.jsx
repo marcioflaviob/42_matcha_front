@@ -150,7 +150,9 @@ const PopulatedMap = () => {
         const firstPictureUrl = match.pictures?.[0]?.url || '';
         const userIcon = new L.divIcon({
           className: 'circular-icon',
-          html: `<div class="icon-wrapper" style="background-image: url('${import.meta.env.VITE_BLOB_URL + '/' + firstPictureUrl}');"></div>`,
+          html: firstPictureUrl
+            ? `<div class="icon-wrapper" style="background-image: url('${import.meta.env.VITE_BLOB_URL + '/' + firstPictureUrl}');"></div>`
+            : `<div class="avatar-placeholder">${match?.first_name?.charAt(0) || 'U'}</div>`,
           iconUrl: import.meta.env.VITE_BLOB_URL + '/' + firstPictureUrl,
           iconSize: [32, 32],
           iconAnchor: [16, 32],

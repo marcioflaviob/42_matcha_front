@@ -38,7 +38,8 @@ const YourPreferences = ({ setActiveStep }) => {
 	const [validFields, setValidFields] = useState({
 		gender: false,
 		sexual_interest: false,
-		interests: false
+		interests: false,
+		location: false
 	});
 	const allFieldsValid = Object.values(validFields).every((isValid) => isValid);
 
@@ -128,8 +129,9 @@ const YourPreferences = ({ setActiveStep }) => {
 			gender: formData.gender !== '',
 			sexual_interest: formData.sexual_interest !== '',
 			interests: formData.interests.length > 0,
+			location: user?.location
 		});
-	}, [formData]);
+	}, [formData, user?.location]);
 
 	useEffect(() => {
 		const fetchData = async () => {

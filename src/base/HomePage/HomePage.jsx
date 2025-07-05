@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import './HomePage.css';
 import axios from 'axios';
 import { displayAlert } from '../../components/Notification/Notification';
@@ -15,7 +15,6 @@ import TipItem from '../../components/HomePage/TipItem';
 const HomePage = () => {
 	const { potentialMatches, setPotentialMatches, setMatches } = useContext(UserContext);
 	const { token } = useContext(AuthContext);
-	const [matchIndex, setMatchIndex] = useState(0);
 	const { isAuthenticated, isLoading } = useContext(AuthContext);
 	
 	useEffect(() => {
@@ -31,7 +30,13 @@ const HomePage = () => {
 					Authorization: `Bearer ${token}`,
 				},
 			});
-			setPotentialMatches(response.data);
+			setPotentialMatches((prevMatches) => {
+			    const existingMatches = prevMatches || [];
+				const newUsers = response.data.filter(user => 
+					!existingMatches.some(existingUser => existingUser.id === user.id)
+				);
+				return [...existingMatches, ...newUsers];
+			});
 		} catch (error) {
 			displayAlert('error', error.response?.data?.message || 'Error fetching potential matches');
 		}
@@ -39,17 +44,17 @@ const HomePage = () => {
 
 	const handleLike = async () => {
 		try {
-			await axios.post(`${import.meta.env.VITE_API_URL}/like/${potentialMatches[matchIndex].id}`, {}, {
+			await axios.post(`${import.meta.env.VITE_API_URL}/like/${potentialMatches[0].id}`, {}, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},
 			});
-			const user = potentialMatches[matchIndex];
+			const user = potentialMatches[0];
 			if (user.liked_me) addUserToMatches(user);
 			setPotentialMatches((prevMatches) =>
-				prevMatches.filter((match) => match.id !== potentialMatches[matchIndex].id)
+				prevMatches.filter((match) => match.id !== potentialMatches[0].id)
 			);
-			setMatchIndex((prevIndex) => prevIndex + 1);
+			if (potentialMatches.length < 3) fetchPotentialMatches();
 		} catch (error) {
 			displayAlert('error', error.response?.data?.message || 'Error liking match');
 		}
@@ -57,15 +62,15 @@ const HomePage = () => {
 	
 	const handleBlock = async () => {
 		try {
-			await axios.post(`${import.meta.env.VITE_API_URL}/block/${potentialMatches[matchIndex].id}`, {}, {
+			await axios.post(`${import.meta.env.VITE_API_URL}/block/${potentialMatches[0].id}`, {}, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},
 			});
 			setPotentialMatches((prevMatches) =>
-				prevMatches.filter((match) => match.id !== potentialMatches[matchIndex].id)
+				prevMatches.filter((match) => match.id !== potentialMatches[0].id)
 			);
-			setMatchIndex((prevIndex) => prevIndex + 1);
+			if (remainingMatches < 4) fetchPotentialMatches();
 		} catch (error) {
 			displayAlert('error', error.response?.data?.message || 'Error blocking user');
 		}
@@ -73,15 +78,15 @@ const HomePage = () => {
 	
 	const handleReport = async () => {
 		try {
-			await axios.post(`${import.meta.env.VITE_API_URL}/report/${potentialMatches[matchIndex].id}`, {}, {
+			await axios.post(`${import.meta.env.VITE_API_URL}/report/${potentialMatches[0].id}`, {}, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},
 			});
 			setPotentialMatches((prevMatches) =>
-				prevMatches.filter((match) => match.id !== potentialMatches[matchIndex].id)
+				prevMatches.filter((match) => match.id !== potentialMatches[0].id)
 			);
-			setMatchIndex((prevIndex) => prevIndex + 1);
+			if (remainingMatches < 4) fetchPotentialMatches();
 		} catch (error) {
 			displayAlert('error', error.response?.data?.message || 'Error reporting user');
 		}
@@ -108,14 +113,14 @@ const HomePage = () => {
         );
     }
 
-	const remainingMatches = potentialMatches.length - matchIndex;
+	const remainingMatches = potentialMatches.length;
 
 	return (
 		<div className='home-page-container'>
 			{/* Page Header */}
 			<div className="home-header">
 				<h1 className="home-title">Discover</h1>
-				{potentialMatches.length > matchIndex && (
+				{potentialMatches.length > 0 && (
 					<div className="match-counter">
 						{remainingMatches} potential {remainingMatches === 1 ? 'match' : 'matches'}
 					</div>
@@ -124,12 +129,12 @@ const HomePage = () => {
 
 			{/* Main Content Area */}
 			<div className="home-main-content">
-				{potentialMatches.length > matchIndex ? (
+				{potentialMatches.length > 0 ? (
 					<>
 						{/* Profile Card Container */}
 						<div className="profile-card-container">
 							<ProfileCard 
-								profile={potentialMatches[matchIndex]} 
+								profile={potentialMatches[0]} 
 								handleLike={handleLike} 
 								handleBlock={handleBlock}
 								handleReport={handleReport}

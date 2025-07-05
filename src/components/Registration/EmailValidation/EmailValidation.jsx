@@ -72,7 +72,7 @@ const EmailValidation = () => {
             ) : (
                 <>
                     <h2>Email verification required</h2>
-                    <p>We've sent a verification link to your email address. Please check your inbox and click the link to activate your account.</p>
+                    <p>Click the button below to receive a verification link in your inbox.</p>
                     <Button 
                         label="Send email" 
                         disabled={!isButtonActive} 

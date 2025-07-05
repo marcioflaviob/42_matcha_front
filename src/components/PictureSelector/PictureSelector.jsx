@@ -159,6 +159,7 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
     };
 
     const handleSetProfilePicture = async (preview) => {
+        if (preview == profilePicture) return;
         if (preview.file) { // If it's a new file, just set it locally
             setProfilePicture(preview);
             setPreviews(prev =>

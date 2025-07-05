@@ -22,7 +22,8 @@ const ProtectedRoutes = () => {
     }
     
     // If user is authenticated but email not yet validated
-    if (user && user.status !== 'complete' && location.pathname !== '/register') {
+    const allowedRoutes = ['/register', `/profile/${user?.id}`, '/edit-profile/'];
+    if (user && user.status !== 'complete' && !allowedRoutes.includes(location.pathname)) {
         return <Navigate to="/register" replace />;
     }
 

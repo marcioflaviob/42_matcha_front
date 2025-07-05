@@ -259,7 +259,7 @@ const PopulatedMap = () => {
     return () => clearInterval(interval);
   }, []); 
 
-  if (!isMapOpen || !user) {
+  if (!isMapOpen || !user || !user.location) {
     return null;
   }
 

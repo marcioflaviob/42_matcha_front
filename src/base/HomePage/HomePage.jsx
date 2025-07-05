@@ -1,4 +1,4 @@
-import React, { use, useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect } from 'react';
 import './HomePage.css';
 import axios from 'axios';
 import { displayAlert } from '../../components/Notification/Notification';

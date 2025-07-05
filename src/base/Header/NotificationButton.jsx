@@ -40,7 +40,7 @@ const NotificationButton = () => {
 						updatedMatches.splice(existingIndex, 1);
 						setPotentialMatches([existingMatch, ...updatedMatches]);
 					} else {
-						const response = await axios.get(`${import.meta.env.VITE_API_URL}/users/${notification.concerned_user_id}`, {}, {
+						const response = await axios.get(`${import.meta.env.VITE_API_URL}/users/${notification.concerned_user_id}`, {
 							headers: {
 								Authorization: `Bearer ${token}`,
 							},

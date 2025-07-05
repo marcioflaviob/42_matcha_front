@@ -96,7 +96,7 @@
     display: flex;
     flex-direction: column;
     padding: 50px;
-    box-shadow: -12px 0 24px -8px rgba(0, 0, 0, 0.141); /* left-only shadow */
+    box-shadow: -12px 0 24px -8px rgba(0, 0, 0, 0.141);
     align-items: center;
 }
 
@@ -143,6 +143,21 @@
 .p-datepicker table td > span.p-highlight
 {
     background-color: #0f853b53;
+}
+
+.circular-icon .avatar-placeholder {
+    width: 32px;
+    height: 32px;
+    background-color: #e6f0eb;
+    color: #2a815b;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-weight: bold;
+    font-size: 1rem;
+    border-radius: 50%;
+    border: 2px solid #333;
+    box-sizing: border-box;
 }
 
 .map-calendar-close-button

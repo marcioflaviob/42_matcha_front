@@ -42,9 +42,9 @@ const Header = () => {
 				{user ? (
 					<div className="user-nav">
 
-						<span className='material-symbols-outlined header-map-button' onClick={openMap} >
+						{user?.location && <span className='material-symbols-outlined header-map-button' onClick={openMap} >
 							public
-						</span>
+						</span>}
 
 						<Button className='nav-button chat-button' label='Chat' onClick={() => navigate('/chat')} />
 						

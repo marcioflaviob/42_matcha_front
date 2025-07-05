@@ -1,6 +1,7 @@
 import { displayAlert }  from "../../Notification/Notification";
-
+import { useContext } from 'react';
 import axios from 'axios';
+import { UserContext } from "../../../context/UserContext";
 
 export const getAddress = async (latitude, longitude, token) => {
   try {
@@ -36,9 +37,11 @@ export const getAddress = async (latitude, longitude, token) => {
 
 export const AskLocation = (showNotification) => {
 
+  const { setUser } = useContext(UserContext);
+
   const setCityAndCountry = async (latitude, longitude, token, userId) => {
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/location/city`,
+      const result = await axios.post(`${import.meta.env.VITE_API_URL}/location/city`,
         {
           userId: userId,
           latitude: latitude,
@@ -50,6 +53,10 @@ export const AskLocation = (showNotification) => {
           },
           withCredentials: true,
         })
+      setUser((prevUser) => ({
+        ...prevUser,
+        location: result.data
+      }));
     } catch (error) {
       displayAlert('error', error.response?.data?.message || 'Error setting city and country');
       return { city: 'Unknown', country: 'Unknown' };
@@ -58,11 +65,15 @@ export const AskLocation = (showNotification) => {
 
   const setLocationFromIP = async (userId, token) => {
     try {
-      await axios.post(`${import.meta.env.VITE_API_URL}/location/ip/${userId}`, {}, {
+      const result = await axios.post(`${import.meta.env.VITE_API_URL}/location/ip/${userId}`, {}, {
           headers: {
               Authorization: `Bearer ${token}`,
           },
       });
+      setUser((prevUser) => ({
+        ...prevUser,
+        location: result.data
+      }));
       if (showNotification) displayAlert('success', 'Location updated successfully');
     } catch (error) {
       displayAlert('error', error.response?.data?.message || 'Unable to get your location. Please try again later or check your network connection.');

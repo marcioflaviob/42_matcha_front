@@ -214,7 +214,9 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
                     ...prev,
                     pictures: [...prev.pictures, newPic],
                 }));
-                if (!profilePicture && updatedPreviews.length > 0) {
+                if (newPic.is_profile) {
+                    setProfilePicture(newPic);
+                } else if (!profilePicture && updatedPreviews.length > 0) {
                     setProfilePicture(updatedPreviews[0]);
                 }
                 setUrlInput('');

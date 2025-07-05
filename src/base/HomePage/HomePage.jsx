@@ -44,10 +44,12 @@ const HomePage = () => {
 					Authorization: `Bearer ${token}`,
 				},
 			});
-			setMatchIndex((prevIndex) => prevIndex + 1);
-
 			const user = potentialMatches[matchIndex];
 			if (user.liked_me) addUserToMatches(user);
+			setPotentialMatches((prevMatches) =>
+				prevMatches.filter((match) => match.id !== potentialMatches[matchIndex].id)
+			);
+			setMatchIndex((prevIndex) => prevIndex + 1);
 		} catch (error) {
 			displayAlert('error', error.response?.data?.message || 'Error liking match');
 		}
@@ -60,6 +62,9 @@ const HomePage = () => {
 					Authorization: `Bearer ${token}`,
 				},
 			});
+			setPotentialMatches((prevMatches) =>
+				prevMatches.filter((match) => match.id !== potentialMatches[matchIndex].id)
+			);
 			setMatchIndex((prevIndex) => prevIndex + 1);
 		} catch (error) {
 			displayAlert('error', error.response?.data?.message || 'Error blocking user');
@@ -73,6 +78,9 @@ const HomePage = () => {
 					Authorization: `Bearer ${token}`,
 				},
 			});
+			setPotentialMatches((prevMatches) =>
+				prevMatches.filter((match) => match.id !== potentialMatches[matchIndex].id)
+			);
 			setMatchIndex((prevIndex) => prevIndex + 1);
 		} catch (error) {
 			displayAlert('error', error.response?.data?.message || 'Error reporting user');

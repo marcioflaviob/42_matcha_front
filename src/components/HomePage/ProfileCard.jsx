@@ -34,32 +34,31 @@ const ProfileCard = ({ profile, handleLike, handleBlock, handleReport, showButto
 	}
 
   const confirmBlockUser = () => {
-      confirmDialog({
-        message: `Are you sure you want to block ${profile.first_name}?`,
-        header: 'Confirmation',
-        icon: 'pi pi-exclamation-triangle',
-        acceptLabel: 'Yes',
-        rejectLabel: 'No',
-        acceptClassName: 'p-button-danger',
-        accept: profileBlock,
-      });
+    confirmDialog({
+      message: `Are you sure you want to block ${profile.first_name}?`,
+      header: 'Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Yes',
+      rejectLabel: 'No',
+      acceptClassName: 'p-button-danger',
+      accept: profileBlock,
+    });
   }
-
+  
   const confirmReportUser = () => {
-      confirmDialog({
-        message: `Are you sure you want to report ${profile.first_name}?`,
-        header: 'Confirmation',
-        icon: 'pi pi-exclamation-triangle',
-        acceptLabel: 'Yes',
-        rejectLabel: 'No',
-        acceptClassName: 'p-button-danger',
-        accept: profileReport,
-      });
+    confirmDialog({
+      message: `Are you sure you want to report ${profile.first_name}?`,
+      header: 'Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Yes',
+      rejectLabel: 'No',
+      acceptClassName: 'p-button-danger',
+      accept: profileReport,
+    });
   }
-
+  
   const profileBlock = async () => {
     setLoading(true);
-    displayAlert("info", `${profile.first_name} blocked successfully`);
     await handleBlock();
     setLoading(false);
   }

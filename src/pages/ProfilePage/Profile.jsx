@@ -16,7 +16,7 @@ const Profile = () => {
 	const navigate = useNavigate();
 
 	const fetchData = async () => {
-		axios.get(`${import.meta.env.VITE_API_URL}/users/${userId}`, {
+		axios.get(`${import.meta.env.VITE_API_URL}/profile/${userId}`, {
 				headers: {
 					Authorization: `Bearer ${token}`,
 				},

@@ -27,6 +27,7 @@ const Conversation = ({ selectedUser, setSelectedUser }) => {
     const saveMessage = async (message, isSent) => {
         const receiverId = isSent ? message.receiver_id : message.sender_id;
         const updatedMatches = matches.map(user => {
+            user.messages = user.messages || [];
             if (user.id == receiverId) {
                 return {
                     ...user,
@@ -71,16 +72,17 @@ const Conversation = ({ selectedUser, setSelectedUser }) => {
             });
 
             setMatches((prevMatches) =>
-                prevMatches.map(u =>
-                    u.id === selectedUser.id
+                prevMatches.map(u => {
+                    u.messages = u.messages || [];
+                    return (u.id === selectedUser.id
                         ? {
                             ...u,
                             messages: u.messages.map(msg =>
                                 msg.id === optimisticMessage.id ? response.data : msg
                             ),
                         }
-                        : u
-                )
+                        : u)
+                })
             );
 
         } catch (error) {

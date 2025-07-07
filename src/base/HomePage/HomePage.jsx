@@ -13,7 +13,7 @@ import TipItem from '../../components/HomePage/TipItem';
         
 
 const HomePage = () => {
-	const { potentialMatches, setPotentialMatches, setMatches } = useContext(UserContext);
+	const { potentialMatches, setPotentialMatches, setMatches, setNotifications } = useContext(UserContext);
 	const { token } = useContext(AuthContext);
 	const { isAuthenticated, isLoading } = useContext(AuthContext);
 	
@@ -71,9 +71,17 @@ const HomePage = () => {
 				prevMatches.filter((match) => match.id !== potentialMatches[0].id)
 			);
 			if (remainingMatches < 4) fetchPotentialMatches();
+			removeUserFromNotifications(potentialMatches[0].id);
 		} catch (error) {
 			displayAlert('error', error.response?.data?.message || 'Error blocking user');
 		}
+	}
+
+	const removeUserFromNotifications = (userId) => {
+		setNotifications((prevNotifications) => {
+			if (!prevNotifications) return [];
+			return prevNotifications.filter((notification) => notification.concerned_user_id !== userId);
+		});
 	}
 	
 	const handleReport = async () => {
@@ -87,6 +95,7 @@ const HomePage = () => {
 				prevMatches.filter((match) => match.id !== potentialMatches[0].id)
 			);
 			if (remainingMatches < 4) fetchPotentialMatches();
+			removeUserFromNotifications(potentialMatches[0].id);
 		} catch (error) {
 			displayAlert('error', error.response?.data?.message || 'Error reporting user');
 		}

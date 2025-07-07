@@ -12,7 +12,7 @@ const CallControls = ({
 }) => {
     const [isMuted, setIsMuted] = useState(false);
     const [isCameraOff, setIsCameraOff] = useState(false);
-    const [hanguUpButtonDisabled, setHangUpButtonDisabled] = useState(false);
+    const [hangUpButtonDisabled, setHangUpButtonDisabled] = useState(false);
 
     const handleMuteToggle = () => {
         if (stream) {
@@ -72,7 +72,7 @@ const CallControls = ({
                     setHangUpButtonDisabled(true);
                     onHangUp();
                 }}
-                disabled={hanguUpButtonDisabled}
+                disabled={hangUpButtonDisabled}
                 rounded
             />
         </div>

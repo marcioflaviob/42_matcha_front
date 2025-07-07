@@ -18,7 +18,7 @@ const ConversationHeader = ({ selectedUser, setSelectedUser }) => {
 	const profilePicture = selectedUser?.pictures.find(picture => picture.is_profile)?.url || '';
 	const [searchParams] = useSearchParams();
 	const navigate = useNavigate();
-	const { setMatches } = useContext(UserContext);
+	const { setMatches, setNotifications } = useContext(UserContext);
 
 	const handleCall = () => {
 		setIsInvited(false);
@@ -36,6 +36,13 @@ const ConversationHeader = ({ selectedUser, setSelectedUser }) => {
 			accept: handleBlockUser,
 		});
 	}
+
+	const removeUserFromNotifications = (userId) => {
+		setNotifications((prevNotifications) => {
+			if (!prevNotifications) return [];
+			return prevNotifications.filter((notification) => notification.concerned_user_id !== userId);
+		});
+	}
 	
 	const handleBlockUser = async () => {
 		try {
@@ -51,6 +58,7 @@ const ConversationHeader = ({ selectedUser, setSelectedUser }) => {
 					setSelectedUser(null);
 					return updatedUsers;
 				});
+				removeUserFromNotifications(selectedUser.id);
 			}
 		} catch (error) {
 			displayAlert('error', error.response?.data?.message || 'Failed to block user');

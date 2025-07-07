@@ -1,7 +1,7 @@
 import './NotificationButton.css';
 import { Badge } from 'primereact/badge';
 import { OverlayPanel } from 'primereact/overlaypanel';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import { SocketContext } from '../../context/SocketContext';
 import { clearNotifications, displayAlert, displayCall, displayNotification } from '../../components/Notification/Notification';
@@ -12,8 +12,7 @@ import useFavicon from '../../../utils/useFavicon';
 
 const NotificationButton = () => {
     const { channel, connected } = useContext(SocketContext);
-    const { user, potentialMatches, setPotentialMatches, setMatches, matches } = useContext(UserContext);
-    const [notifications, setNotifications] = useState(null);
+    const { potentialMatches, setPotentialMatches, setMatches, matches, notifications, setNotifications } = useContext(UserContext);
     const { token } = useContext(AuthContext);
     const navigate = useNavigate();
     const overlayPanelRef = useRef(null);
@@ -40,18 +39,21 @@ const NotificationButton = () => {
 						updatedMatches.splice(existingIndex, 1);
 						setPotentialMatches([existingMatch, ...updatedMatches]);
 					} else {
-						const response = await axios.get(`${import.meta.env.VITE_API_URL}/users/${notification.concerned_user_id}`, {
+						axios.get(`${import.meta.env.VITE_API_URL}/users/${notification.concerned_user_id}`, {
 							headers: {
 								Authorization: `Bearer ${token}`,
 							},
+						}).then((response) => {
+							response.data.liked_me = true;
+							setPotentialMatches([response.data, ...prevMatches]);
+						}).catch((error) => {
+							displayAlert('error', error.response?.data?.message || 'Error fetching user data');
 						});
-						response.data.liked_me = true;
-						setPotentialMatches([response.data, ...prevMatches]);
 					}
-					navigate('/');
 					setNotifications((prevNotifications) =>
 						prevNotifications.filter((n) => n.id !== notification.id)
 					);
+					navigate('/');
 				} catch (error) {
 					displayAlert('error', error.response?.data?.message || 'Error updating potential matches');
 				}
@@ -82,24 +84,6 @@ const NotificationButton = () => {
 			displayAlert('error', error.response?.data?.message || 'Error marking notifications as seen');
 		}
 	};
-
-	useEffect(() => {
-		const fetchNotifications = async () => {
-			try {
-				const response = await axios.get(`${import.meta.env.VITE_API_URL}/notifications`, {
-					headers: {
-						Authorization: `Bearer ${token}`,
-					},
-				});
-				setNotifications(response.data);
-			} catch (error) {
-				displayAlert('error', error.response?.data?.message || 'Error fetching notifications');
-			}
-		};
-		if (user) {
-			fetchNotifications();
-		}
-	}, [user]);
 
 	useEffect(() => {
 		if (connected && channel) {
@@ -149,6 +133,8 @@ const NotificationButton = () => {
 				updatedMatches.splice(existingIndex, 1);
 				return [existingMatch, ...updatedMatches];
 			}
+			else
+				return prevMatches;
 		});
 	}
 

@@ -80,6 +80,7 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
             resetState();
             setIsLoading(false);
         } catch (error) {
+            setIsLoading(false);
             displayAlert('error', error.response?.data?.message || 'Error uploading files');
         }
     };
@@ -99,6 +100,18 @@ const PictureSelector = ({ showDialog, setShowDialog }) => {
                 },
                 withCredentials: true,
             });
+
+            setPreviews(prev => prev.map(p => 
+                p.id === file.id ? {
+                    ...p,
+                    id: result.data.id,
+                    url: result.data.url,
+                    is_profile: result.data.is_profile,
+                    file: null,
+                } : p
+            ));
+
+            if (result.data.is_profile) setProfilePicture(result.data);
 
             setUser(prev => ({
                 ...prev,

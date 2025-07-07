@@ -12,10 +12,24 @@ import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
         
 const ProfilePicture = ({ userInfo }) => {
   const navigate = useNavigate();
-  const { user } = useContext(UserContext);
+  const { user, setMatches, setNotifications } = useContext(UserContext);
   const { token } = useContext(AuthContext);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const menuRef = useRef(null);
+
+  const removeUserFromMatches = (userId) => {
+    setMatches((prevMatches) => {
+      if (!prevMatches) return [];
+      return prevMatches.filter((match) => match.id !== userId);
+    });
+  }
+
+  const removeUserFromNotifications = (userId) => {
+    setNotifications((prevNotifications) => {
+      if (!prevNotifications) return [];
+      return prevNotifications.filter((notification) => notification.concerned_user_id !== userId);
+    });
+  }
 
   const navigateBack = () => {
     if (window.history.length > 1 && document.referrer) {
@@ -50,15 +64,15 @@ const ProfilePicture = ({ userInfo }) => {
   }
 
   const confirmUnlikeUser = () => {
-      confirmDialog({
-        message: `Are you sure you want to unlike ${userInfo.first_name}?`,
-        header: 'Confirmation',
-        icon: 'pi pi-exclamation-triangle',
-        acceptLabel: 'Yes',
-        rejectLabel: 'No',
-        acceptClassName: 'p-button-danger',
-        accept: handleUnlike,
-      });
+    confirmDialog({
+      message: `Are you sure you want to unlike ${userInfo.first_name}?`,
+      header: 'Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Yes',
+      rejectLabel: 'No',
+      acceptClassName: 'p-button-danger',
+      accept: handleUnlike,
+    });
   }
 
   const handleReport = async () => {
@@ -67,6 +81,8 @@ const ProfilePicture = ({ userInfo }) => {
         Authorization: `Bearer ${token}`,
       },
     }).then(() => {
+      removeUserFromMatches(userInfo.id);
+      removeUserFromNotifications(userInfo.id);
       setTimeout(() => {
         navigate('/');
       }, 500);
@@ -82,6 +98,8 @@ const ProfilePicture = ({ userInfo }) => {
         Authorization: `Bearer ${token}`,
       },
     }).then(() => {
+      removeUserFromMatches(userInfo.id);
+      removeUserFromNotifications(userInfo.id);
       setTimeout(() => {
         navigate('/');
       }, 500);
@@ -97,6 +115,8 @@ const ProfilePicture = ({ userInfo }) => {
         Authorization: `Bearer ${token}`,
       },
     }).then(() => {
+      removeUserFromMatches(userInfo.id);
+      removeUserFromNotifications(userInfo.id);
       setTimeout(() => {
         navigate('/');
       }, 500);

@@ -10,6 +10,7 @@ export const UserProvider = ({ children }) => {
     const [potentialMatches, setPotentialMatches] = useState(null);
     const [loading, setLoading] = useState(true);
     const { token, isAuthenticated, isLoading, logout } = useContext(AuthContext);
+    const [notifications, setNotifications] = useState(null);
     const { setFocusedDate, setFocusedUser, setMapStatus } = useContext(MapContext);
     const [dates, setDates] = useState([]);
     const [matches, setMatches] = useState(null);
@@ -36,8 +37,10 @@ export const UserProvider = ({ children }) => {
         setDates,
         logoutUser,
         matches,
-        setMatches
-    }), [user, potentialMatches, dates, loading, matches]);
+        setMatches,
+        notifications,
+        setNotifications,
+    }), [user, potentialMatches, dates, loading, matches, notifications]);
 
     const fetchDates = async () => {
         try {
@@ -61,6 +64,19 @@ export const UserProvider = ({ children }) => {
 		setMatches(response.data);
 	};
 
+    const fetchNotifications = async () => {
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/notifications`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setNotifications(response.data);
+        } catch (error) {
+            displayAlert('error', error.response?.data?.message || 'Error fetching notifications');
+        }
+    };
+
     useEffect(() => {
         if (isLoading) return;
         
@@ -73,6 +89,7 @@ export const UserProvider = ({ children }) => {
                     if (response.data.user.id) {
                         setUser(response.data.user);
                         fetchDates();
+                        fetchNotifications();
                         if (!matches || matches.length === 0)
                             fetchUsers();
                     } else {

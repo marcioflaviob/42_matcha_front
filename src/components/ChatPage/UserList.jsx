@@ -14,7 +14,6 @@ const UserList = ({ selectedUser, setSelectedUser}) => {
     const { setMatches, matches } = useContext(UserContext);
     const navigate = useNavigate();
 
-
     const handleContactClick = (user) => {
         navigate(`/chat?id=${user.id}`);
     };

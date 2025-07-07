@@ -20,13 +20,18 @@ const ProtectedRoutes = () => {
     if (!isAuthenticated && !isPublicRoute) {
         return <Navigate to="/login" state={{ from: location }} replace />;
     }
+
     
     // If user is authenticated but email not yet validated
     const allowedRoutes = ['/register', `/profile/${user?.id}`, '/edit-profile/'];
-    if (user && user.status !== 'complete' && !allowedRoutes.includes(location.pathname)) {
+    if (user && user.status === 'validation' && !allowedRoutes.includes(location.pathname)) {
         return <Navigate to="/register" replace />;
     }
-
+    
+    if (user && (user?.status !== 'complete' && user?.status !== 'validation') && location.pathname !== '/register') {
+        return <Navigate to="/register" replace />;
+    }
+    
     // If user is authenticated and has completed registration
     if (user && user.status === 'complete' && (location.pathname === '/register' || location.pathname === '/login')) {
         return <Navigate to="/" replace />;

@@ -48,6 +48,12 @@ const EditProfileForm = ({ shadowUser, setShadowUser }) => {
         const value = e.target.value;
         const valueSet = new Set(value);
 
+        if (value.length === 0 && shadowUser.interests.length > 1) {
+            const firstInterest = shadowUser.interests[0];
+            setShadowUser(prev => ({ ...prev, interests: [firstInterest] }));
+            return;
+        }
+
         if (value.length === 0) {
             displayAlert('warn', 'Please select at least one interest');
             return;

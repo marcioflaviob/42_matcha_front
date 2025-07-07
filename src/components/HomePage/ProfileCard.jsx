@@ -9,10 +9,10 @@ import { UserContext } from "../../context/UserContext";
 import { ConfirmDialog, confirmDialog } from 'primereact/confirmdialog';
 
 const ProfileCard = ({ profile, handleLike, handleBlock, handleReport, showButtons }) => {
-
   const menuRef = useRef(null);
   const [currentImageIndex, setCurrentImageIndex] = useState(0);
   const { user } = useContext(UserContext);
+  const [loading, setLoading] = useState(false);
 
   let items = [
     {
@@ -34,41 +34,46 @@ const ProfileCard = ({ profile, handleLike, handleBlock, handleReport, showButto
 	}
 
   const confirmBlockUser = () => {
-      confirmDialog({
-        message: `Are you sure you want to block ${profile.first_name}?`,
-        header: 'Confirmation',
-        icon: 'pi pi-exclamation-triangle',
-        acceptLabel: 'Yes',
-        rejectLabel: 'No',
-        acceptClassName: 'p-button-danger',
-        accept: profileBlock,
-      });
+    confirmDialog({
+      message: `Are you sure you want to block ${profile.first_name}?`,
+      header: 'Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Yes',
+      rejectLabel: 'No',
+      acceptClassName: 'p-button-danger',
+      accept: profileBlock,
+    });
   }
-
+  
   const confirmReportUser = () => {
-      confirmDialog({
-        message: `Are you sure you want to report ${profile.first_name}?`,
-        header: 'Confirmation',
-        icon: 'pi pi-exclamation-triangle',
-        acceptLabel: 'Yes',
-        rejectLabel: 'No',
-        acceptClassName: 'p-button-danger',
-        accept: profileReport,
-      });
+    confirmDialog({
+      message: `Are you sure you want to report ${profile.first_name}?`,
+      header: 'Confirmation',
+      icon: 'pi pi-exclamation-triangle',
+      acceptLabel: 'Yes',
+      rejectLabel: 'No',
+      acceptClassName: 'p-button-danger',
+      accept: profileReport,
+    });
+  }
+  
+  const profileBlock = async () => {
+    setLoading(true);
+    await handleBlock();
+    setLoading(false);
   }
 
-  const profileBlock = () => {
-    displayAlert("info", `${profile.first_name} blocked successfully`);
-    handleBlock();
+  const profileLike = async () => {
+    setLoading(true);
+    await handleLike();
+    setLoading(false);
   }
 
-  const profileLike = () => {
-    handleLike();
-  }
-
-  const profileReport = () => {
+  const profileReport = async () => {
+    setLoading(true);
     displayAlert("info", `${profile.first_name} reported successfully`);
-    handleReport();
+    await handleReport();
+    setLoading(false);
   }
 
   return (
@@ -116,8 +121,8 @@ const ProfileCard = ({ profile, handleLike, handleBlock, handleReport, showButto
       {/* Moved buttons outside profile-content to fix z-index issues */}
       {showButtons && (
         <div className="match-buttons">
-          <Button icon="pi pi-times" className="match-button reject-match-button" onClick={handleBlock} rounded />
-          <Button icon="pi pi-heart-fill" className="match-button accept-match-button" onClick={profileLike} rounded />
+          <Button icon="pi pi-times" className="match-button reject-match-button" onClick={profileBlock} disabled={loading} rounded />
+          <Button icon="pi pi-heart-fill" className="match-button accept-match-button" onClick={profileLike} disabled={loading} rounded />
         </div>
       )}
     </div>

@@ -72,7 +72,7 @@ export const AskLocation = (showNotification) => {
       });
       setUser((prevUser) => ({
         ...prevUser,
-        location: result.data
+        location: result.data.location
       }));
       if (showNotification) displayAlert('success', 'Location updated successfully');
     } catch (error) {

@@ -24,7 +24,7 @@ L.Icon.Default.mergeOptions({
 });
 
 const PopulatedMap = () => {
-  const { user, dates, setDates, matches, setMatches} = useContext(UserContext);
+  const { user, dates, setDates, matches} = useContext(UserContext);
   const { mapStatus, setMapStatus, focusedDate, setFocusedDate, focusedUser} = useContext(MapContext);
   const isMapOpen = mapStatus != 'closed';
   const isSettingDate = mapStatus == 'setting_date';

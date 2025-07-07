@@ -75,7 +75,7 @@ export const AskLocation = (showNotification) => {
         location: result.data.location
       }));
       if (showNotification) displayAlert('success', 'Location updated successfully');
-    } catch (error) {
+    } catch {
       displayAlert('error', error.response?.data?.message || 'Unable to get your location. Please try again later or check your network connection.');
     }
   };

@@ -1,5 +1,5 @@
 import { displayAlert }  from "../../Notification/Notification";
-import { useContext, useEffect } from 'react';
+import { useContext } from 'react';
 import axios from 'axios';
 import { UserContext } from "../../../context/UserContext";
 

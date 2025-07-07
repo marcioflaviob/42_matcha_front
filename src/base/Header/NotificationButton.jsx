@@ -1,7 +1,7 @@
 import './NotificationButton.css';
 import { Badge } from 'primereact/badge';
 import { OverlayPanel } from 'primereact/overlaypanel';
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { AuthContext } from '../../context/AuthContext';
 import { SocketContext } from '../../context/SocketContext';
 import { clearNotifications, displayAlert, displayCall, displayNotification } from '../../components/Notification/Notification';

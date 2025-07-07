@@ -1,5 +1,5 @@
 import { displayAlert }  from "../../Notification/Notification";
-import { useContext } from 'react';
+import { useContext, useEffect } from 'react';
 import axios from 'axios';
 import { UserContext } from "../../../context/UserContext";
 
@@ -72,7 +72,7 @@ export const AskLocation = (showNotification) => {
       });
       setUser((prevUser) => ({
         ...prevUser,
-        location: result.data
+        location: result.data.location
       }));
       if (showNotification) displayAlert('success', 'Location updated successfully');
     } catch (error) {

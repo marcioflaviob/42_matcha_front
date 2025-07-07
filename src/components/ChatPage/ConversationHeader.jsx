@@ -18,7 +18,7 @@ const ConversationHeader = ({ selectedUser, setSelectedUser }) => {
 	const profilePicture = selectedUser?.pictures.find(picture => picture.is_profile)?.url || '';
 	const [searchParams] = useSearchParams();
 	const navigate = useNavigate();
-	const { matches, setMatches } = useContext(UserContext);
+	const { setMatches } = useContext(UserContext);
 
 	const handleCall = () => {
 		setIsInvited(false);
@@ -81,16 +81,11 @@ const ConversationHeader = ({ selectedUser, setSelectedUser }) => {
 	useEffect(() => {
 		const calling = searchParams.get('call');
 		const userId = searchParams.get('id');
-
-		console.log('ConversationHeader mounted with calling:', calling, 'and userId:', userId);
-		console.log('Selected user:', selectedUser);
-
+    
 		if (calling && (!userId || selectedUser.id == userId)) {
-			console.log('Setting isCalling to true and isInvited to false');
 			setIsCalling(true);
 			setIsInvited(true);
 		} else if (calling && selectedUser.id != userId) {
-			console.log('Setting isCalling to true and isInvited to true');
 			displayAlert('warn', 'User not found');
 		}
 		setFocusedUser(selectedUser);

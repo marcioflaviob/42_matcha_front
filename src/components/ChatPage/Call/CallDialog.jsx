@@ -130,8 +130,6 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
         });
 
         newPeer.on('error', (err) => {
-            console.error('Peer connection error:', err);
-            displayAlert('error', 'Connection error');
         });
 
         newPeer.on('close', () => {

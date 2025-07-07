@@ -34,6 +34,7 @@ const PopulatedMap = () => {
   const [position, setPosition] = useState({ y: window.innerHeight });
   const positionRef = useRef(position.y);
   const isAnimating = useRef(true);
+  const [mapMatches, setMapMatches] = useState([]);
   const { token } = useContext(AuthContext);
   const [clickedPosition, setClickedPosition] = useState(null);
   const calendarRef = useRef(null);
@@ -160,7 +161,7 @@ const PopulatedMap = () => {
         });
         return { ...match, icon : userIcon};
       });
-      setMatches(updatedMatches);
+      setMapMatches(updatedMatches);
 
 
       if (focusedUser) {
@@ -292,7 +293,7 @@ const PopulatedMap = () => {
           attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/">CARTO</a>'
         />
 
-        {matches.map((match) => (
+        {mapMatches.map((match) => (
           <Marker key={match.id} position={[match.location.latitude, match.location.longitude]} icon={match.icon} style={{ cursor: 'pointer'}}>
             <Popup>
               <h3>{match.first_name}</h3>

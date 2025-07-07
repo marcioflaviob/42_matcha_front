@@ -12,7 +12,7 @@ import useFavicon from '../../../utils/useFavicon';
 
 const NotificationButton = () => {
     const { channel, connected } = useContext(SocketContext);
-    const { user, potentialMatches, setPotentialMatches, setMatches, matches, notifications, setNotifications } = useContext(UserContext);
+    const { potentialMatches, setPotentialMatches, setMatches, matches, notifications, setNotifications } = useContext(UserContext);
     const { token } = useContext(AuthContext);
     const navigate = useNavigate();
     const overlayPanelRef = useRef(null);

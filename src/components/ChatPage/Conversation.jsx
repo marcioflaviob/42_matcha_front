@@ -131,6 +131,15 @@ const Conversation = ({ selectedUser, setSelectedUser }) => {
                     message.is_read = true;
                 }
                 const isSent = message.date && message.sender_id == user.id;
+                if (message.date) {
+                    setDates((prevDates) => {
+                        const existingDate = prevDates.find(date => date.id === message.date.id);
+                        if (!existingDate) {
+                            return [...prevDates, message.date];
+                        }
+                        return prevDates;
+                    });
+                }
                 saveMessage(message, isSent);
             });
         }
@@ -164,13 +173,6 @@ const Conversation = ({ selectedUser, setSelectedUser }) => {
                             {selectedUser?.messages && selectedUser.messages.length > 0 ?
                                 (selectedUser.messages.map((msg) => {
                                     if (msg.date) {
-                                        setDates((prevDates) => {
-                                            const existingDate = prevDates.find(date => date.id === msg.date.id);
-                                            if (!existingDate) {
-                                                return [...prevDates, msg.date];
-                                            }
-                                            return prevDates;
-                                        });
                                         return (
                                             <div key={msg.id} className={`message-date ${msg.sender_id === selectedUser.id ? 'received' : 'sent'} ${msg.date.status === "refused" ? "refused" : ""}`}>
                                                 <div className={`message-date-title ${msg.date.status === "refused" ? "refused" : ""}`}>{(msg.date.status === 'refused' || !msg.date) ? "Date refused" : msg.date.status == 'accepted' ? "Date accepted" : "Let's go on a date!"}</div>

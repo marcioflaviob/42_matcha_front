@@ -209,7 +209,10 @@ const ProfileInfo = ({ userInfo }) => {
             {/* View history card */}
             { userInfo && userInfo.id == user.id &&
                 <div className="profile-bio-card">
-                    <h3 className="section-title">View History</h3>
+                    <h3 className="section-title">
+                        <i className="pi pi-history" />
+                        View History
+                    </h3>
                     { viewHistory.length > 0 ? (
                         <div className='view-history-container'>
                             <ul className="view-history-list">

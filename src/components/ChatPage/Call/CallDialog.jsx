@@ -113,20 +113,13 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
 
         setPeer(newPeer);
 
-        let signalTimeout;
-
         newPeer.on('signal', (signal) => {
-            clearTimeout(signalTimeout);
             channel.trigger('client-signal', {
                 sender_id: user.id,
                 receiver_id: selectedUser.id,
                 signal,
             });
         });
-
-        signalTimeout = setTimeout(() => {
-            handleHangUp();
-        }, 10000);
 
         newPeer.on('stream', (incomingStream) => {
             setRemoteStream(incomingStream);

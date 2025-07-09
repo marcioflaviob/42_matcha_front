@@ -186,7 +186,7 @@ const ProfileInfo = ({ userInfo }) => {
             <div className="profile-interests-card">
                 <h3 className="section-title">
                     <i className="pi pi-tags" />
-                    Interests
+                    {' '}Interests
                 </h3>
                 {
                     userInfo ?
@@ -211,7 +211,7 @@ const ProfileInfo = ({ userInfo }) => {
                 <div className="profile-bio-card">
                     <h3 className="section-title">
                         <i className="pi pi-history" />
-                        View History
+                        {' '}View History
                     </h3>
                     { viewHistory.length > 0 ? (
                         <div className='view-history-container'>

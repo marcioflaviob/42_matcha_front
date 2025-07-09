@@ -103,7 +103,7 @@ const SetUpProfile = ({ setActiveStep }) => {
                 <PictureSelector showDialog={openPictureSelector} setShowDialog={setOpenPictureSelector} />
 			</div>
 			<div className='button-div'>
-				<Button label="Back" severity="secondary" icon="pi pi-arrow-left" onClick={() => setActiveStep(1)} />
+				{/* <Button label="Back" severity="secondary" icon="pi pi-arrow-left" onClick={() => setActiveStep(1)} /> */}
 				<Button label="Next" icon="pi pi-arrow-right" iconPos="right" onClick={() => handleButtonNext()} 
                     disabled={!formData.biography || !isBirthdateValid(formData.birthdate) || user.pictures.length == 0} />
 			</div>

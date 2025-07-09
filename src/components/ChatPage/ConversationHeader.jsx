@@ -89,6 +89,7 @@ const ConversationHeader = ({ selectedUser, setSelectedUser }) => {
 	useEffect(() => {
 		const calling = searchParams.get('call');
 		const userId = searchParams.get('id');
+    
 		if (calling && (!userId || selectedUser.id == userId)) {
 			setIsCalling(true);
 			setIsInvited(true);

@@ -7,10 +7,12 @@ const CallControls = ({
     callButtonText = 'Call', 
     onCall, 
     onHangUp, 
-    stream 
+    stream,
+    buttonDisabled = false
 }) => {
     const [isMuted, setIsMuted] = useState(false);
     const [isCameraOff, setIsCameraOff] = useState(false);
+    const [hangUpButtonDisabled, setHangUpButtonDisabled] = useState(false);
 
     const handleMuteToggle = () => {
         if (stream) {
@@ -40,6 +42,7 @@ const CallControls = ({
                     icon="pi pi-phone"
                     className="call-action-button"
                     onClick={onCall}
+                    disabled={buttonDisabled}
                     rounded
                 />
             )}
@@ -64,9 +67,12 @@ const CallControls = ({
             
             <Button
                 label="Hang Up"
-
                 className="hangup-button"
-                onClick={onHangUp}
+                onClick={() => {
+                    setHangUpButtonDisabled(true);
+                    onHangUp();
+                }}
+                disabled={hangUpButtonDisabled}
                 rounded
             />
         </div>

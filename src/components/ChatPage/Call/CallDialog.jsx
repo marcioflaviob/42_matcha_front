@@ -83,7 +83,6 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
             } else {
                 channelName = `presence-video-call-${selectedUser.id}-${user.id}`;
             }
-
             const newChannel = pusher.subscribe(channelName);
             setChannel(newChannel);
 
@@ -98,9 +97,9 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
         }
     }, [connected, pusher, selectedUser.id, user.id]);
 
-    const setUpPeerConnection = useCallback(() => {
+    const setUpPeerConnection = useCallback(async () => {
         const newPeer = new SimplePeer({
-            initiator: user.id < selectedUser.id,
+            initiator: !isInvited,
             trickle: true,
             stream: stream,
             config: {
@@ -110,17 +109,19 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
                 ]
             }
         });
-
-        setPeer(newPeer);
-
+   
         newPeer.on('signal', (signal) => {
-            channel.trigger('client-signal', {
-                sender_id: user.id,
-                receiver_id: selectedUser.id,
-                signal,
-            });
+            if (channel) {
+                channel.trigger('client-signal', {
+                    sender_id: user.id,
+                    receiver_id: selectedUser.id,
+                    signal,
+                });
+            } else {
+                console.error('[CallDialog] Cannot send signal: channel not available');
+            }
         });
-
+        
         newPeer.on('stream', (incomingStream) => {
             setRemoteStream(incomingStream);
         });
@@ -128,17 +129,22 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
         newPeer.on('connect', () => {
             setConnectionEstablished(true);
         });
-
+        
         newPeer.on('error', (err) => {
         });
-
+        
         newPeer.on('close', () => {
             handleHangUp();
         });
 
-    }, [channel, selectedUser.id, stream, user.id, handleHangUp]);
+        setPeer(newPeer);
+        
+    }, [channel, selectedUser.id, stream, user.id, handleHangUp, remoteStream]);
 
     const handleAcceptCall = useCallback(() => {
+        
+        if (!channel || !stream) return;
+        
         if (waitingForAcceptance) {
             setWaitingForAcceptance(false);
             channel.trigger('client-call-accepted', {
@@ -150,35 +156,11 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
     }, [waitingForAcceptance, channel, selectedUser.id, user.id, setUpPeerConnection]);
 
     useEffect(() => {
-        if (connected && pusher) {
-            let channelName;
-            if (user.id > selectedUser.id) {
-                channelName = `presence-video-call-${user.id}-${selectedUser.id}`;
-            } else {
-                channelName = `presence-video-call-${selectedUser.id}-${user.id}`;
-            }
-
-            const newChannel = pusher.subscribe(channelName);
-            setChannel(newChannel);
-
-            return () => {
-                newChannel.unbind_all();
-                pusher.unsubscribe(channelName);
-                if (peer) peer.destroy();
-                if (stream) { 
-                    stream.getTracks().forEach(track => track.stop());
-                }
-            };
-        }
-    }, [connected, pusher, selectedUser.id, stream, user.id]);
-
-    useEffect(() => {
         if (channel) {
-
             channel.bind('client-call-accepted', (data) => {
                 if (data.receiver_id == user.id && data.sender_id == selectedUser.id) {
                     setWaitingForAcceptance(false);
-                    setUpPeerConnection();
+                    if (stream) setUpPeerConnection();
                 }
             });
 
@@ -217,6 +199,14 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
             handleAcceptCall();
         }
     }, [isInvited, channel, callStarted, handleAcceptCall]);
+
+    useEffect(() => {
+        if (!peer && stream && channel && callStarted && remoteStream &&
+            ((isInvited && !waitingForAcceptance) || (!isInvited && !waitingForAcceptance))) {
+            setUpPeerConnection();
+        }
+    }, [peer, stream, channel, callStarted, isInvited, waitingForAcceptance, setUpPeerConnection]);
+
 
     const renderDialog = () => {
         if (!permissionGranted) {

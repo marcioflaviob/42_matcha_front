@@ -1,4 +1,4 @@
-import React, { useContext } from 'react';
+import React, { useContext, useState } from 'react';
 import './CallDialog.css';
 import './AwaitingCall.css';
 import { displayAlert } from '../../Notification/Notification';
@@ -9,9 +9,11 @@ import CallControls from './CallControls';
 
 const AwaitingCall = ({ isInvited, selectedUser, stream, setCallStarted, channel, handleHangUp }) => {
     const { token } = useContext(AuthContext);
+    const [buttonDisabled, setButtonDisabled] = useState(false);
 
     const handleCallClick = async () => {
         if (channel) {
+            setButtonDisabled(true);
             if (!isInvited) {
                 await axios.post(`${import.meta.env.VITE_API_URL}/call/${selectedUser.id}`, {}, {
                     headers: {
@@ -38,6 +40,7 @@ const AwaitingCall = ({ isInvited, selectedUser, stream, setCallStarted, channel
                 onCall={handleCallClick}
                 onHangUp={handleHangUp}
                 stream={stream}
+                buttonDisabled={buttonDisabled}
             />
         </div>
     );

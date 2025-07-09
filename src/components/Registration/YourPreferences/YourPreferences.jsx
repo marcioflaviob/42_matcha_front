@@ -203,7 +203,7 @@ const YourPreferences = ({ setActiveStep }) => {
 				<span className='hobby-selection'>
 					<p>My hobbies</p>
 					<MultiSelect id='interests' className='hobby-selection-input' value={formData.interests.map(interest => interest.name) || []} options={allInterests} onChange={(e) => handleInterestChange(e, 'interests')}
-						optionLabel="name" optionValue="name" placeholder='Select your interests' showSelectAll={false} showClear={true} invalid={touchedFields.interests && !validFields.interests}/>
+						optionLabel="name" optionValue="name" placeholder='Select your interests' showSelectAll={false} invalid={touchedFields.interests && !validFields.interests}/>
 				</span>
 
 			</div>

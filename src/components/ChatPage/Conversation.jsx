@@ -14,7 +14,7 @@ const Conversation = ({ selectedUser, setSelectedUser }) => {
     const { token } = useContext(AuthContext);
     const [input, setInput] = useState('');
     const { setMapStatus, setFocusedDate, setFocusedUser } = useContext(MapContext);
-    const { user, setMatches, matches } = useContext(UserContext);
+    const { user, setMatches, matches, setDates } = useContext(UserContext);
     const { connected, channel } = useContext(SocketContext);
     const messageListRef = useRef(null);
 
@@ -131,6 +131,15 @@ const Conversation = ({ selectedUser, setSelectedUser }) => {
                     message.is_read = true;
                 }
                 const isSent = message.date && message.sender_id == user.id;
+                if (message.date) {
+                    setDates((prevDates) => {
+                        const existingDate = prevDates.find(date => date.id === message.date.id);
+                        if (!existingDate) {
+                            return [...prevDates, message.date];
+                        }
+                        return prevDates;
+                    });
+                }
                 saveMessage(message, isSent);
             });
         }
@@ -141,7 +150,7 @@ const Conversation = ({ selectedUser, setSelectedUser }) => {
         }
     }, [connected, channel, selectedUser]);
 
-    const openMap = (date) => {
+    const openMap = async (date) => {
         setMapStatus("checking_date");
         setFocusedDate(date);
         setFocusedUser(selectedUser);

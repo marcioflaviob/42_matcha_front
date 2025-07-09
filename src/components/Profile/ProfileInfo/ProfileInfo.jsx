@@ -1,24 +1,51 @@
 import React, { useEffect, useContext, useState } from 'react';
 import './ProfileInfo.css';
 import { UserContext } from '../../../context/UserContext';
+import { AuthContext } from '../../../context/AuthContext';
 import { Button } from 'primereact/button';
 import { useNavigate } from 'react-router-dom';
 import InterestChip from '../../InterestChip/InterestChip';
 import StarRating from '../../StarRating/StarRating';
 import { Skeleton } from 'primereact/skeleton';
+import axios from 'axios';
+import { displayAlert } from '../../Notification/Notification';
         
 const ProfileInfo = ({ userInfo }) => {
     const navigate = useNavigate();
-    const {user} = useContext(UserContext);
+    const { token } = useContext(AuthContext);
+    const { user } = useContext(UserContext);
     const [showEditButton, setShowEditButton] = useState(false);
+    const [viewHistory, setViewHistory] = useState([]);
+    const [showMore, setShowMore] = useState(false);
 
     useEffect(() => {
         if (user && userInfo && user.id == userInfo.id)
+        {
             setShowEditButton(true);
+            getAllProfileView();
+        }
+
     }, [userInfo, user]);
 
     const handleEditButton = () => {
         navigate(`/edit-profile/`);
+    }
+
+    const getAllProfileView = () => {
+        if (userInfo)
+        {
+            axios.get(`${import.meta.env.VITE_API_URL}/notifications/profile-views`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+            .then((response) => {
+                setViewHistory(response.data);
+            })
+            .catch((error) => {
+                displayAlert('Failed to fetch profile views.', error.response?.data?.message || 'Error fetching profile views');
+            });
+        }
     }
 
     return (
@@ -159,7 +186,7 @@ const ProfileInfo = ({ userInfo }) => {
             <div className="profile-interests-card">
                 <h3 className="section-title">
                     <i className="pi pi-tags" />
-                    Interests
+                    {' '}Interests
                 </h3>
                 {
                     userInfo ?
@@ -178,6 +205,46 @@ const ProfileInfo = ({ userInfo }) => {
                     </div>
                 }
             </div>
+
+            {/* View history card */}
+            { userInfo && userInfo.id == user.id &&
+                <div className="profile-bio-card">
+                    <h3 className="section-title">
+                        <i className="pi pi-history" />
+                        {' '}View History
+                    </h3>
+                    { viewHistory.length > 0 ? (
+                        <div className='view-history-container'>
+                            <ul className="view-history-list">
+                                {viewHistory.slice(showMore ? -10 : -5).reverse().map((view) => (
+                                    <div key={view.id} className="view-history-item">
+                                        <div className="view-history-user">
+                                            <img 
+                                                src={`${import.meta.env.VITE_BLOB_URL}/${view.pictures[0].url}`} 
+                                                alt={`${view.first_name} ${view.last_name}`} 
+                                                className="view-history-avatar"
+                                            />
+                                            <span className="view-history-name">{view.message}</span>
+                                        </div>
+                                    </div>
+                                ))}
+                            </ul>
+                            { viewHistory.length > 5 && !showMore &&
+                                <div className="view-history-footer">
+                                    <button 
+                                        className="view-all-btn" 
+                                        onClick={() => setShowMore(true)}
+                                    >
+                                        See More
+                                    </button>
+                                </div>
+                            }
+                        </div>
+                    ) : (
+                        <p className="no-view-history">No one has viewed your profile yet.</p>
+                    )}
+                </div>
+            }
         </div>
     );
 };

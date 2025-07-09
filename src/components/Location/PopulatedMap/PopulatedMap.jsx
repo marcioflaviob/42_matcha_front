@@ -41,6 +41,8 @@ const PopulatedMap = () => {
   const [slideOut, setSlideOut] = useState(false);
   const markerRefs = useRef({});
   const [minDate, setMinDate] = useState(new Date());
+  const [isLoading, setIsLoading] = useState(false);
+  const [responded, setResponded] = useState(false);
   const [dateForm, setDateForm] = useState({
     senderId: '',
     receiverId: '',
@@ -120,6 +122,7 @@ const PopulatedMap = () => {
   };
 
   const handleSendDate = async () => {
+    setIsLoading(true);
     try {
       const response = await axios.post(import.meta.env.VITE_API_URL + '/dates', dateForm, {
         headers: {
@@ -128,7 +131,14 @@ const PopulatedMap = () => {
       });
       displayAlert('success', 'Date planned!');
       setClickedPosition('');
-      setDates((prev) => [...prev, response.data]);
+      setDates((prevDates) => {
+          const existingDate = prevDates.find(date => date.id === response.data.id);
+          if (!existingDate) {
+              return [...prevDates, response.data];
+          }
+          return prevDates;
+      });
+      setIsLoading(false);
     } catch (error) {
       displayAlert('error', error.response?.data?.message || 'Error scheduling date');
     }
@@ -162,7 +172,6 @@ const PopulatedMap = () => {
         return { ...match, icon : userIcon};
       });
       setMapMatches(updatedMatches);
-
 
       if (focusedUser) {
         setDateForm((prev => ({
@@ -221,6 +230,7 @@ const PopulatedMap = () => {
   }, [mapStatus]);
 
   const handleUpdateDate = async (dateId, status) => {
+    setResponded(true);
 		try {
 			await axios.patch(`${import.meta.env.VITE_API_URL}/dates`, {
         id: dateId,
@@ -231,12 +241,13 @@ const PopulatedMap = () => {
 				},
       });
       setDates(dates.map((date) => {
-        if (date.id === dateId) {
+        if (date.id == dateId) {
           return { ...date, status };
         }
         return date;
       }));
       setFocusedDate(null);
+      setResponded(false);
 		} catch (error) {
 			displayAlert("error", error.response?.data?.message || "Error updating date status");
 		}
@@ -329,6 +340,7 @@ const PopulatedMap = () => {
                     className="p-button-success"
                     onClick={() => {handleUpdateDate(date?.id, "accepted")}} 
                     size="small"
+                    disabled={responded}
                   />
                   <Button 
                     label="Refuse" 
@@ -337,6 +349,7 @@ const PopulatedMap = () => {
                     severity='danger'
                     onClick={() => {handleUpdateDate(date?.id, "refused")}} 
                     size="small"
+                    disabled={responded}
                   />
                 </div>
               }
@@ -371,7 +384,7 @@ const PopulatedMap = () => {
             showTime
             minDate={minDate}
             />
-            <Button label="Schedule date" disabled={!dateForm.scheduledDate} className='map-date-button' text onClick={handleSendDate}/>
+            <Button label="Schedule date" disabled={!dateForm.scheduledDate} loading={isLoading} className='map-date-button' text onClick={handleSendDate}/>
         </div>}
     </div>
   );

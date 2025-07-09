@@ -109,7 +109,7 @@ const CallDialog = ({ selectedUser, setIsCalling, isInvited }) => {
                 ]
             }
         });
-        
+   
         newPeer.on('signal', (signal) => {
             if (channel) {
                 channel.trigger('client-signal', {

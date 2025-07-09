@@ -14,7 +14,7 @@ const Conversation = ({ selectedUser, setSelectedUser }) => {
     const { token } = useContext(AuthContext);
     const [input, setInput] = useState('');
     const { setMapStatus, setFocusedDate, setFocusedUser } = useContext(MapContext);
-    const { user, setMatches, matches } = useContext(UserContext);
+    const { user, setMatches, matches, setDates } = useContext(UserContext);
     const { connected, channel } = useContext(SocketContext);
     const messageListRef = useRef(null);
 
@@ -141,7 +141,21 @@ const Conversation = ({ selectedUser, setSelectedUser }) => {
         }
     }, [connected, channel, selectedUser]);
 
-    const openMap = (date) => {
+    const fetchDates = async () => {
+        try {
+            const response = await axios.get(`${import.meta.env.VITE_API_URL}/dates`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            });
+            setDates(response.data);
+        } catch (error) {
+            displayAlert('error', error.response?.data?.message || 'Error fetching dates');
+        }
+    };
+
+    const openMap = async (date) => {
+        await fetchDates();
         setMapStatus("checking_date");
         setFocusedDate(date);
         setFocusedUser(selectedUser);

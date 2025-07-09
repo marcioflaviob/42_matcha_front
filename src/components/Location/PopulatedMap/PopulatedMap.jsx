@@ -163,7 +163,6 @@ const PopulatedMap = () => {
       });
       setMapMatches(updatedMatches);
 
-
       if (focusedUser) {
         setDateForm((prev => ({
           ...prev,

@@ -141,21 +141,7 @@ const Conversation = ({ selectedUser, setSelectedUser }) => {
         }
     }, [connected, channel, selectedUser]);
 
-    const fetchDates = async () => {
-        try {
-            const response = await axios.get(`${import.meta.env.VITE_API_URL}/dates`, {
-                headers: {
-                    Authorization: `Bearer ${token}`,
-                },
-            });
-            setDates(response.data);
-        } catch (error) {
-            displayAlert('error', error.response?.data?.message || 'Error fetching dates');
-        }
-    };
-
     const openMap = async (date) => {
-        await fetchDates();
         setMapStatus("checking_date");
         setFocusedDate(date);
         setFocusedUser(selectedUser);
@@ -178,6 +164,13 @@ const Conversation = ({ selectedUser, setSelectedUser }) => {
                             {selectedUser?.messages && selectedUser.messages.length > 0 ?
                                 (selectedUser.messages.map((msg) => {
                                     if (msg.date) {
+                                        setDates((prevDates) => {
+                                            const existingDate = prevDates.find(date => date.id === msg.date.id);
+                                            if (!existingDate) {
+                                                return [...prevDates, msg.date];
+                                            }
+                                            return prevDates;
+                                        });
                                         return (
                                             <div key={msg.id} className={`message-date ${msg.sender_id === selectedUser.id ? 'received' : 'sent'} ${msg.date.status === "refused" ? "refused" : ""}`}>
                                                 <div className={`message-date-title ${msg.date.status === "refused" ? "refused" : ""}`}>{(msg.date.status === 'refused' || !msg.date) ? "Date refused" : msg.date.status == 'accepted' ? "Date accepted" : "Let's go on a date!"}</div>

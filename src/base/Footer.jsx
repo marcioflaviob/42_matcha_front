@@ -25,7 +25,7 @@ const Footer = () => {
                 </div>
                 
 				<p className="copyright">
-                    matcha is a school project wrote in 2025 by{" "}
+                    matcha is a school project written in 2025 by{" "}
                     <a href="https://www.linkedin.com/in/marcioflavio/" target="_blank" rel="noopener noreferrer">
                         marcio flavio
                     </a>{" "}

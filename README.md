@@ -2,6 +2,8 @@
 
 Matcha is 42 school project written by [Marcio Flavio](https://www.linkedin.com/in/marcioflavio/) and [Teo Rimize](https://www.linkedin.com/in/t%C3%A9o-rimize-378b3222a/). 
 
+Check it out at [matcha.marcioflavio.com](https://matcha.marcioflavio.com/)
+
 It consists of a modern dating web application built with React and a RESTful API backend. This repository contains the frontend codebase, providing user experience for discovering, chatting, and connecting with potential matches.
 
 [Click here to go to the backend repository.](https://github.com/marcioflaviob/42_matcha_back)
